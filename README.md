@@ -86,6 +86,31 @@ npx http-server -p 8080
 관리하며, 새 픽업 타입을 추가하고 싶다면 이 세 메서드와 `Player.applyFieldSpeedBuff`/
 `heal` 같은 소비 메서드에 분기를 하나 추가하면 됩니다.
 
+### 레벨업 등급 표시 (Common/Rare 같은 영문 대신 한글, 고등급은 화려하게)
+
+`LevelUpScene`의 등급 표시는 전부 한글(`일반/고급/희귀/영웅/전설`, `PS.rarityNameKo` -
+`src/utils/KoreanLabels.js`)이며, 등급이 높을수록 카드 프레젠테이션도 눈에 띄게
+화려해집니다 (`LevelUpScene`의 `FLAIR` 테이블):
+
+- 카드 배경 색감과 테두리 두께/발광 레이어 수가 등급별로 증가
+- 영웅(Epic)·전설(Legendary)은 테두리가 맥동(pulse)하는 애니메이션 추가
+- 희귀 이상은 카드 테두리를 따라 도는 반짝임 파티클 추가, 전설이 가장 밀도 높음
+- 제목/등급 폰트 크기도 등급에 비례해 살짝 커짐
+
+새 등급이나 연출을 조정하려면 `LevelUpScene.js`의 `FLAIR` 객체(등급별
+`glowLayers`/`pulse`/`particles`/`borderW`/`fontScale`)만 손보면 됩니다. 또한 게임 내
+어디서도 타입 id(`fire`, `water` ...)나 등급 id(`common`, `legendary` ...)가 영문 그대로
+노출되지 않도록 `PS.typeNameKo`/`PS.rarityNameKo`를 표시 직전에 한 번 거치는 것이
+컨벤션입니다.
+
+### 초반 공격 사거리
+
+플레이테스트 피드백으로 초반 사거리가 짧게 느껴져 두 가지를 조정했습니다:
+`BuildSystem`의 기본 `rangeMult`를 1.0 → 1.2로 올려 모든 공격 패턴에 전역 +20% 사거리를
+주었고, 근접(`melee`) 패턴 기술 12종의 `range`를 데이터에서 직접 약 1.9배 늘렸습니다
+(예: Quick Attack 65 → 124px). 전체 사거리 균형을 다시 조정하려면 `BuildSystem.refreshModifiers`의
+`rangeMult` 기본값(1.2)이나 `data/moves.json`의 개별 `range`/`areaRadius`를 조정하세요.
+
 ## 3. 완전 오프라인 구조가 지켜지는 방식
 
 - `data/*.json`은 모두 로컬 파일이며, `PreloadScene`이 `this.load.json`으로만 불러옵니다.
@@ -188,9 +213,39 @@ on_attack_cooldown_reset_chance, crit_chance, crit_damage, type_penetration`).
 
 `data/vfx.json`의 `types.<typeId>`에 `{ color, shape, trail }`을 추가하면
 `src/managers/AssetManager.generateVfxTexture`가 자동으로 절차적 파티클 텍스처를
-만들어줍니다. `shape`는 `generateVfxTexture`의 switch문에 있는 값(fire/water/bolt/leaf/
-shard/fist/bubble/chunk/wing/swirl/sting/wisp/orb/spike/sparkle 등) 중 하나를 쓰거나,
-새 도형을 그리고 싶으면 그 switch문에 case를 하나 추가하면 됩니다.
+만들어줍니다. 18타입 전부가 서로 다른 `shape`(실루엣)와 `color`를 갖도록 이미 구성되어
+있어(예: fire=불꽃 삼각형, water=물방울, fighting=너클, ground=지진 파편, psychic=삼중
+소용돌이, ghost=유령 위습, steel=톱니바퀴 등), 같은 투사체/타격 이펙트라도 타입만 보고
+바로 구분됩니다 (`GameScene`이 투사체 텍스처와 틴트를 `move.type` 기준으로 지정 - 62-70행
+근처 `firePlayerProjectile`/`vfx.getTexture` 참고). 새 `shape`를 쓰려면
+`generateVfxTexture`의 switch문에 case를 하나 추가하면 됩니다.
+
+### 속성별 상태이상 기믹 (공격에 실려 있는 부가 효과)
+
+`data/moves.json`의 각 기술에 있는 `statusEffect`(또는 상태전용 기술의 경우
+`statusOnly`)가 타입별 "기믹"을 담당합니다. 대표적으로:
+
+| 속성 | 대표 기믹 | 예시 기술 |
+|---|---|---|
+| 불꽃 | 화상 (지속 피해) | Ember, Flamethrower, Fire Blast |
+| 물 | 슬로우 (이동속도 감소) | Bubble |
+| 전기 | 마비 (공격/이동속도 감소 + 기절 확률) | Thunder Shock, Thunderbolt, Spark |
+| 풀 / 독 | 중독 (스택형 지속 피해) | Vine Whip, Razor Leaf, Poison Sting |
+| 얼음 | 슬로우 | Powder Snow |
+| 격투 | 방어구 파괴 / 방어력 감소 | Cross Chop, Low Kick |
+| 땅 / 바위 | 방어력 감소 | Mud Slap, Rock Throw |
+| 벌레 | 중독 | X-Scissor |
+| 비행 | 공격력 감소 (돌풍에 흐트러짐) | Gust |
+| 고스트 | 혼란 | Confuse Ray |
+| 에스퍼 | 혼란 | Psybeam |
+| 악 | 방어력 감소 | Crunch |
+| 페어리 | 공격력 감소 | Moonblast |
+| 드래곤 | 마비 | Dragon Breath |
+| 노말 | (고유 상태이상 없음 - 원작처럼 범용 속성) | - |
+
+모든 상태이상 자체의 수치(지속시간/확률/효과량)는 `data/balance.json`의
+`statusEffects`에서 한 곳에 모아 관리합니다. 새 기술에 기존 상태이상을 다시 걸고 싶으면
+`statusEffect: { "id": "burn", "chance": 0.25 }`처럼 데이터만 추가하면 됩니다.
 
 ## 10. 새로운 진화 추가 방법
 

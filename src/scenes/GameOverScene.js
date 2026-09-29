@@ -29,7 +29,7 @@ PS.GameOverScene = class GameOverScene extends Phaser.Scene {
       `생존 시간: ${mm}:${ss.toString().padStart(2, '0')}`,
       `도달 레벨: ${r.level || 1}`,
       `처치 수: ${r.kills || 0}`,
-      `주력 타입: ${r.dominantType ? r.dominantType.toUpperCase() : '-'}`
+      `주력 타입: ${r.dominantType ? PS.typeNameKo(r.dominantType) : '-'}`
     ];
     this.add.text(width / 2, height * 0.42, lines.join('\n'), {
       fontFamily: 'Arial', fontSize: '16px', color: '#ffffff', align: 'center', lineSpacing: 10

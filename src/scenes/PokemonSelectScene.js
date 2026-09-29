@@ -34,7 +34,7 @@ PS.PokemonSelectScene = class PokemonSelectScene extends Phaser.Scene {
       const card = this.add.rectangle(x, y, cellW - 12, cellH - 12, 0x1c2530, 1).setStrokeStyle(2, 0x33424f);
       const sprite = this.add.image(x, y - 24, species.id).setDisplaySize(72, 72);
       const name = this.add.text(x, y + 22, species.name, { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffffff' }).setOrigin(0.5);
-      const types = this.add.text(x, y + 40, species.types.join(' / '), { fontFamily: 'Arial', fontSize: '10px', color: '#8fd3ff' }).setOrigin(0.5);
+      const types = this.add.text(x, y + 40, species.types.map(PS.typeNameKo).join(' / '), { fontFamily: 'Arial', fontSize: '10px', color: '#8fd3ff' }).setOrigin(0.5);
 
       const zone = this.add.zone(x, y, cellW - 12, cellH - 12).setInteractive({ useHandCursor: true });
       zone.on('pointerover', () => { card.setStrokeStyle(3, 0xffd400); this.detailText.setText(`${species.name} — ${species.description}`); });

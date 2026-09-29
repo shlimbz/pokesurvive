@@ -63,7 +63,7 @@
     "pattern": "melee",
     "baseDamage": 12,
     "cooldownMs": 1000,
-    "range": 70,
+    "range": 133,
     "statusEffect": {
       "id": "paralysis",
       "chance": 0.2
@@ -78,7 +78,7 @@
     "pattern": "melee",
     "baseDamage": 13,
     "cooldownMs": 440,
-    "range": 65,
+    "range": 124,
     "maxLevel": 5
   },
   "tackle": {
@@ -89,7 +89,7 @@
     "pattern": "melee",
     "baseDamage": 14,
     "cooldownMs": 560,
-    "range": 65,
+    "range": 124,
     "maxLevel": 5
   },
   "growl": {
@@ -166,7 +166,7 @@
     "pattern": "melee",
     "baseDamage": 16,
     "cooldownMs": 520,
-    "range": 65,
+    "range": 124,
     "maxLevel": 5
   },
   "water_gun": {
@@ -224,7 +224,7 @@
     "pattern": "spread",
     "baseDamage": 16,
     "cooldownMs": 640,
-    "range": 130,
+    "range": 190,
     "count": 3,
     "spreadAngle": 70,
     "statusEffect": {
@@ -286,7 +286,7 @@
     "pattern": "melee",
     "baseDamage": 14,
     "cooldownMs": 600,
-    "range": 90,
+    "range": 171,
     "pierce": 1,
     "lifestealPercent": 0.15,
     "statusEffect": {
@@ -332,7 +332,7 @@
     "pattern": "melee",
     "baseDamage": 20,
     "cooldownMs": 640,
-    "range": 80,
+    "range": 152,
     "knockback": 220,
     "maxLevel": 5
   },
@@ -344,7 +344,7 @@
     "pattern": "melee",
     "baseDamage": 16,
     "cooldownMs": 560,
-    "range": 75,
+    "range": 143,
     "statusEffect": {
       "id": "armorBreak",
       "chance": 0.25
@@ -359,7 +359,7 @@
     "pattern": "melee",
     "baseDamage": 26,
     "cooldownMs": 900,
-    "range": 90,
+    "range": 171,
     "knockback": 320,
     "statusEffect": {
       "id": "armorBreak",
@@ -375,7 +375,7 @@
     "pattern": "melee",
     "baseDamage": 30,
     "cooldownMs": 1400,
-    "range": 100,
+    "range": 190,
     "knockback": 380,
     "maxLevel": 5
   },
@@ -415,7 +415,7 @@
     "pattern": "melee",
     "baseDamage": 16,
     "cooldownMs": 750,
-    "range": 85,
+    "range": 162,
     "lifestealPercent": 0.3,
     "maxLevel": 5
   },
@@ -476,7 +476,11 @@
     "cooldownMs": 1000,
     "range": 260,
     "areaRadius": 70,
-    "maxLevel": 5
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.25
+    }
   },
   "rock_throw": {
     "id": "rock_throw",
@@ -489,7 +493,11 @@
     "range": 320,
     "projectileSpeed": 380,
     "knockback": 150,
-    "maxLevel": 5
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.3
+    }
   },
   "shadow_punch": {
     "id": "shadow_punch",
@@ -528,7 +536,7 @@
     "pattern": "melee",
     "baseDamage": 18,
     "cooldownMs": 900,
-    "range": 85,
+    "range": 162,
     "statusEffect": {
       "id": "defenseDown",
       "chance": 0.3
@@ -563,7 +571,11 @@
     "projectileSpeed": 460,
     "count": 3,
     "spreadAngle": 50,
-    "maxLevel": 5
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "attackDown",
+      "chance": 0.25
+    }
   },
   "wing_attack": {
     "id": "wing_attack",
@@ -573,7 +585,7 @@
     "pattern": "melee",
     "baseDamage": 14,
     "cooldownMs": 650,
-    "range": 90,
+    "range": 171,
     "maxLevel": 5
   },
   "psybeam": {

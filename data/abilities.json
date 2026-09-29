@@ -5,34 +5,58 @@
     "grade": "rare",
     "description": "피격 시 일정 확률로 주변 적을 마비시킨다.",
     "effects": [
-      { "type": "on_hit_taken_aoe_status", "status": "paralysis", "chance": 0.15, "radius": 90, "chancePerLevel": 0.07 }
+      {
+        "type": "on_hit_taken_aoe_status",
+        "status": "paralysis",
+        "chance": 0.15,
+        "radius": 90,
+        "chancePerLevel": 0.07
+      }
     ]
   },
   "blaze": {
     "id": "blaze",
     "name": "Blaze",
     "grade": "rare",
-    "description": "HP가 낮을수록 Fire 기술 피해가 증가한다.",
+    "description": "HP가 낮을수록 불꽃 기술 피해가 증가한다.",
     "effects": [
-      { "type": "low_hp_type_damage", "moveType": "fire", "threshold": 0.34, "damageMult": 1.5, "damageMultPerLevel": 0.25 }
+      {
+        "type": "low_hp_type_damage",
+        "moveType": "fire",
+        "threshold": 0.34,
+        "damageMult": 1.5,
+        "damageMultPerLevel": 0.25
+      }
     ]
   },
   "torrent": {
     "id": "torrent",
     "name": "Torrent",
     "grade": "rare",
-    "description": "HP가 낮을수록 Water 기술 피해가 증가한다.",
+    "description": "HP가 낮을수록 물 기술 피해가 증가한다.",
     "effects": [
-      { "type": "low_hp_type_damage", "moveType": "water", "threshold": 0.34, "damageMult": 1.5, "damageMultPerLevel": 0.25 }
+      {
+        "type": "low_hp_type_damage",
+        "moveType": "water",
+        "threshold": 0.34,
+        "damageMult": 1.5,
+        "damageMultPerLevel": 0.25
+      }
     ]
   },
   "overgrow": {
     "id": "overgrow",
     "name": "Overgrow",
     "grade": "rare",
-    "description": "HP가 낮을수록 Grass 기술 피해가 증가한다.",
+    "description": "HP가 낮을수록 풀 기술 피해가 증가한다.",
     "effects": [
-      { "type": "low_hp_type_damage", "moveType": "grass", "threshold": 0.34, "damageMult": 1.5, "damageMultPerLevel": 0.25 }
+      {
+        "type": "low_hp_type_damage",
+        "moveType": "grass",
+        "threshold": 0.34,
+        "damageMult": 1.5,
+        "damageMultPerLevel": 0.25
+      }
     ]
   },
   "intimidate": {
@@ -41,61 +65,99 @@
     "grade": "uncommon",
     "description": "주변 적의 공격력을 지속적으로 감소시킨다.",
     "effects": [
-      { "type": "aura_debuff", "stat": "attack", "mult": 0.85, "radius": 140, "radiusPerLevel": 40, "tickSec": 1.0 }
+      {
+        "type": "aura_debuff",
+        "stat": "attack",
+        "mult": 0.85,
+        "radius": 140,
+        "radiusPerLevel": 40,
+        "tickSec": 1
+      }
     ]
   },
   "swift_swim": {
     "id": "swift_swim",
     "name": "Swift Swim",
     "grade": "uncommon",
-    "description": "Water 빌드에서 이동속도가 증가한다.",
+    "description": "물 빌드에서 이동속도가 증가한다.",
     "effects": [
-      { "type": "type_build_move_speed", "moveType": "water", "threshold": 2, "speedMult": 1.15, "speedMultPerLevel": 0.08 }
+      {
+        "type": "type_build_move_speed",
+        "moveType": "water",
+        "threshold": 2,
+        "speedMult": 1.15,
+        "speedMultPerLevel": 0.08
+      }
     ]
   },
   "chlorophyll": {
     "id": "chlorophyll",
     "name": "Chlorophyll",
     "grade": "uncommon",
-    "description": "Grass 빌드에서 공격속도가 증가한다.",
+    "description": "풀 빌드에서 공격속도가 증가한다.",
     "effects": [
-      { "type": "type_build_attack_speed", "moveType": "grass", "threshold": 2, "cooldownMult": 0.85, "cooldownMultPerLevel": 0.05 }
+      {
+        "type": "type_build_attack_speed",
+        "moveType": "grass",
+        "threshold": 2,
+        "cooldownMult": 0.85,
+        "cooldownMultPerLevel": 0.05
+      }
     ]
   },
   "flash_fire": {
     "id": "flash_fire",
     "name": "Flash Fire",
     "grade": "rare",
-    "description": "Fire 피해를 받을 때마다 Fire 기술 위력이 누적 상승한다.",
+    "description": "불꽃 피해를 받을 때마다 불꽃 기술 위력이 누적 상승한다.",
     "effects": [
-      { "type": "absorb_type_stack_damage", "absorbType": "fire", "buffType": "fire", "stackMult": 0.05, "maxStacks": 6 }
+      {
+        "type": "absorb_type_stack_damage",
+        "absorbType": "fire",
+        "buffType": "fire",
+        "stackMult": 0.05,
+        "maxStacks": 6
+      }
     ]
   },
   "water_absorb": {
     "id": "water_absorb",
     "name": "Water Absorb",
     "grade": "rare",
-    "description": "Water 속성 피해를 받으면 대신 체력을 회복한다.",
+    "description": "물 속성 피해를 받으면 대신 체력을 회복한다.",
     "effects": [
-      { "type": "absorb_type_heal", "absorbType": "water", "healPercentOfDamage": 0.5 }
+      {
+        "type": "absorb_type_heal",
+        "absorbType": "water",
+        "healPercentOfDamage": 0.5
+      }
     ]
   },
   "volt_absorb": {
     "id": "volt_absorb",
     "name": "Volt Absorb",
     "grade": "rare",
-    "description": "Electric 속성 피해를 받으면 대신 체력을 회복한다.",
+    "description": "전기 속성 피해를 받으면 대신 체력을 회복한다.",
     "effects": [
-      { "type": "absorb_type_heal", "absorbType": "electric", "healPercentOfDamage": 0.5 }
+      {
+        "type": "absorb_type_heal",
+        "absorbType": "electric",
+        "healPercentOfDamage": 0.5
+      }
     ]
   },
   "levitate": {
     "id": "levitate",
     "name": "Levitate",
     "grade": "uncommon",
-    "description": "Ground 속성 피해에 대한 저항이 크게 증가한다.",
+    "description": "땅 속성 피해에 대한 저항이 크게 증가한다.",
     "effects": [
-      { "type": "type_resist", "resistType": "ground", "damageMult": 0.5, "damageMultPerLevel": -0.1 }
+      {
+        "type": "type_resist",
+        "resistType": "ground",
+        "damageMult": 0.5,
+        "damageMultPerLevel": -0.1
+      }
     ]
   },
   "guts": {
@@ -104,7 +166,11 @@
     "grade": "uncommon",
     "description": "상태이상에 걸려있을 때 공격력이 증가한다.",
     "effects": [
-      { "type": "status_active_damage_boost", "damageMult": 1.3, "damageMultPerLevel": 0.15 }
+      {
+        "type": "status_active_damage_boost",
+        "damageMult": 1.3,
+        "damageMultPerLevel": 0.15
+      }
     ]
   },
   "technician": {
@@ -113,7 +179,12 @@
     "grade": "epic",
     "description": "위력이 낮은 기술의 피해가 증가한다.",
     "effects": [
-      { "type": "low_base_power_damage_boost", "threshold": 60, "damageMult": 1.3, "damageMultPerLevel": 0.1 }
+      {
+        "type": "low_base_power_damage_boost",
+        "threshold": 60,
+        "damageMult": 1.3,
+        "damageMultPerLevel": 0.1
+      }
     ]
   },
   "huge_power": {
@@ -122,7 +193,12 @@
     "grade": "epic",
     "description": "Physical 기술의 피해가 대폭 증가한다.",
     "effects": [
-      { "type": "category_damage_boost", "category": "physical", "damageMult": 1.5, "damageMultPerLevel": 0.2 }
+      {
+        "type": "category_damage_boost",
+        "category": "physical",
+        "damageMult": 1.5,
+        "damageMultPerLevel": 0.2
+      }
     ]
   },
   "adaptability": {
@@ -131,7 +207,11 @@
     "grade": "rare",
     "description": "STAB(자기 타입 일치) 보너스가 더 크게 적용된다.",
     "effects": [
-      { "type": "stab_boost", "stabMult": 2.0, "stabMultPerLevel": 0.25 }
+      {
+        "type": "stab_boost",
+        "stabMult": 2,
+        "stabMultPerLevel": 0.25
+      }
     ]
   },
   "run_away": {
@@ -140,7 +220,11 @@
     "grade": "common",
     "description": "이동 속도가 소폭 증가한다.",
     "effects": [
-      { "type": "flat_move_speed", "speedBonus": 10, "speedBonusPerLevel": 6 }
+      {
+        "type": "flat_move_speed",
+        "speedBonus": 10,
+        "speedBonusPerLevel": 6
+      }
     ]
   },
   "steadfast": {
@@ -149,7 +233,13 @@
     "grade": "uncommon",
     "description": "상태이상에 걸릴 때마다 잠시 공격속도가 증가한다.",
     "effects": [
-      { "type": "on_status_applied_self_buff", "buff": "attackSpeed", "mult": 1.25, "durationSec": 3, "multPerLevel": 0.1 }
+      {
+        "type": "on_status_applied_self_buff",
+        "buff": "attackSpeed",
+        "mult": 1.25,
+        "durationSec": 3,
+        "multPerLevel": 0.1
+      }
     ]
   }
 }

@@ -124,6 +124,83 @@ PS.AssetManager = class AssetManager {
           { x: 1, y: cy }, { x: cx - 3, y: cy - 3 }
         ], true);
         break;
+      case 'fighting':
+      case 'fist':
+        // Knuckle-duster silhouette: a chunky rounded block with three knuckle bumps.
+        g.fillRoundedRect(cx - 8, cy - 4, 16, 11, 3);
+        g.fillCircle(cx - 4, cy - 5, 3);
+        g.fillCircle(cx, cy - 6, 3.5);
+        g.fillCircle(cx + 4, cy - 5, 3);
+        break;
+      case 'ground':
+      case 'quake':
+        // Jagged shards erupting from cracked ground.
+        g.fillTriangle(cx - 8, size - 2, cx - 4, 3, cx - 1, size - 2);
+        g.fillTriangle(cx - 1, size - 2, cx + 3, 1, cx + 7, size - 2);
+        g.fillRect(2, size - 4, size - 4, 3);
+        break;
+      case 'flying':
+      case 'wing':
+        // Two swept-back wing blades forming a chevron.
+        g.fillTriangle(cx, cy, 1, 3, 7, cy + 4);
+        g.fillTriangle(cx, cy, size - 1, 3, size - 7, cy + 4);
+        break;
+      case 'psychic':
+      case 'swirl':
+        // Triskelion (three curved blades) suggesting a psychic vortex.
+        for (let i = 0; i < 3; i++) {
+          const a = (i / 3) * Math.PI * 2;
+          const bx = cx + Math.cos(a) * 7;
+          const by = cy + Math.sin(a) * 7;
+          const tx = cx + Math.cos(a + 1.3) * 3;
+          const ty = cy + Math.sin(a + 1.3) * 3;
+          g.fillTriangle(cx, cy, bx, by, tx, ty);
+        }
+        break;
+      case 'bug':
+      case 'sting':
+        // Thin elongated stinger needle.
+        g.fillTriangle(cx, 1, cx - 3, cy + 4, cx + 3, cy + 4);
+        g.fillRect(cx - 2, cy + 3, 4, size - cy - 5);
+        break;
+      case 'rock':
+      case 'chunk':
+        // Irregular jagged boulder outline.
+        g.fillPoints([
+          { x: cx - 9, y: cy + 2 }, { x: cx - 5, y: cy - 8 }, { x: cx + 2, y: cy - 9 },
+          { x: cx + 9, y: cy - 2 }, { x: cx + 6, y: cy + 8 }, { x: cx - 4, y: cy + 9 }
+        ], true);
+        break;
+      case 'ghost':
+      case 'wisp':
+        // Two offset wavy teardrops giving a floating-wisp silhouette.
+        g.fillCircle(cx - 2, cy + 4, 6);
+        g.fillTriangle(cx - 2, 1, cx - 7, cy + 2, cx + 3, cy + 2);
+        break;
+      case 'dragon':
+      case 'orb':
+        // Glowing core with a faint outer ring (draconic energy sphere).
+        g.lineStyle(2, 0xffffff, 0.35);
+        g.strokeCircle(cx, cy, 11);
+        g.fillStyle(c, 1);
+        g.fillCircle(cx, cy, 7);
+        break;
+      case 'dark':
+      case 'spike':
+        // Fanned claw-slash spikes.
+        g.fillTriangle(cx - 8, size - 2, cx - 5, 2, cx - 2, size - 2);
+        g.fillTriangle(cx - 2, size - 2, cx + 1, 1, cx + 4, size - 2);
+        g.fillTriangle(cx + 4, size - 2, cx + 7, 3, cx + 10, size - 2);
+        break;
+      case 'steel':
+      case 'gear':
+        // Simplified cog: circle with teeth around the rim.
+        g.fillCircle(cx, cy, 6);
+        for (let i = 0; i < 6; i++) {
+          const a = (i / 6) * Math.PI * 2;
+          g.fillRect(cx + Math.cos(a) * 7 - 1.5, cy + Math.sin(a) * 7 - 1.5, 3, 3);
+        }
+        break;
       default:
         g.fillCircle(cx, cy, 8);
         break;

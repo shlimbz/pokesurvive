@@ -133,14 +133,15 @@ PS.LevelSystem = class LevelSystem {
   }
 
   describeChoice(choice, build) {
-    const statLabels = { hp: 'HP', attack: 'Attack', defense: 'Defense', spAttack: 'Sp.Attack', spDefense: 'Sp.Defense', speed: 'Speed' };
+    const statLabels = { hp: 'HP', attack: '공격', defense: '방어', spAttack: '특수공격', spDefense: '특수방어', speed: '스피드' };
+    const categoryLabels = { physical: '물리', special: '특수', status: '변화' };
     if (choice.kind === 'move') {
       const move = this.managers.move.getMove(choice.id);
       const level = build.getMoveLevel(choice.id);
       return {
         title: move.name,
         subtitle: choice.isNew ? '새로운 기술' : `Lv${level} → Lv${level + 1}`,
-        body: `${move.type.toUpperCase()} · ${move.category} · 위력 ${move.baseDamage}`
+        body: `${PS.typeNameKo(move.type)} · ${categoryLabels[move.category] || move.category} · 위력 ${move.baseDamage}`
       };
     }
     if (choice.kind === 'item') {
@@ -163,10 +164,14 @@ PS.LevelSystem = class LevelSystem {
     }
     // stat
     const cfg = this.balance.statUpgrade[choice.grade];
+    const extraLabels = {
+      minor_regen: '체력 서서히 재생',
+      conditional_shield: '치명적 피해를 1회 무효화'
+    };
     return {
       title: `${statLabels[choice.id]} 강화`,
       subtitle: `+${Math.round(cfg.percent * 100)}%`,
-      body: cfg.extra ? `추가 효과: ${cfg.extra}` : '능력치가 영구적으로 증가합니다.'
+      body: cfg.extra ? `추가 효과: ${extraLabels[cfg.extra] || cfg.extra}` : '능력치가 영구적으로 증가합니다.'
     };
   }
 };

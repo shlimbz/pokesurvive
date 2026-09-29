@@ -118,7 +118,9 @@ PS.BuildSystem = class BuildSystem {
       critDamage: 0,
       cooldownMult: 1,
       moveSpeedPercent: 0,
-      rangeMult: 1,
+      // 1.2 baseline (not 1.0): playtesting showed early attack range felt too short even
+      // before any range-boosting item is picked up, so every move gets a flat +20% reach.
+      rangeMult: 1.2,
       lifestealPercent: 0,
       typePenetration: 0,
       hpRegenPercent: 0,
