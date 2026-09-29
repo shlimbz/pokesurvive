@@ -3,12 +3,18 @@
 // section 0 ("이동하면서 Pokémon의 기술이 자동으로 발동한다").
 window.PS = window.PS || {};
 
+// Fixed on-screen size (px) for the player, independent of the source texture's native
+// resolution - a real PokeAPI artwork PNG (~475x475) and a generated 64x64 placeholder both
+// end up the same visible size via setDisplaySize().
+PS.PLAYER_DISPLAY_SIZE = 56;
+
 PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, textureKey, build) {
     super(scene, x, y, textureKey);
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.setDepth(10);
+    this.setDisplaySize(PS.PLAYER_DISPLAY_SIZE, PS.PLAYER_DISPLAY_SIZE);
 
     this.build = build;
     this.statusEffects = {};
@@ -22,10 +28,12 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
     this.flashFireStacks = 0;
     this.attackSpeedBuffMult = 1;
     this.attackSpeedBuffTimer = 0;
+    this.fieldSpeedBuffMult = 1;
+    this.fieldSpeedBuffTimer = 0;
 
     for (const moveId of build.getOwnedMoveIds()) this.moveCooldowns[moveId] = 0;
 
-    this.body.setCircle(16);
+    PS.MathUtils.fitCircularBody(this, 16);
   }
 
   /** Called by StatusEffectSystem.apply() whenever a status lands on the player (Steadfast). */
@@ -47,8 +55,11 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  setTexture2(textureKey) {
+  /** Swaps sprite on evolution, re-applying the fixed display size for the new texture. */
+  setSpeciesTexture(textureKey) {
     this.setTexture(textureKey);
+    this.setDisplaySize(PS.PLAYER_DISPLAY_SIZE, PS.PLAYER_DISPLAY_SIZE);
+    PS.MathUtils.fitCircularBody(this, 16);
   }
 
   getHpRatio() {
@@ -60,6 +71,8 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
     this.survivalRechargeTimer = Math.max(0, this.survivalRechargeTimer - dtSec);
     this.attackSpeedBuffTimer = Math.max(0, this.attackSpeedBuffTimer - dtSec);
     if (this.attackSpeedBuffTimer <= 0) this.attackSpeedBuffMult = 1;
+    this.fieldSpeedBuffTimer = Math.max(0, this.fieldSpeedBuffTimer - dtSec);
+    if (this.fieldSpeedBuffTimer <= 0) this.fieldSpeedBuffMult = 1;
 
     // --- movement ---
     let vx = 0, vy = 0;
@@ -69,7 +82,7 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
     if (input.down) vy += 1;
     const dir = PS.MathUtils.normalize(vx, vy);
     const speedMult = statusFx.getMoveSpeedMult(this);
-    const speed = this.build.getMoveSpeed() * speedMult;
+    const speed = this.build.getMoveSpeed() * speedMult * this.fieldSpeedBuffMult;
     this.x += dir.x * speed * dtSec;
     this.y += dir.y * speed * dtSec;
     this.body.reset(this.x, this.y);
@@ -126,5 +139,16 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
 
   isDead() {
     return this.hp <= 0;
+  }
+
+  /** Field "Speed" pickup: temporary movement speed multiplier. */
+  applyFieldSpeedBuff(mult, durationSec) {
+    this.fieldSpeedBuffMult = Math.max(this.fieldSpeedBuffMult, mult);
+    this.fieldSpeedBuffTimer = Math.max(this.fieldSpeedBuffTimer, durationSec);
+  }
+
+  /** Field "Heal" pickup. */
+  heal(amount) {
+    this.hp = Math.min(this.maxHp, this.hp + amount);
   }
 };

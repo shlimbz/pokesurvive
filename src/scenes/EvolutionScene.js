@@ -19,10 +19,12 @@ PS.EvolutionScene = class EvolutionScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '18px', color: '#cccccc'
     }).setOrigin(0.5);
 
-    const sprite = this.add.image(width / 2, height / 2 - 10, speciesId).setScale(0.5);
+    const finalSize = 220;
+    const sprite = this.add.image(width / 2, height / 2 - 10, speciesId).setDisplaySize(finalSize * 0.2, finalSize * 0.2);
     this.tweens.add({
       targets: sprite,
-      scale: 2.2,
+      displayWidth: finalSize,
+      displayHeight: finalSize,
       duration: 900,
       ease: 'Back.easeOut'
     });

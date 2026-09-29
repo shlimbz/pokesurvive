@@ -76,9 +76,9 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       0
     );
 
-    this.setEnemyTexture = (enemy, species) => {
-      if (enemy.texture.key !== species.id) enemy.setTexture(species.id);
-    };
+    // ---- Field pickups (heal / speed / magnet) ----
+    this.pickupGroup = this.physics.add.group();
+    this.nextPickupTimerMs = PS.RandomUtils.range(8000, 13000);
 
     // ---- Spawn system ----
     this.spawnSystem = new PS.SpawnSystem(managers.enemy, this.waveSystem, data.balance, this.mapId,
@@ -89,6 +89,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.enemyProjectileGroup, this.player, (proj, player) => this.onEnemyProjectileHit(proj));
     this.physics.add.overlap(this.player, this.enemyGroup, (player, enemy) => this.onPlayerTouchEnemy(enemy));
     this.physics.add.overlap(this.player, this.expGemGroup, (player, gem) => this.onPlayerTouchGem(gem));
+    this.physics.add.overlap(this.player, this.pickupGroup, (player, pickup) => this.onPickupCollected(pickup));
 
     // ---- Input ----
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -164,6 +165,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.gemPool.forEachActive(g => g.update(dt, this.player.x, this.player.y, this.data_.balance.player.pickupRadius));
 
     this.spawnSystem.update(deltaMs, this.runTimeSec, this.player.x, this.player.y, this.enemyPool.activeCount);
+    this.updatePickups(deltaMs);
 
     this.checkLevelUps();
     this.checkEvolution();
@@ -344,6 +346,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     });
     const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
     proj.setTexture(this.vfx.getTexture(move.type));
+    proj.setDisplaySize(20, 20);
     proj.setTint(this.assets.hexToInt(vfxDef.color));
     proj.onDone = (p) => this.playerProjectilePool.release(p);
   }
@@ -397,6 +400,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         });
         const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
         proj.setTexture(this.vfx.getTexture(move.type));
+        proj.setDisplaySize(18, 18);
         proj.setTint(this.assets.hexToInt(vfxDef.color));
         proj.onDone = (p) => this.enemyProjectilePool.release(p);
         break;
@@ -506,10 +510,49 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.gemPool.release(gem);
   }
 
+  // ================= Field pickups (heal / speed / magnet) =================
+  updatePickups(dtMs) {
+    this.nextPickupTimerMs -= dtMs;
+    if (this.nextPickupTimerMs <= 0) {
+      this.nextPickupTimerMs = PS.RandomUtils.range(10000, 16000);
+      this.spawnFieldPickup();
+    }
+  }
+
+  spawnFieldPickup() {
+    const kind = PS.RandomUtils.pick(['heal', 'speed', 'magnet']);
+    const angle = Math.random() * Math.PI * 2;
+    const dist = PS.RandomUtils.range(250, 550);
+    const x = this.player.x + Math.cos(angle) * dist;
+    const y = this.player.y + Math.sin(angle) * dist;
+
+    const pickup = this.physics.add.sprite(x, y, `pickup_${kind}`);
+    pickup.pickupType = kind;
+    pickup.setDepth(3);
+    this.pickupGroup.add(pickup);
+    this.tweens.add({ targets: pickup, y: y - 10, duration: 650, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.time.delayedCall(20000, () => { if (pickup.active) pickup.destroy(); });
+  }
+
+  onPickupCollected(pickup) {
+    if (!pickup.active) return;
+    const kind = pickup.pickupType;
+    if (kind === 'heal') {
+      this.player.heal(Math.round(this.player.maxHp * 0.3));
+      this.damageNumberPool.obtain(this.player.x, this.player.y - 30, '+HP', { color: '#ff6b8a', scale: 1.2 });
+    } else if (kind === 'speed') {
+      this.player.applyFieldSpeedBuff(1.6, 8);
+      this.damageNumberPool.obtain(this.player.x, this.player.y - 30, 'SPEED UP!', { color: '#4dd2ff', scale: 1.1 });
+    } else if (kind === 'magnet') {
+      this.gemPool.forEachActive(g => { g.magnetized = true; });
+      this.damageNumberPool.obtain(this.player.x, this.player.y - 30, 'MAGNET!', { color: '#ffd400', scale: 1.2 });
+    }
+    pickup.destroy();
+  }
+
   // ================= Enemy lifecycle =================
   spawnEnemy(species, stats, x, y, isBig) {
     const enemy = this.enemyPool.obtain(species, stats, x, y);
-    this.setEnemyTexture(enemy, species);
     if (isBig) PS.Boss.announce(this, enemy);
     return enemy;
   }
@@ -569,7 +612,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.isPaused = true;
     const fromSpecies = this.build.species;
     this.evolutionSystem.apply(this.build, entry);
-    this.player.setTexture(this.build.speciesId);
+    this.player.setSpeciesTexture(this.build.speciesId);
     this.player.refreshFromBuild();
     this.vfx.playEvolutionFlash(this.player.x, this.player.y);
 

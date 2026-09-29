@@ -4,6 +4,10 @@
 // layered on top of a tier === 'boss' Enemy instance.
 window.PS = window.PS || {};
 
+// Fixed base on-screen diameter (px) for a normal-tier enemy at species.scale === 1,
+// independent of the source texture's native resolution (see PS.PLAYER_DISPLAY_SIZE).
+PS.ENEMY_BASE_DISPLAY_SIZE = 42;
+
 PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, textureKey) {
     super(scene, 0, 0, textureKey);
@@ -36,12 +40,14 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.moveTimer = species.moveCooldownMs ? species.moveCooldownMs * 0.5 : 0;
 
     const scale = species.scale || 1;
-    this.setScale(scale);
+    if (this.texture.key !== species.id) this.setTexture(species.id);
+    const displaySize = PS.ENEMY_BASE_DISPLAY_SIZE * scale;
+    this.setDisplaySize(displaySize, displaySize);
     this.setPosition(x, y);
     this.setActive(true);
     this.setVisible(true);
     this.body.enable = true;
-    this.body.setCircle(14 * scale, -14 * scale + 14, -14 * scale + 14);
+    PS.MathUtils.fitCircularBody(this, 14 * scale);
 
     this.hpBarBg.setVisible(true);
     this.hpBarFg.setVisible(true);

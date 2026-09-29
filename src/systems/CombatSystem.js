@@ -116,7 +116,11 @@ PS.CombatSystem = class CombatSystem {
     const defenderDefenseStatusMult = this.statusFx.getDefenseMult(playerEntity);
     const defenseModifier = 1 / (1 + defenderReduction * defenderDefenseStatusMult * 0.01);
 
-    let damage = (move ? move.baseDamage : attackPower)
+    // Contact damage (move === null, a normal enemy just touching the player) uses a flat
+    // baseline equivalent to a generic "Tackle" - it still scales with the enemy's own Attack
+    // stat via the (attackPower / 50) term below, same as every other move.
+    const baseDamage = move ? move.baseDamage : 11;
+    let damage = baseDamage
       * (attackPower / 50)
       * stab
       * typeMult

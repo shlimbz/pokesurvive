@@ -39,5 +39,22 @@ PS.MathUtils = {
   round(value, decimals = 0) {
     const m = Math.pow(10, decimals);
     return Math.round(value * m) / m;
+  },
+
+  /**
+   * Gives an Arcade Physics sprite a circular hitbox of `worldRadius` PIXELS ON SCREEN,
+   * centered on the sprite, regardless of the source texture's native resolution.
+   * Needed because setDisplaySize() scales a sprite to a fixed on-screen size whether its
+   * texture is a tiny 64x64 placeholder or a ~475x475 downloaded PokeAPI artwork PNG -
+   * body.setCircle() takes its radius/offset in the texture's own (unscaled) pixel space, so
+   * a fixed number there would produce a near-invisible hitbox on a large source image.
+   */
+  fitCircularBody(sprite, worldRadius) {
+    const scaleX = sprite.scaleX || 1;
+    const frame = sprite.frame;
+    const localRadius = worldRadius / scaleX;
+    const offsetX = frame.width / 2 - localRadius;
+    const offsetY = frame.height / 2 - localRadius;
+    sprite.body.setCircle(localRadius, offsetX, offsetY);
   }
 };

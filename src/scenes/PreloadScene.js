@@ -1,10 +1,28 @@
 // PreloadScene: loads every JSON data file (fully offline, no PokeAPI calls at runtime),
 // builds the manager singletons in PS.Game, and generates procedural placeholder textures.
-// If a real sprite has been downloaded into assets/pokemon/<id>.png or assets/enemies/<id>.png
-// via tools/download-pokeapi.js, it is loaded under the SAME texture key as the species id and
-// used automatically instead of the generated placeholder - no other code needs to change.
+// Real sprites in assets/pokemon/<id>.png are loaded under the SAME texture key as the
+// species id and used automatically instead of the generated placeholder - if a new id is
+// added to data/pokemon.json or data/enemies.json without a matching PNG, it just falls back
+// to the placeholder (see create() below), no crash, no other code needs to change.
 window.PS = window.PS || {};
 PS.Game = PS.Game || {};
+
+// Keep this in sync with the ids in data/pokemon.json + data/enemies.json. It only controls
+// which real artwork files we ATTEMPT to load - an id with no PNG here simply falls back to
+// the procedural placeholder texture in create().
+PS.SPRITE_IDS = [
+  'bulbasaur', 'ivysaur', 'venusaur', 'charmander', 'charmeleon', 'charizard',
+  'squirtle', 'wartortle', 'blastoise', 'pikachu', 'raichu',
+  'eevee', 'flareon', 'vaporeon', 'jolteon',
+  'gastly', 'haunter', 'gengar', 'machop', 'machoke', 'machamp',
+  'vulpix', 'ninetales', 'piplup', 'prinplup', 'empoleon', 'riolu', 'lucario',
+  'rattata', 'oddish', 'weedle', 'bellsprout',
+  'poliwag', 'psyduck', 'tentacool', 'staryu',
+  'growlithe', 'ponyta', 'numel', 'slugma',
+  'beedrill', 'golduck', 'rapidash',
+  'scyther', 'poliwrath',
+  'vileplume', 'gyarados', 'magmar'
+];
 
 PS.PreloadScene = class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -30,11 +48,12 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
     this.load.json('typeChartData', 'type-chart.json');
     this.load.json('balanceData', 'balance.json');
 
-    // Optional real sprites (see tools/download-pokeapi.js). Missing files simply fail to
-    // load and we fall back to a generated placeholder texture of the same key in create().
+    // Real sprites (downloaded via tools/download-pokeapi.js and committed to the repo).
+    // A missing file just fails to load - create() falls back to a generated placeholder
+    // texture under the same key, so nothing ever breaks if art is added/removed later.
     this.load.setPath('assets/pokemon/');
-    this.pendingPokemonIds = [];
-    this.load.on('filecomplete', (key) => {});
+    for (const id of PS.SPRITE_IDS) this.load.image(id, `${id}.png`);
+    this.load.on('loaderror', () => {}); // expected for any id without art - handled in create()
 
     const barW = 200;
     this.load.on('progress', (value) => {
@@ -88,6 +107,12 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
     assets.generateCreatureTexture('enemy_generic', '0x999999', 22, '?');
     assets.generateCircleTexture('gem', 0x62ffb0, 8);
     assets.generateCircleTexture('bullet_base', 0xffffff, 8);
+
+    // Field pickups (spec-inspired Vampire Survivors staples: heal / speed / magnet orbs
+    // that spawn on the map periodically, separate from the level-up item system).
+    assets.generateCreatureTexture('pickup_heal', '0xff4d6d', 18, 'H');
+    assets.generateCreatureTexture('pickup_speed', '0x4dd2ff', 18, 'S');
+    assets.generateCreatureTexture('pickup_magnet', '0xffd400', 18, 'M');
 
     this.scene.start('Menu');
   }

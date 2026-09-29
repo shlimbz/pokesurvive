@@ -1,12 +1,12 @@
 {
   "statConversion": {
     "hp": { "base": 80, "perPoint": 3.2 },
-    "attack": { "base": 5, "perPoint": 0.35 },
+    "attack": { "base": 8, "perPoint": 0.45 },
     "defense": { "base": 0, "perPoint": 0.55 },
-    "spAttack": { "base": 5, "perPoint": 0.35 },
+    "spAttack": { "base": 8, "perPoint": 0.45 },
     "spDefense": { "base": 0, "perPoint": 0.55 },
     "speed": {
-      "base": 100,
+      "base": 130,
       "perPoint": 0.55,
       "attackSpeedShare": 0.35,
       "comment": "speed stat becomes: moveSpeed(px/s) = base + perPoint*SPD ; attack cooldown is reduced by attackSpeedShare fraction of the speed bonus"

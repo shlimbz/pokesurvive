@@ -1,55 +1,658 @@
 {
-  "thunder_shock": { "id": "thunder_shock", "name": "Thunder Shock", "type": "electric", "category": "special", "pattern": "chain", "baseDamage": 14, "cooldownMs": 850, "range": 380, "projectileSpeed": 620, "pierce": 0, "chainCount": 2, "chainRange": 170, "count": 1, "statusEffect": { "id": "paralysis", "chance": 0.20 }, "maxLevel": 5 },
-  "thunderbolt":  { "id": "thunderbolt",  "name": "Thunderbolt",  "type": "electric", "category": "special", "pattern": "strike", "baseDamage": 30, "cooldownMs": 1500, "range": 420, "areaRadius": 70, "count": 1, "statusEffect": { "id": "paralysis", "chance": 0.30 }, "maxLevel": 5 },
-  "thunder":      { "id": "thunder",      "name": "Thunder",      "type": "electric", "category": "special", "pattern": "chain", "baseDamage": 26, "cooldownMs": 1100, "range": 420, "projectileSpeed": 700, "chainCount": 4, "chainRange": 200, "count": 1, "statusEffect": { "id": "paralysis", "chance": 0.30 }, "maxLevel": 5 },
-  "spark":        { "id": "spark",        "name": "Spark",        "type": "electric", "category": "physical", "pattern": "melee", "baseDamage": 12, "cooldownMs": 1000, "range": 70, "statusEffect": { "id": "paralysis", "chance": 0.20 }, "maxLevel": 5 },
-
-  "quick_attack": { "id": "quick_attack", "name": "Quick Attack", "type": "normal", "category": "physical", "pattern": "melee", "baseDamage": 10, "cooldownMs": 550, "range": 65, "maxLevel": 5 },
-  "tackle":       { "id": "tackle",       "name": "Tackle",       "type": "normal", "category": "physical", "pattern": "melee", "baseDamage": 11, "cooldownMs": 700, "range": 65, "maxLevel": 5 },
-  "growl":        { "id": "growl",        "name": "Growl",        "type": "normal", "category": "status", "pattern": "circle", "baseDamage": 0, "cooldownMs": 3500, "areaRadius": 160, "statusOnly": { "status": "attackDown", "chance": 0.9 }, "maxLevel": 5 },
-
-  "ember":        { "id": "ember",        "name": "Ember",        "type": "fire", "category": "special", "pattern": "projectile", "baseDamage": 13, "cooldownMs": 700, "range": 360, "projectileSpeed": 520, "pierce": 0, "count": 1, "statusEffect": { "id": "burn", "chance": 0.25 }, "maxLevel": 5 },
-  "flamethrower": { "id": "flamethrower", "name": "Flamethrower", "type": "fire", "category": "special", "pattern": "beam", "baseDamage": 9, "cooldownMs": 120, "range": 320, "beamWidth": 42, "statusEffect": { "id": "burn", "chance": 0.12 }, "maxLevel": 5, "tickMs": 120 },
-  "fire_blast":   { "id": "fire_blast",   "name": "Fire Blast",   "type": "fire", "category": "special", "pattern": "explosion", "baseDamage": 34, "cooldownMs": 1700, "range": 300, "areaRadius": 110, "statusEffect": { "id": "burn", "chance": 0.4 }, "maxLevel": 5 },
-  "scratch":      { "id": "scratch",      "name": "Scratch",      "type": "normal", "category": "physical", "pattern": "melee", "baseDamage": 12, "cooldownMs": 650, "range": 65, "maxLevel": 5 },
-
-  "water_gun":    { "id": "water_gun",    "name": "Water Gun",    "type": "water", "category": "special", "pattern": "projectile", "baseDamage": 13, "cooldownMs": 700, "range": 360, "projectileSpeed": 540, "splashRadius": 60, "count": 1, "maxLevel": 5 },
-  "bubble":       { "id": "bubble",       "name": "Bubble",       "type": "water", "category": "special", "pattern": "spread", "baseDamage": 9, "cooldownMs": 900, "range": 300, "projectileSpeed": 420, "count": 3, "spreadAngle": 40, "splashRadius": 40, "statusEffect": { "id": "slow", "chance": 0.2 }, "maxLevel": 5 },
-  "hydro_pump":   { "id": "hydro_pump",   "name": "Hydro Pump",   "type": "water", "category": "special", "pattern": "beam", "baseDamage": 12, "cooldownMs": 130, "range": 340, "beamWidth": 50, "splashRadius": 80, "maxLevel": 5, "tickMs": 130 },
-
-  "vine_whip":    { "id": "vine_whip",    "name": "Vine Whip",    "type": "grass", "category": "physical", "pattern": "spread", "baseDamage": 12, "cooldownMs": 800, "range": 130, "count": 3, "spreadAngle": 70, "statusEffect": { "id": "poison", "chance": 0.2 }, "maxLevel": 5 },
-  "razor_leaf":   { "id": "razor_leaf",   "name": "Razor Leaf",   "type": "grass", "category": "physical", "pattern": "spread", "baseDamage": 16, "cooldownMs": 750, "range": 320, "projectileSpeed": 480, "count": 4, "spreadAngle": 90, "statusEffect": { "id": "poison", "chance": 0.25 }, "maxLevel": 5 },
-  "solar_beam":   { "id": "solar_beam",   "name": "Solar Beam",   "type": "grass", "category": "special", "pattern": "strike", "baseDamage": 40, "cooldownMs": 2000, "range": 450, "areaRadius": 90, "maxLevel": 5 },
-  "petal_dance":  { "id": "petal_dance",  "name": "Petal Dance",  "type": "grass", "category": "special", "pattern": "circle", "baseDamage": 16, "cooldownMs": 2200, "areaRadius": 200, "statusEffect": { "id": "poison", "chance": 0.5 }, "maxLevel": 5 },
-
-  "lick":         { "id": "lick",         "name": "Lick",         "type": "ghost", "category": "physical", "pattern": "melee", "baseDamage": 11, "cooldownMs": 750, "range": 90, "pierce": 1, "lifestealPercent": 0.15, "statusEffect": { "id": "paralysis", "chance": 0.15 }, "maxLevel": 5 },
-  "confuse_ray":  { "id": "confuse_ray",  "name": "Confuse Ray",  "type": "ghost", "category": "status", "pattern": "circle", "baseDamage": 0, "cooldownMs": 4000, "areaRadius": 170, "statusOnly": { "status": "confusion", "chance": 0.6 }, "maxLevel": 5 },
-  "shadow_ball":  { "id": "shadow_ball",  "name": "Shadow Ball",  "type": "ghost", "category": "special", "pattern": "projectile", "baseDamage": 22, "cooldownMs": 950, "range": 400, "projectileSpeed": 480, "pierce": 3, "lifestealPercent": 0.1, "maxLevel": 5 },
-
-  "karate_chop":  { "id": "karate_chop",  "name": "Karate Chop",  "type": "fighting", "category": "physical", "pattern": "melee", "baseDamage": 15, "cooldownMs": 800, "range": 80, "knockback": 220, "maxLevel": 5 },
-  "low_kick":     { "id": "low_kick",     "name": "Low Kick",     "type": "fighting", "category": "physical", "pattern": "melee", "baseDamage": 12, "cooldownMs": 700, "range": 75, "statusEffect": { "id": "armorBreak", "chance": 0.25 }, "maxLevel": 5 },
-  "cross_chop":   { "id": "cross_chop",   "name": "Cross Chop",   "type": "fighting", "category": "physical", "pattern": "melee", "baseDamage": 26, "cooldownMs": 900, "range": 90, "knockback": 320, "statusEffect": { "id": "armorBreak", "chance": 0.35 }, "maxLevel": 5 },
-  "focus_punch":  { "id": "focus_punch",  "name": "Focus Punch",  "type": "fighting", "category": "physical", "pattern": "melee", "baseDamage": 30, "cooldownMs": 1400, "range": 100, "knockback": 380, "maxLevel": 5 },
-
-  "force_palm":   { "id": "force_palm",   "name": "Force Palm",   "type": "fighting", "category": "physical", "pattern": "strike", "baseDamage": 18, "cooldownMs": 1000, "range": 260, "areaRadius": 60, "statusEffect": { "id": "paralysis", "chance": 0.30 }, "maxLevel": 5 },
-  "aura_sphere":  { "id": "aura_sphere",  "name": "Aura Sphere",  "type": "fighting", "category": "special", "pattern": "homing", "baseDamage": 20, "cooldownMs": 1000, "range": 420, "projectileSpeed": 380, "maxLevel": 5 },
-  "drain_punch":  { "id": "drain_punch",  "name": "Drain Punch",  "type": "fighting", "category": "physical", "pattern": "melee", "baseDamage": 16, "cooldownMs": 750, "range": 85, "lifestealPercent": 0.3, "maxLevel": 5 },
-
-  "fire_spin":    { "id": "fire_spin",    "name": "Fire Spin",    "type": "fire", "category": "special", "pattern": "circle", "baseDamage": 8, "cooldownMs": 700, "areaRadius": 150, "statusEffect": { "id": "burn", "chance": 0.35 }, "maxLevel": 5 },
-
-  "poison_sting": { "id": "poison_sting", "name": "Poison Sting", "type": "poison", "category": "physical", "pattern": "projectile", "baseDamage": 10, "cooldownMs": 900, "range": 280, "projectileSpeed": 420, "statusEffect": { "id": "poison", "chance": 0.35 }, "maxLevel": 5 },
-  "sludge_bomb":  { "id": "sludge_bomb",  "name": "Sludge Bomb",  "type": "poison", "category": "special", "pattern": "explosion", "baseDamage": 20, "cooldownMs": 1300, "range": 320, "areaRadius": 100, "statusEffect": { "id": "poison", "chance": 0.5 }, "maxLevel": 5 },
-  "x_scissor":    { "id": "x_scissor",    "name": "X-Scissor",    "type": "bug", "category": "physical", "pattern": "strike", "baseDamage": 20, "cooldownMs": 1000, "range": 260, "areaRadius": 70, "maxLevel": 5 },
-  "rock_throw":   { "id": "rock_throw",   "name": "Rock Throw",   "type": "rock", "category": "physical", "pattern": "projectile", "baseDamage": 16, "cooldownMs": 1100, "range": 320, "projectileSpeed": 380, "knockback": 150, "maxLevel": 5 },
-  "shadow_punch": { "id": "shadow_punch", "name": "Shadow Punch", "type": "ghost", "category": "physical", "pattern": "homing", "baseDamage": 15, "cooldownMs": 900, "range": 300, "projectileSpeed": 400, "maxLevel": 5 },
-  "dragon_breath":{ "id": "dragon_breath","name": "Dragon Breath", "type": "dragon", "category": "special", "pattern": "beam", "baseDamage": 10, "cooldownMs": 130, "range": 300, "beamWidth": 40, "statusEffect": { "id": "paralysis", "chance": 0.15 }, "maxLevel": 5, "tickMs": 130 },
-  "crunch":       { "id": "crunch",       "name": "Crunch",       "type": "dark", "category": "physical", "pattern": "melee", "baseDamage": 18, "cooldownMs": 900, "range": 85, "statusEffect": { "id": "defenseDown", "chance": 0.3 }, "maxLevel": 5 },
-  "moonblast":    { "id": "moonblast",    "name": "Moonblast",    "type": "fairy", "category": "special", "pattern": "projectile", "baseDamage": 20, "cooldownMs": 1000, "range": 340, "projectileSpeed": 420, "statusEffect": { "id": "attackDown", "chance": 0.3 }, "maxLevel": 5 },
-  "gust":         { "id": "gust",         "name": "Gust",         "type": "flying", "category": "special", "pattern": "spread", "baseDamage": 9, "cooldownMs": 800, "range": 300, "projectileSpeed": 460, "count": 3, "spreadAngle": 50, "maxLevel": 5 },
-  "wing_attack":  { "id": "wing_attack",  "name": "Wing Attack",  "type": "flying", "category": "physical", "pattern": "melee", "baseDamage": 14, "cooldownMs": 650, "range": 90, "maxLevel": 5 },
-  "psybeam":      { "id": "psybeam",      "name": "Psybeam",      "type": "psychic", "category": "special", "pattern": "beam", "baseDamage": 8, "cooldownMs": 120, "range": 300, "beamWidth": 36, "statusEffect": { "id": "confusion", "chance": 0.2 }, "maxLevel": 5, "tickMs": 120 },
-  "powder_snow":  { "id": "powder_snow",  "name": "Powder Snow",  "type": "ice", "category": "special", "pattern": "spread", "baseDamage": 10, "cooldownMs": 900, "range": 280, "projectileSpeed": 380, "count": 3, "spreadAngle": 60, "statusEffect": { "id": "slow", "chance": 0.4 }, "maxLevel": 5 },
-  "mud_slap":     { "id": "mud_slap",     "name": "Mud Slap",     "type": "ground", "category": "physical", "pattern": "circle", "baseDamage": 12, "cooldownMs": 1000, "areaRadius": 130, "statusEffect": { "id": "defenseDown", "chance": 0.3 }, "maxLevel": 5 },
-  "hyper_beam":   { "id": "hyper_beam",   "name": "Hyper Beam",   "type": "normal", "category": "special", "pattern": "beam", "baseDamage": 26, "cooldownMs": 140, "range": 500, "beamWidth": 70, "maxLevel": 5, "tickMs": 140 },
-  "eruption":     { "id": "eruption",     "name": "Eruption",     "type": "fire", "category": "special", "pattern": "explosion", "baseDamage": 44, "cooldownMs": 2400, "range": 380, "areaRadius": 220, "statusEffect": { "id": "burn", "chance": 0.6 }, "maxLevel": 5 }
+  "thunder_shock": {
+    "id": "thunder_shock",
+    "name": "Thunder Shock",
+    "type": "electric",
+    "category": "special",
+    "pattern": "chain",
+    "baseDamage": 18,
+    "cooldownMs": 680,
+    "range": 380,
+    "projectileSpeed": 620,
+    "pierce": 0,
+    "chainCount": 2,
+    "chainRange": 170,
+    "count": 1,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.2
+    },
+    "maxLevel": 5
+  },
+  "thunderbolt": {
+    "id": "thunderbolt",
+    "name": "Thunderbolt",
+    "type": "electric",
+    "category": "special",
+    "pattern": "strike",
+    "baseDamage": 30,
+    "cooldownMs": 1500,
+    "range": 420,
+    "areaRadius": 70,
+    "count": 1,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.3
+    },
+    "maxLevel": 5
+  },
+  "thunder": {
+    "id": "thunder",
+    "name": "Thunder",
+    "type": "electric",
+    "category": "special",
+    "pattern": "chain",
+    "baseDamage": 26,
+    "cooldownMs": 1100,
+    "range": 420,
+    "projectileSpeed": 700,
+    "chainCount": 4,
+    "chainRange": 200,
+    "count": 1,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.3
+    },
+    "maxLevel": 5
+  },
+  "spark": {
+    "id": "spark",
+    "name": "Spark",
+    "type": "electric",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 12,
+    "cooldownMs": 1000,
+    "range": 70,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.2
+    },
+    "maxLevel": 5
+  },
+  "quick_attack": {
+    "id": "quick_attack",
+    "name": "Quick Attack",
+    "type": "normal",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 13,
+    "cooldownMs": 440,
+    "range": 65,
+    "maxLevel": 5
+  },
+  "tackle": {
+    "id": "tackle",
+    "name": "Tackle",
+    "type": "normal",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 14,
+    "cooldownMs": 560,
+    "range": 65,
+    "maxLevel": 5
+  },
+  "growl": {
+    "id": "growl",
+    "name": "Growl",
+    "type": "normal",
+    "category": "status",
+    "pattern": "circle",
+    "baseDamage": 0,
+    "cooldownMs": 2800,
+    "areaRadius": 160,
+    "statusOnly": {
+      "status": "attackDown",
+      "chance": 0.9
+    },
+    "maxLevel": 5
+  },
+  "ember": {
+    "id": "ember",
+    "name": "Ember",
+    "type": "fire",
+    "category": "special",
+    "pattern": "projectile",
+    "baseDamage": 17,
+    "cooldownMs": 560,
+    "range": 360,
+    "projectileSpeed": 520,
+    "pierce": 0,
+    "count": 1,
+    "statusEffect": {
+      "id": "burn",
+      "chance": 0.25
+    },
+    "maxLevel": 5
+  },
+  "flamethrower": {
+    "id": "flamethrower",
+    "name": "Flamethrower",
+    "type": "fire",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 9,
+    "cooldownMs": 120,
+    "range": 320,
+    "beamWidth": 42,
+    "statusEffect": {
+      "id": "burn",
+      "chance": 0.12
+    },
+    "maxLevel": 5,
+    "tickMs": 120
+  },
+  "fire_blast": {
+    "id": "fire_blast",
+    "name": "Fire Blast",
+    "type": "fire",
+    "category": "special",
+    "pattern": "explosion",
+    "baseDamage": 34,
+    "cooldownMs": 1700,
+    "range": 300,
+    "areaRadius": 110,
+    "statusEffect": {
+      "id": "burn",
+      "chance": 0.4
+    },
+    "maxLevel": 5
+  },
+  "scratch": {
+    "id": "scratch",
+    "name": "Scratch",
+    "type": "normal",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 16,
+    "cooldownMs": 520,
+    "range": 65,
+    "maxLevel": 5
+  },
+  "water_gun": {
+    "id": "water_gun",
+    "name": "Water Gun",
+    "type": "water",
+    "category": "special",
+    "pattern": "projectile",
+    "baseDamage": 17,
+    "cooldownMs": 560,
+    "range": 360,
+    "projectileSpeed": 540,
+    "splashRadius": 60,
+    "count": 1,
+    "maxLevel": 5
+  },
+  "bubble": {
+    "id": "bubble",
+    "name": "Bubble",
+    "type": "water",
+    "category": "special",
+    "pattern": "spread",
+    "baseDamage": 12,
+    "cooldownMs": 720,
+    "range": 300,
+    "projectileSpeed": 420,
+    "count": 3,
+    "spreadAngle": 40,
+    "splashRadius": 40,
+    "statusEffect": {
+      "id": "slow",
+      "chance": 0.2
+    },
+    "maxLevel": 5
+  },
+  "hydro_pump": {
+    "id": "hydro_pump",
+    "name": "Hydro Pump",
+    "type": "water",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 12,
+    "cooldownMs": 130,
+    "range": 340,
+    "beamWidth": 50,
+    "splashRadius": 80,
+    "maxLevel": 5,
+    "tickMs": 130
+  },
+  "vine_whip": {
+    "id": "vine_whip",
+    "name": "Vine Whip",
+    "type": "grass",
+    "category": "physical",
+    "pattern": "spread",
+    "baseDamage": 16,
+    "cooldownMs": 640,
+    "range": 130,
+    "count": 3,
+    "spreadAngle": 70,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.2
+    },
+    "maxLevel": 5
+  },
+  "razor_leaf": {
+    "id": "razor_leaf",
+    "name": "Razor Leaf",
+    "type": "grass",
+    "category": "physical",
+    "pattern": "spread",
+    "baseDamage": 16,
+    "cooldownMs": 750,
+    "range": 320,
+    "projectileSpeed": 480,
+    "count": 4,
+    "spreadAngle": 90,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.25
+    },
+    "maxLevel": 5
+  },
+  "solar_beam": {
+    "id": "solar_beam",
+    "name": "Solar Beam",
+    "type": "grass",
+    "category": "special",
+    "pattern": "strike",
+    "baseDamage": 40,
+    "cooldownMs": 2000,
+    "range": 450,
+    "areaRadius": 90,
+    "maxLevel": 5
+  },
+  "petal_dance": {
+    "id": "petal_dance",
+    "name": "Petal Dance",
+    "type": "grass",
+    "category": "special",
+    "pattern": "circle",
+    "baseDamage": 16,
+    "cooldownMs": 2200,
+    "areaRadius": 200,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.5
+    },
+    "maxLevel": 5
+  },
+  "lick": {
+    "id": "lick",
+    "name": "Lick",
+    "type": "ghost",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 14,
+    "cooldownMs": 600,
+    "range": 90,
+    "pierce": 1,
+    "lifestealPercent": 0.15,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.15
+    },
+    "maxLevel": 5
+  },
+  "confuse_ray": {
+    "id": "confuse_ray",
+    "name": "Confuse Ray",
+    "type": "ghost",
+    "category": "status",
+    "pattern": "circle",
+    "baseDamage": 0,
+    "cooldownMs": 3200,
+    "areaRadius": 170,
+    "statusOnly": {
+      "status": "confusion",
+      "chance": 0.6
+    },
+    "maxLevel": 5
+  },
+  "shadow_ball": {
+    "id": "shadow_ball",
+    "name": "Shadow Ball",
+    "type": "ghost",
+    "category": "special",
+    "pattern": "projectile",
+    "baseDamage": 22,
+    "cooldownMs": 950,
+    "range": 400,
+    "projectileSpeed": 480,
+    "pierce": 3,
+    "lifestealPercent": 0.1,
+    "maxLevel": 5
+  },
+  "karate_chop": {
+    "id": "karate_chop",
+    "name": "Karate Chop",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 20,
+    "cooldownMs": 640,
+    "range": 80,
+    "knockback": 220,
+    "maxLevel": 5
+  },
+  "low_kick": {
+    "id": "low_kick",
+    "name": "Low Kick",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 16,
+    "cooldownMs": 560,
+    "range": 75,
+    "statusEffect": {
+      "id": "armorBreak",
+      "chance": 0.25
+    },
+    "maxLevel": 5
+  },
+  "cross_chop": {
+    "id": "cross_chop",
+    "name": "Cross Chop",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 26,
+    "cooldownMs": 900,
+    "range": 90,
+    "knockback": 320,
+    "statusEffect": {
+      "id": "armorBreak",
+      "chance": 0.35
+    },
+    "maxLevel": 5
+  },
+  "focus_punch": {
+    "id": "focus_punch",
+    "name": "Focus Punch",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 30,
+    "cooldownMs": 1400,
+    "range": 100,
+    "knockback": 380,
+    "maxLevel": 5
+  },
+  "force_palm": {
+    "id": "force_palm",
+    "name": "Force Palm",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "strike",
+    "baseDamage": 23,
+    "cooldownMs": 800,
+    "range": 260,
+    "areaRadius": 60,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.3
+    },
+    "maxLevel": 5
+  },
+  "aura_sphere": {
+    "id": "aura_sphere",
+    "name": "Aura Sphere",
+    "type": "fighting",
+    "category": "special",
+    "pattern": "homing",
+    "baseDamage": 20,
+    "cooldownMs": 1000,
+    "range": 420,
+    "projectileSpeed": 380,
+    "maxLevel": 5
+  },
+  "drain_punch": {
+    "id": "drain_punch",
+    "name": "Drain Punch",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 16,
+    "cooldownMs": 750,
+    "range": 85,
+    "lifestealPercent": 0.3,
+    "maxLevel": 5
+  },
+  "fire_spin": {
+    "id": "fire_spin",
+    "name": "Fire Spin",
+    "type": "fire",
+    "category": "special",
+    "pattern": "circle",
+    "baseDamage": 8,
+    "cooldownMs": 700,
+    "areaRadius": 150,
+    "statusEffect": {
+      "id": "burn",
+      "chance": 0.35
+    },
+    "maxLevel": 5
+  },
+  "poison_sting": {
+    "id": "poison_sting",
+    "name": "Poison Sting",
+    "type": "poison",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 10,
+    "cooldownMs": 900,
+    "range": 280,
+    "projectileSpeed": 420,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.35
+    },
+    "maxLevel": 5
+  },
+  "sludge_bomb": {
+    "id": "sludge_bomb",
+    "name": "Sludge Bomb",
+    "type": "poison",
+    "category": "special",
+    "pattern": "explosion",
+    "baseDamage": 20,
+    "cooldownMs": 1300,
+    "range": 320,
+    "areaRadius": 100,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.5
+    },
+    "maxLevel": 5
+  },
+  "x_scissor": {
+    "id": "x_scissor",
+    "name": "X-Scissor",
+    "type": "bug",
+    "category": "physical",
+    "pattern": "strike",
+    "baseDamage": 20,
+    "cooldownMs": 1000,
+    "range": 260,
+    "areaRadius": 70,
+    "maxLevel": 5
+  },
+  "rock_throw": {
+    "id": "rock_throw",
+    "name": "Rock Throw",
+    "type": "rock",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 16,
+    "cooldownMs": 1100,
+    "range": 320,
+    "projectileSpeed": 380,
+    "knockback": 150,
+    "maxLevel": 5
+  },
+  "shadow_punch": {
+    "id": "shadow_punch",
+    "name": "Shadow Punch",
+    "type": "ghost",
+    "category": "physical",
+    "pattern": "homing",
+    "baseDamage": 15,
+    "cooldownMs": 900,
+    "range": 300,
+    "projectileSpeed": 400,
+    "maxLevel": 5
+  },
+  "dragon_breath": {
+    "id": "dragon_breath",
+    "name": "Dragon Breath",
+    "type": "dragon",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 10,
+    "cooldownMs": 130,
+    "range": 300,
+    "beamWidth": 40,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.15
+    },
+    "maxLevel": 5,
+    "tickMs": 130
+  },
+  "crunch": {
+    "id": "crunch",
+    "name": "Crunch",
+    "type": "dark",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 18,
+    "cooldownMs": 900,
+    "range": 85,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.3
+    },
+    "maxLevel": 5
+  },
+  "moonblast": {
+    "id": "moonblast",
+    "name": "Moonblast",
+    "type": "fairy",
+    "category": "special",
+    "pattern": "projectile",
+    "baseDamage": 20,
+    "cooldownMs": 1000,
+    "range": 340,
+    "projectileSpeed": 420,
+    "statusEffect": {
+      "id": "attackDown",
+      "chance": 0.3
+    },
+    "maxLevel": 5
+  },
+  "gust": {
+    "id": "gust",
+    "name": "Gust",
+    "type": "flying",
+    "category": "special",
+    "pattern": "spread",
+    "baseDamage": 9,
+    "cooldownMs": 800,
+    "range": 300,
+    "projectileSpeed": 460,
+    "count": 3,
+    "spreadAngle": 50,
+    "maxLevel": 5
+  },
+  "wing_attack": {
+    "id": "wing_attack",
+    "name": "Wing Attack",
+    "type": "flying",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 14,
+    "cooldownMs": 650,
+    "range": 90,
+    "maxLevel": 5
+  },
+  "psybeam": {
+    "id": "psybeam",
+    "name": "Psybeam",
+    "type": "psychic",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 8,
+    "cooldownMs": 120,
+    "range": 300,
+    "beamWidth": 36,
+    "statusEffect": {
+      "id": "confusion",
+      "chance": 0.2
+    },
+    "maxLevel": 5,
+    "tickMs": 120
+  },
+  "powder_snow": {
+    "id": "powder_snow",
+    "name": "Powder Snow",
+    "type": "ice",
+    "category": "special",
+    "pattern": "spread",
+    "baseDamage": 10,
+    "cooldownMs": 900,
+    "range": 280,
+    "projectileSpeed": 380,
+    "count": 3,
+    "spreadAngle": 60,
+    "statusEffect": {
+      "id": "slow",
+      "chance": 0.4
+    },
+    "maxLevel": 5
+  },
+  "mud_slap": {
+    "id": "mud_slap",
+    "name": "Mud Slap",
+    "type": "ground",
+    "category": "physical",
+    "pattern": "circle",
+    "baseDamage": 12,
+    "cooldownMs": 1000,
+    "areaRadius": 130,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.3
+    },
+    "maxLevel": 5
+  },
+  "hyper_beam": {
+    "id": "hyper_beam",
+    "name": "Hyper Beam",
+    "type": "normal",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 26,
+    "cooldownMs": 140,
+    "range": 500,
+    "beamWidth": 70,
+    "maxLevel": 5,
+    "tickMs": 140
+  },
+  "eruption": {
+    "id": "eruption",
+    "name": "Eruption",
+    "type": "fire",
+    "category": "special",
+    "pattern": "explosion",
+    "baseDamage": 44,
+    "cooldownMs": 2400,
+    "range": 380,
+    "areaRadius": 220,
+    "statusEffect": {
+      "id": "burn",
+      "chance": 0.6
+    },
+    "maxLevel": 5
+  }
 }
