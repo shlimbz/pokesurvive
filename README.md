@@ -30,7 +30,9 @@ API/DB 전부 없음). 모든 데이터는 `data/*.json`, 모든 이미지는 �
 /data/            pokemon.json, moves.json, evolution.json, enemies.json, maps.json,
                   vfx.json, items.json, abilities.json, type-chart.json, balance.json
 
-/assets/          pokemon/ vfx/ items/ ui/ maps/ audio/  (currently empty - see §4)
+/assets/          pokemon/  48종 실제 Pokémon 공식 아트(PNG)가 기본 내장되어 있습니다 - 별도
+                  다운로드 없이 바로 실제 스프라이트로 플레이됩니다 (§4).
+                  vfx/ items/ ui/ maps/ audio/ 는 비어 있으며 절차적 생성으로 대체됩니다.
 /vendor/          phaser.min.js  (Phaser 3.80.1, vendored locally - no CDN)
 /tools/           download-pokeapi.js
 ```
@@ -69,6 +71,21 @@ npx http-server -p 8080
 | 4 | 보유 기술 전부 최대 레벨로 |
 | 5 | Legendary(없으면 Epic) 아이템 1개 즉시 획득 |
 
+### 필드 픽업 (Heal / Speed / Magnet)
+
+레벨업 카드로 얻는 영구 강화와는 별개로, 맵 위에 8~13초 간격으로 임시 픽업 오브가
+플레이어 근처에 무작위로 스폰됩니다 (뱀서라이크 장르의 전형적인 요소):
+
+| 아이콘 | 효과 |
+|---|---|
+| H (분홍) | 즉시 체력 회복 |
+| S (하늘색) | 일정 시간 이동속도 증가 |
+| M (노랑) | 일정 시간 픽업(경험치 구슬 등) 흡수 범위 대폭 증가 |
+
+`GameScene.updatePickups`/`spawnFieldPickup`/`onPickupCollected`가 스폰·수명·획득을
+관리하며, 새 픽업 타입을 추가하고 싶다면 이 세 메서드와 `Player.applyFieldSpeedBuff`/
+`heal` 같은 소비 메서드에 분기를 하나 추가하면 됩니다.
+
 ## 3. 완전 오프라인 구조가 지켜지는 방식
 
 - `data/*.json`은 모두 로컬 파일이며, `PreloadScene`이 `this.load.json`으로만 불러옵니다.
@@ -78,20 +95,30 @@ npx http-server -p 8080
 - `tools/download-pokeapi.js`는 **개발 단계 전용** 스크립트로, 게임 코드 어디에서도
   import/호출되지 않습니다. PokeAPI 접근은 이 스크립트를 사람이 직접 실행할 때만 발생합니다.
 
-## 4. 에셋 배치 방법 (선택 사항 - 실제 Pokémon 아트 적용)
+## 4. 실제 Pokémon 아트
+
+`assets/pokemon/`에 48종(스타터 + 진화체 + 주요 야생/보스 종)의 실제 공식 아트(PNG)가
+**기본으로 포함**되어 있습니다. 별도 실행 없이 바로 실제 스프라이트로 플레이됩니다.
+`PreloadScene.PS.SPRITE_IDS`에 나열된 id에 대해 `assets/pokemon/<id>.png`를 로드하고,
+같은 id의 텍스처 키로 `Pokemon`/`Enemy` 스프라이트에 자동 적용됩니다. 표시 크기는
+`setDisplaySize()`로 고정되어 있어(플레이어 56px, 적 42px×tier scale) 원본 PNG 해상도와
+무관하게 항상 올바른 크기로 렌더링되며, 히트박스도 `MathUtils.fitCircularBody()`가
+실제 표시 크기 기준으로 다시 계산하므로 절차적 placeholder와 실제 아트가 섞여 있어도
+크기/충돌 판정이 항상 정확합니다.
+
+에셋이 없는 id, 또는 새로 추가한 Pokémon/적은 자동으로 절차적 placeholder(색상 원 +
+이니셜)로 대체되므로 코드 수정 없이 항상 안전하게 동작합니다.
+
+새 스프라이트를 추가/교체하려면:
 
 1. `node tools/download-pokeapi.js --all` (또는 `--pokemon pikachu,charmander` /
-   `--generation 1`) 실행 → `assets/pokemon/<id>.png`에 공식 아트가 저장됩니다.
-2. 그게 전부입니다. `PreloadScene`이 `assets/pokemon/<id>.png`가 존재하면 자동으로
-   그 파일을 텍스처로 사용하고, 없으면 절차적 placeholder(색상 원 + 이니셜)로 대체합니다.
-   코드를 수정할 필요가 없습니다.
-3. 적(enemy) 스프라이트도 같은 방식으로 `assets/pokemon/<enemy-id>.png`에 파일을 두면
-   적용됩니다 (`data/enemies.json`의 id와 파일명이 일치해야 함).
-4. `tools/download-pokeapi.js`가 받아오는 원본 PokeAPI JSON은 `data/raw/*.json`에
-   저장됩니다. 이 파일들은 게임이 직접 사용하지 않는 **참고용 원본 데이터**입니다
-   (§3 완전 오프라인 구조, 및 `data/pokemon.json` 자체 주석 참고). 실제 게임 밸런스는
-   여전히 `data/pokemon.json` / `data/moves.json` / `data/evolution.json`에 사람이
-   직접 정의합니다.
+   `--generation 1`) 실행 → `assets/pokemon/<id>.png`에 공식 아트가 저장됩니다. (`tools/`
+   스크립트는 **개발 전용**이며 게임 코드에서 호출되지 않습니다 - §3 참고.)
+2. `src/scenes/PreloadScene.js`의 `PS.SPRITE_IDS` 배열에 해당 id를 추가합니다
+   (이미 넣어 둔 48종 외에 추가하고 싶을 때만 필요).
+3. `data/raw/*.json`은 다운로드 스크립트가 참고용으로 남기는 PokeAPI 원본 데이터이며
+   게임이 직접 사용하지 않습니다. 실제 게임 밸런스는 여전히 `data/pokemon.json` /
+   `data/moves.json` / `data/evolution.json`에 사람이 직접 정의합니다.
 
 ## 5. 새로운 Pokémon 추가 방법
 
