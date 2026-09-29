@@ -1,0 +1,29 @@
+[
+  { "from": "charmander", "to": "charmeleon", "conditions": { "requiredLevel": 5 } },
+  { "from": "charmeleon", "to": "charizard",  "conditions": { "requiredLevel": 10, "requiredMove": "ember", "requiredMoveLevel": 3 } },
+
+  { "from": "squirtle",  "to": "wartortle", "conditions": { "requiredLevel": 5 } },
+  { "from": "wartortle", "to": "blastoise", "conditions": { "requiredLevel": 10, "requiredMove": "water_gun", "requiredMoveLevel": 3 } },
+
+  { "from": "bulbasaur", "to": "ivysaur",  "conditions": { "requiredLevel": 5 } },
+  { "from": "ivysaur",   "to": "venusaur", "conditions": { "requiredLevel": 10, "requiredMove": "vine_whip", "requiredMoveLevel": 3 } },
+
+  { "from": "pikachu", "to": "raichu", "conditions": { "requiredLevel": 8, "requiredMove": "thunder_shock", "requiredMoveLevel": 3, "requiredItem": "magnet", "requiredItemCount": 1 } },
+
+  { "from": "gastly",  "to": "haunter", "conditions": { "requiredLevel": 5 } },
+  { "from": "haunter", "to": "gengar",  "conditions": { "requiredLevel": 10, "requiredMove": "lick", "requiredMoveLevel": 3, "requiredKills": 40 } },
+
+  { "from": "machop",  "to": "machoke", "conditions": { "requiredLevel": 5 } },
+  { "from": "machoke", "to": "machamp", "conditions": { "requiredLevel": 10, "requiredMove": "karate_chop", "requiredMoveLevel": 3 } },
+
+  { "from": "vulpix", "to": "ninetales", "conditions": { "requiredLevel": 8, "requiredItem": "charcoal", "requiredItemCount": 2 } },
+
+  { "from": "piplup",   "to": "prinplup", "conditions": { "requiredLevel": 5 } },
+  { "from": "prinplup", "to": "empoleon", "conditions": { "requiredLevel": 10, "requiredMove": "bubble", "requiredMoveLevel": 3 } },
+
+  { "from": "riolu", "to": "lucario", "conditions": { "requiredLevel": 8, "requiredAbility": "steadfast", "requiredKills": 25 } },
+
+  { "from": "eevee", "to": "flareon",  "conditions": { "requiredLevel": 6, "requiredTypeDamage": { "type": "fire", "amount": 350 } } },
+  { "from": "eevee", "to": "vaporeon", "conditions": { "requiredLevel": 6, "requiredTypeDamage": { "type": "water", "amount": 350 } } },
+  { "from": "eevee", "to": "jolteon",  "conditions": { "requiredLevel": 6, "requiredTypeDamage": { "type": "electric", "amount": 350 } } }
+]

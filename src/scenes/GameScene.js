@@ -1,0 +1,627 @@
+// GameScene: the core 15-minute survival loop - movement, auto-attack, type effectiveness,
+// status effects, EXP, level-up choices, evolution, elites/miniboss/boss, and the HUD.
+window.PS = window.PS || {};
+
+PS.GameScene = class GameScene extends Phaser.Scene {
+  constructor() {
+    super('Game');
+  }
+
+  create() {
+    const data = PS.Game.data;
+    const managers = PS.Game.managers;
+    this.data_ = data;
+    this.managers = managers;
+    this.typeFx = PS.Game.typeFx;
+    this.statusFx = PS.Game.statusFx;
+    this.combat = PS.Game.combat;
+    this.levelSystem = PS.Game.levelSystem;
+    this.evolutionSystem = PS.Game.evolutionSystem;
+    this.assets = PS.Game.assets;
+    this.vfx = new PS.VFXSystem(this, data.vfx, this.assets);
+    this.audio = new PS.AudioSystem(this);
+    this.waveSystem = new PS.WaveSystem(data.balance);
+
+    this.mapId = PS.Game.selectedMapId || 'forest';
+    this.map = managers.enemy.getMap(this.mapId);
+
+    this.worldSize = 8000;
+    this.physics.world.setBounds(0, 0, this.worldSize, this.worldSize);
+    this.cameras.main.setBounds(0, 0, this.worldSize, this.worldSize);
+    this.cameras.main.setBackgroundColor(this.hex(this.map.background.color));
+    this.drawBackgroundGrid();
+
+    this.runTimeSec = 0;
+    this.isPaused = false;
+    this.matchEnded = false;
+    this.bossKilled = false;
+
+    // ---- Build + Player ----
+    const speciesId = PS.Game.selectedSpeciesId || managers.pokemon.getStarters()[0].id;
+    this.build = new PS.BuildSystem(speciesId, managers, data.balance);
+    const startX = this.worldSize / 2;
+    const startY = this.worldSize / 2;
+    this.player = new PS.Player(this, startX, startY, speciesId, this.build);
+    this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
+
+    // ---- Groups & pools ----
+    this.enemyGroup = this.physics.add.group();
+    this.playerProjectileGroup = this.physics.add.group();
+    this.enemyProjectileGroup = this.physics.add.group();
+    this.expGemGroup = this.physics.add.group();
+
+    this.enemyPool = new PS.ObjectPool(
+      () => { const e = new PS.Enemy(this, 'enemy_generic'); this.enemyGroup.add(e); return e; },
+      (obj, species, stats, x, y) => obj.spawn(species, stats, x, y, managers.move),
+      0
+    );
+    this.playerProjectilePool = new PS.ObjectPool(
+      () => { const p = new PS.Projectile(this, 'bullet_base'); this.playerProjectileGroup.add(p); return p; },
+      (obj, x, y, angle, cfg) => obj.spawn(x, y, angle, cfg),
+      0
+    );
+    this.enemyProjectilePool = new PS.ObjectPool(
+      () => { const p = new PS.Projectile(this, 'bullet_base'); this.enemyProjectileGroup.add(p); return p; },
+      (obj, x, y, angle, cfg) => obj.spawn(x, y, angle, cfg),
+      0
+    );
+    this.gemPool = new PS.ObjectPool(
+      () => { const g = new PS.ExpGem(this, 'gem'); this.expGemGroup.add(g); return g; },
+      (obj, x, y, value) => obj.spawn(x, y, value),
+      0
+    );
+    this.damageNumberPool = new PS.ObjectPool(
+      () => new PS.DamageNumber(this),
+      (obj, x, y, value, options) => obj.fire(x, y, value, options),
+      0
+    );
+
+    this.setEnemyTexture = (enemy, species) => {
+      if (enemy.texture.key !== species.id) enemy.setTexture(species.id);
+    };
+
+    // ---- Spawn system ----
+    this.spawnSystem = new PS.SpawnSystem(managers.enemy, this.waveSystem, data.balance, this.mapId,
+      (species, stats, x, y, isBig) => this.spawnEnemy(species, stats, x, y, isBig));
+
+    // ---- Collisions ----
+    this.physics.add.overlap(this.playerProjectileGroup, this.enemyGroup, (proj, enemy) => this.onPlayerProjectileHit(proj, enemy));
+    this.physics.add.overlap(this.enemyProjectileGroup, this.player, (proj, player) => this.onEnemyProjectileHit(proj));
+    this.physics.add.overlap(this.player, this.enemyGroup, (player, enemy) => this.onPlayerTouchEnemy(enemy));
+    this.physics.add.overlap(this.player, this.expGemGroup, (player, gem) => this.onPlayerTouchGem(gem));
+
+    // ---- Input ----
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys('W,A,S,D');
+    this.setupDebugKeys();
+
+    this.buildHud();
+
+    this.events.on('resume', () => { this.isPaused = false; });
+  }
+
+  hex(v) {
+    return typeof v === 'string' ? parseInt(v.replace('0x', ''), 16) : v;
+  }
+
+  drawBackgroundGrid() {
+    const g = this.add.graphics();
+    g.lineStyle(1, 0xffffff, 0.05);
+    const step = 128;
+    for (let x = 0; x <= this.worldSize; x += step) g.lineBetween(x, 0, x, this.worldSize);
+    for (let y = 0; y <= this.worldSize; y += step) g.lineBetween(0, y, this.worldSize, y);
+    g.setDepth(0);
+  }
+
+  // ================= HUD =================
+  buildHud() {
+    const w = this.cameras.main.width;
+    this.hpBarBg = this.add.rectangle(20, 20, 220, 16, 0x220000, 0.8).setOrigin(0, 0).setScrollFactor(0).setDepth(50);
+    this.hpBarFg = this.add.rectangle(22, 22, 216, 12, 0xff4444, 1).setOrigin(0, 0).setScrollFactor(0).setDepth(51);
+    this.expBarBg = this.add.rectangle(20, 40, 220, 8, 0x002222, 0.8).setOrigin(0, 0).setScrollFactor(0).setDepth(50);
+    this.expBarFg = this.add.rectangle(22, 42, 216, 4, 0x62ffb0, 1).setOrigin(0, 0).setScrollFactor(0).setDepth(51);
+
+    this.levelText = this.add.text(20, 52, 'Lv.1', { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffffff' }).setScrollFactor(0).setDepth(51);
+    this.timerText = this.add.text(w / 2, 20, '15:00', { fontFamily: 'Arial Black', fontSize: '20px', color: '#ffffff' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(51);
+    this.killText = this.add.text(w - 20, 20, 'Kills: 0', { fontFamily: 'Arial', fontSize: '13px', color: '#cccccc' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+    this.speciesText = this.add.text(w - 20, 40, this.build.species.name, { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffd400' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+  }
+
+  updateHud() {
+    this.hpBarFg.width = 216 * this.player.getHpRatio();
+    const expNeeded = this.levelSystem.expForLevel(this.build.level);
+    this.expBarFg.width = 216 * PS.MathUtils.clamp(this.build.exp / expNeeded, 0, 1);
+    this.levelText.setText(`Lv.${this.build.level}`);
+    this.timerText.setText(this.waveSystem.getTimeRemainingLabel(this.runTimeSec));
+    this.killText.setText(`Kills: ${this.build.kills}`);
+    this.speciesText.setText(this.build.species.name);
+  }
+
+  // ================= Update loop =================
+  update(time, deltaMs) {
+    if (this.isPaused || this.matchEnded) return;
+    const dt = Math.min(deltaMs, 50) / 1000;
+    this.runTimeSec += dt;
+
+    const input = {
+      left: this.cursors.left.isDown || this.wasd.A.isDown,
+      right: this.cursors.right.isDown || this.wasd.D.isDown,
+      up: this.cursors.up.isDown || this.wasd.W.isDown,
+      down: this.cursors.down.isDown || this.wasd.S.isDown
+    };
+
+    this.player.update(dt, input, this.statusFx, this.managers.move, (player, move) => this.performPlayerAttack(player, move));
+
+    this.enemyPool.forEachActive(enemy => {
+      enemy.update(dt, this.player.x, this.player.y, this.statusFx,
+        (ent, amount) => this.applyEnemyDot(ent, amount),
+        (ent, move) => this.performEnemyAttack(ent, move));
+    });
+
+    this.playerProjectilePool.forEachActive(p => p.update(dt, (x, y, excludeSet) => this.findNearestEnemy(x, y, excludeSet)));
+    this.enemyProjectilePool.forEachActive(p => p.update(dt, () => null));
+
+    this.gemPool.forEachActive(g => g.update(dt, this.player.x, this.player.y, this.data_.balance.player.pickupRadius));
+
+    this.spawnSystem.update(deltaMs, this.runTimeSec, this.player.x, this.player.y, this.enemyPool.activeCount);
+
+    this.checkLevelUps();
+    this.checkEvolution();
+    this.updateAuraAbilities(dt);
+    this.updateHud();
+
+    if (this.player.isDead()) this.endMatch(false);
+    if (this.waveSystem.isMatchOver(this.runTimeSec)) this.endMatch(true);
+  }
+
+  // Intimidate-style continuous auras: periodically refresh a debuff status on nearby enemies.
+  updateAuraAbilities(dt) {
+    this._auraTimer = (this._auraTimer || 0) + dt;
+    const hooks = PS.AbilitySystem.find(this.build.modifiers, 'aura_debuff');
+    if (hooks.length === 0) return;
+    for (const hook of hooks) {
+      const tick = hook.effect.tickSec || 1.0;
+      hook._timer = (hook._timer || 0) + dt;
+      if (hook._timer < tick) continue;
+      hook._timer = 0;
+      const radius = hook.effect.radius + (hook.effect.radiusPerLevel || 0) * (hook.level - 1);
+      const targets = this.findEnemiesInRadius(this.player.x, this.player.y, radius);
+      for (const t of targets) this.statusFx.tryApply(t, 'attackDown', 1.0);
+    }
+  }
+
+  applyEnemyDot(enemy, amount) {
+    if (enemy.takeDamage(amount)) this.killEnemy(enemy);
+  }
+
+  // ================= Targeting =================
+  findNearestEnemy(x, y, excludeSet) {
+    let best = null;
+    let bestDist = Infinity;
+    this.enemyPool.forEachActive(e => {
+      if (excludeSet && excludeSet.has(e)) return;
+      const d = PS.MathUtils.distanceSq(x, y, e.x, e.y);
+      if (d < bestDist) { bestDist = d; best = e; }
+    });
+    return best;
+  }
+
+  findEnemiesInRadius(x, y, radius, innerRadius = 0) {
+    const result = [];
+    const rSq = radius * radius;
+    const innerSq = innerRadius * innerRadius;
+    this.enemyPool.forEachActive(e => {
+      const d = PS.MathUtils.distanceSq(x, y, e.x, e.y);
+      if (d <= rSq && d >= innerSq) result.push(e);
+    });
+    return result;
+  }
+
+  // ================= Player attack pattern resolution =================
+  getEffectiveRange(move) {
+    return (move.range || 300) * this.build.modifiers.rangeMult;
+  }
+
+  getEffectiveAreaRadius(move, fallback) {
+    return (move.areaRadius || fallback) * this.build.modifiers.rangeMult;
+  }
+
+  performPlayerAttack(player, move) {
+    const nearest = this.findNearestEnemy(player.x, player.y, null);
+    const aimAngle = nearest ? PS.MathUtils.angleBetween(player.x, player.y, nearest.x, nearest.y) : (player.lastFacingAngle || -Math.PI / 2);
+    const hpRatio = player.getHpRatio();
+    const range = this.getEffectiveRange(move);
+
+    switch (move.pattern) {
+      case 'melee': {
+        const meleeRange = (move.range || 70) * this.build.modifiers.rangeMult;
+        const target = nearest && PS.MathUtils.distance(player.x, player.y, nearest.x, nearest.y) <= meleeRange ? nearest : null;
+        if (target) this.applyPlayerHitToEnemy(move, target, hpRatio, player);
+        this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x + Math.cos(aimAngle) * 30, player.y + Math.sin(aimAngle) * 30, aimAngle);
+        return true;
+      }
+      case 'projectile':
+        this.firePlayerProjectile(move, player.x, player.y, aimAngle, 'straight', range);
+        return true;
+      case 'spread': {
+        const count = move.count || 3;
+        const spread = Phaser.Math.DegToRad(move.spreadAngle || 45);
+        for (let i = 0; i < count; i++) {
+          const t = count === 1 ? 0 : (i / (count - 1)) - 0.5;
+          this.firePlayerProjectile(move, player.x, player.y, aimAngle + t * spread, 'straight', range);
+        }
+        return true;
+      }
+      case 'chain':
+        this.firePlayerProjectile(move, player.x, player.y, aimAngle, 'chain', range);
+        return true;
+      case 'homing':
+        this.firePlayerProjectile(move, player.x, player.y, aimAngle, 'homing', range);
+        return true;
+      case 'boomerang':
+        this.firePlayerProjectile(move, player.x, player.y, aimAngle, 'boomerang', range);
+        return true;
+      case 'circle': {
+        const radius = this.getEffectiveAreaRadius(move, 150);
+        const targets = this.findEnemiesInRadius(player.x, player.y, radius);
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), player.x, player.y, radius);
+        return true;
+      }
+      case 'orbit': {
+        const radius = this.getEffectiveAreaRadius(move, 140);
+        const targets = this.findEnemiesInRadius(player.x, player.y, radius, radius * 0.6);
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), player.x, player.y, radius);
+        return true;
+      }
+      case 'strike': {
+        const radius = this.getEffectiveAreaRadius(move, 80);
+        const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
+        const targets = this.findEnemiesInRadius(point.x, point.y, radius);
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), point.x, point.y, radius);
+        return true;
+      }
+      case 'explosion': {
+        const radius = this.getEffectiveAreaRadius(move, 100);
+        const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
+        const targets = this.findEnemiesInRadius(point.x, point.y, radius);
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), point.x, point.y, radius);
+        return true;
+      }
+      case 'rain': {
+        const radius = this.getEffectiveAreaRadius(move, 90);
+        const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
+        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), point.x, point.y, radius * 0.4);
+        this.time.delayedCall(280, () => {
+          const targets = this.findEnemiesInRadius(point.x, point.y, radius);
+          this.resolveAoe(move, targets, hpRatio, player);
+          this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), point.x, point.y, radius);
+        });
+        return true;
+      }
+      case 'beam': {
+        const width = move.beamWidth || 40;
+        const ex = player.x + Math.cos(aimAngle) * range;
+        const ey = player.y + Math.sin(aimAngle) * range;
+        const targets = this.findEnemiesNearSegment(player.x, player.y, ex, ey, width / 2);
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x + Math.cos(aimAngle) * (range * 0.5), player.y + Math.sin(aimAngle) * (range * 0.5), aimAngle);
+        return true;
+      }
+      default:
+        return true;
+    }
+  }
+
+  findEnemiesNearSegment(x1, y1, x2, y2, halfWidth) {
+    const result = [];
+    const dx = x2 - x1, dy = y2 - y1;
+    const lenSq = dx * dx + dy * dy || 1;
+    this.enemyPool.forEachActive(e => {
+      let t = ((e.x - x1) * dx + (e.y - y1) * dy) / lenSq;
+      t = PS.MathUtils.clamp(t, 0, 1);
+      const px = x1 + t * dx, py = y1 + t * dy;
+      if (PS.MathUtils.distance(e.x, e.y, px, py) <= halfWidth) result.push(e);
+    });
+    return result;
+  }
+
+  firePlayerProjectile(move, x, y, angle, kind, range) {
+    const proj = this.playerProjectilePool.obtain(x, y, angle, {
+      kind,
+      move,
+      moveLevel: this.build.getMoveLevel(move.id),
+      ownerContext: { side: 'player' },
+      speed: move.projectileSpeed || 420,
+      pierce: move.pierce || 0,
+      chainCount: move.chainCount || 0,
+      chainRange: move.chainRange || 160,
+      splashRadius: move.splashRadius || 0,
+      range: range || move.range || 350
+    });
+    const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
+    proj.setTexture(this.vfx.getTexture(move.type));
+    proj.setTint(this.assets.hexToInt(vfxDef.color));
+    proj.onDone = (p) => this.playerProjectilePool.release(p);
+  }
+
+  resolveAoe(move, targets, hpRatio, attackerEntity) {
+    if (move.category === 'status' && move.statusOnly) {
+      for (const target of targets) this.statusFx.tryApply(target, move.statusOnly.status, move.statusOnly.chance);
+      return;
+    }
+    for (const target of targets) this.applyPlayerHitToEnemy(move, target, hpRatio, attackerEntity);
+  }
+
+  applyPlayerHitToEnemy(move, enemy, hpRatio, attackerEntity) {
+    const result = this.combat.resolvePlayerHit(this.build, move, enemy, hpRatio, attackerEntity);
+    const died = enemy.takeDamage(result.damage);
+
+    this.damageNumberPool.obtain(enemy.x, enemy.y - 20, result.damage, {
+      color: result.isCrit ? '#fff176' : '#ffffff',
+      scale: result.isCrit ? 1.3 : 1
+    });
+    this.vfx.showFeedbackText(enemy.x, enemy.y, result.label);
+    this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), enemy.x, enemy.y);
+
+    if (result.lifestealPercent > 0) {
+      this.player.hp = Math.min(this.player.maxHp, this.player.hp + result.damage * result.lifestealPercent);
+    }
+    if (move.knockback) {
+      const dir = PS.MathUtils.normalize(enemy.x - this.player.x, enemy.y - this.player.y);
+      enemy.x += dir.x * (move.knockback / 10);
+      enemy.y += dir.y * (move.knockback / 10);
+    }
+
+    if (died) this.killEnemy(enemy);
+  }
+
+  // ================= Enemy attack resolution =================
+  performEnemyAttack(enemy, move) {
+    if (enemy.tier === 'boss' || enemy.tier === 'miniboss') PS.Boss.telegraph(this, enemy, move.areaRadius || 60);
+
+    switch (move.pattern) {
+      case 'projectile': {
+        const angle = PS.MathUtils.angleBetween(enemy.x, enemy.y, this.player.x, this.player.y);
+        const proj = this.enemyProjectilePool.obtain(enemy.x, enemy.y, angle, {
+          kind: 'straight',
+          move,
+          moveLevel: 1,
+          ownerContext: { side: 'enemy', enemyStats: { attack: enemy.attack }, enemyTypes: enemy.types },
+          speed: move.projectileSpeed || 380,
+          pierce: 0,
+          range: move.range || 320
+        });
+        const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
+        proj.setTexture(this.vfx.getTexture(move.type));
+        proj.setTint(this.assets.hexToInt(vfxDef.color));
+        proj.onDone = (p) => this.enemyProjectilePool.release(p);
+        break;
+      }
+      case 'circle':
+      case 'explosion': {
+        const radius = move.areaRadius || 120;
+        if (PS.MathUtils.distance(enemy.x, enemy.y, this.player.x, this.player.y) <= radius) {
+          this.applyEnemyHitToPlayer(enemy, move);
+        }
+        this.vfx.playCircleVfx(move.type, 2, enemy.x, enemy.y, radius);
+        break;
+      }
+      case 'beam': {
+        const angle = PS.MathUtils.angleBetween(enemy.x, enemy.y, this.player.x, this.player.y);
+        const ex = enemy.x + Math.cos(angle) * (move.range || 300);
+        const ey = enemy.y + Math.sin(angle) * (move.range || 300);
+        const dist = this.pointSegmentDistance(this.player.x, this.player.y, enemy.x, enemy.y, ex, ey);
+        if (dist <= (move.beamWidth || 40) / 2) this.applyEnemyHitToPlayer(enemy, move);
+        break;
+      }
+      default: {
+        if (PS.MathUtils.distance(enemy.x, enemy.y, this.player.x, this.player.y) <= (move.range || 100)) {
+          this.applyEnemyHitToPlayer(enemy, move);
+        }
+      }
+    }
+  }
+
+  pointSegmentDistance(px, py, x1, y1, x2, y2) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const lenSq = dx * dx + dy * dy || 1;
+    let t = ((px - x1) * dx + (py - y1) * dy) / lenSq;
+    t = PS.MathUtils.clamp(t, 0, 1);
+    return PS.MathUtils.distance(px, py, x1 + t * dx, y1 + t * dy);
+  }
+
+  onEnemyProjectileHit(proj) {
+    if (!proj.active) return;
+    const move = proj.move;
+    const stats = proj.ownerContext.enemyStats;
+    const types = proj.ownerContext.enemyTypes;
+    this.applyEnemyHitToPlayer({ attack: stats.attack, types }, move);
+    proj.deactivate();
+  }
+
+  applyEnemyHitToPlayer(enemySource, move) {
+    const enemyStats = { attack: enemySource.attack };
+    const enemyTypes = enemySource.types;
+    const result = this.combat.resolveEnemyHitOnPlayer(enemyStats, enemyTypes, move, this.build, this.player);
+
+    if (!result.absorbed) {
+      const applied = this.player.takeDamage(result.damage);
+      if (applied) {
+        this.damageNumberPool.obtain(this.player.x, this.player.y - 24, result.damage, { color: '#ff6666' });
+        this.triggerStaticHook();
+      }
+      if (result.statusId && PS.RandomUtils.chance(result.statusChance)) this.statusFx.tryApply(this.player, result.statusId, result.statusChance);
+    } else {
+      if (result.healFromAbsorb > 0) {
+        this.player.hp = Math.min(this.player.maxHp, this.player.hp + result.healFromAbsorb);
+        this.damageNumberPool.obtain(this.player.x, this.player.y - 24, `+${result.healFromAbsorb}`, { color: '#62ffb0' });
+      }
+      if (result.flashFireStacks.length > 0) {
+        const maxStacks = result.flashFireStacks[0].effect.maxStacks;
+        this.player.flashFireStacks = Math.min(maxStacks, (this.player.flashFireStacks || 0) + 1);
+      }
+    }
+  }
+
+  triggerStaticHook() {
+    const mods = this.build.modifiers;
+    for (const hook of PS.AbilitySystem.find(mods, 'on_hit_taken_aoe_status')) {
+      const chance = PS.AbilitySystem.scale(hook.effect, hook.level, 'chance', 'chancePerLevel');
+      if (PS.RandomUtils.chance(chance)) {
+        const targets = this.findEnemiesInRadius(this.player.x, this.player.y, hook.effect.radius);
+        for (const t of targets) this.statusFx.tryApply(t, hook.effect.status, 1.0);
+        this.vfx.playCircleVfx('electric', 2, this.player.x, this.player.y, hook.effect.radius);
+      }
+    }
+  }
+
+  onPlayerProjectileHit(proj, enemyObj) {
+    if (!proj.active || !enemyObj.active) return;
+    if (proj.hitSet.has(enemyObj)) return;
+    this.applyPlayerHitToEnemy(proj.move, enemyObj, this.player.getHpRatio(), this.player);
+
+    if (proj.splashRadius > 0) {
+      const splashTargets = this.findEnemiesInRadius(enemyObj.x, enemyObj.y, proj.splashRadius).filter(e => e !== enemyObj);
+      for (const t of splashTargets) this.applyPlayerHitToEnemy(proj.move, t, this.player.getHpRatio(), this.player);
+    }
+
+    const keepFlying = proj.registerHit(enemyObj);
+    if (!keepFlying) proj.deactivate();
+  }
+
+  onPlayerTouchEnemy(enemy) {
+    if (!enemy.active) return;
+    if (enemy.contactCooldown > 0) return;
+    enemy.contactCooldown = 0.6;
+    this.applyEnemyHitToPlayer(enemy, null);
+  }
+
+  onPlayerTouchGem(gem) {
+    if (!gem.active) return;
+    this.build.addExp(gem.value);
+    this.gemPool.release(gem);
+  }
+
+  // ================= Enemy lifecycle =================
+  spawnEnemy(species, stats, x, y, isBig) {
+    const enemy = this.enemyPool.obtain(species, stats, x, y);
+    this.setEnemyTexture(enemy, species);
+    if (isBig) PS.Boss.announce(this, enemy);
+    return enemy;
+  }
+
+  killEnemy(enemy) {
+    this.build.recordKill();
+    this.vfx.playDeathBurst(enemy.x, enemy.y, this.assets.hexToInt(enemy.species.color));
+    this.gemPool.obtain(enemy.x, enemy.y, Math.max(1, Math.round(enemy.expValue)));
+    if (enemy.tier === 'boss') {
+      this.bossKilled = true;
+    }
+    enemy.despawn();
+    this.enemyPool.release(enemy);
+  }
+
+  // ================= Level up / evolution =================
+  checkLevelUps() {
+    const count = this.levelSystem.consumeLevelUps(this.build);
+    if (count > 0) {
+      this.player.refreshFromBuild();
+      this.queueLevelUps(count);
+    }
+  }
+
+  queueLevelUps(count) {
+    this.pendingLevelUps = (this.pendingLevelUps || 0) + count;
+    if (!this.isPaused) this.openNextLevelUp();
+  }
+
+  openNextLevelUp() {
+    if (!this.pendingLevelUps || this.pendingLevelUps <= 0) return;
+    this.pendingLevelUps--;
+    this.isPaused = true;
+    const choices = this.levelSystem.generateChoices(this.build, this.runTimeSec);
+    this.scene.launch('LevelUp', {
+      choices,
+      build: this.build,
+      levelSystem: this.levelSystem,
+      onChosen: (choice) => {
+        this.levelSystem.applyChoice(this.build, choice);
+        this.player.refreshFromBuild();
+        this.scene.stop('LevelUp');
+        if (this.pendingLevelUps > 0) this.openNextLevelUp();
+        else this.isPaused = false;
+      }
+    });
+  }
+
+  checkEvolution() {
+    this._evoTimer = (this._evoTimer || 0) + 1;
+    if (this._evoTimer % 20 !== 0) return; // throttle: check ~3x/sec
+    const entry = this.evolutionSystem.checkEvolution(this.build, this.runTimeSec);
+    if (entry) this.triggerEvolution(entry);
+  }
+
+  triggerEvolution(entry) {
+    this.isPaused = true;
+    const fromSpecies = this.build.species;
+    this.evolutionSystem.apply(this.build, entry);
+    this.player.setTexture(this.build.speciesId);
+    this.player.refreshFromBuild();
+    this.vfx.playEvolutionFlash(this.player.x, this.player.y);
+
+    this.scene.launch('Evolution', {
+      fromName: fromSpecies.name,
+      toName: this.build.species.name,
+      speciesId: this.build.speciesId,
+      onDone: () => {
+        this.scene.stop('Evolution');
+        this.isPaused = false;
+      }
+    });
+  }
+
+  // ================= Match end =================
+  endMatch(survived) {
+    if (this.matchEnded) return;
+    this.matchEnded = true;
+    const result = {
+      survived,
+      bossDefeated: this.bossKilled,
+      survivedSec: Math.floor(this.runTimeSec),
+      level: this.build.level,
+      kills: this.build.kills,
+      speciesName: this.build.species.name,
+      speciesId: this.build.speciesId,
+      dominantType: this.build.getDominantType()
+    };
+    PS.SaveSystem.recordRunResult(result);
+    this.scene.start('GameOver', result);
+  }
+
+  // ================= Debug =================
+  setupDebugKeys() {
+    const kb = this.input.keyboard;
+    kb.on('keydown-G', () => { this.build.addExp(this.levelSystem.expForLevel(this.build.level)); });
+    kb.on('keydown-E', () => {
+      const candidates = this.evolutionSystem.getCandidates(this.build.speciesId);
+      if (candidates.length > 0) this.triggerEvolution(candidates[0]);
+    });
+    kb.on('keydown-B', () => this.spawnSystem.spawnBoss(this.player.x, this.player.y));
+    kb.on('keydown-ONE', () => this.vfx.playTypeVfx('fire', 3, this.player.x, this.player.y - 60));
+    kb.on('keydown-TWO', () => this.vfx.playTypeVfx('water', 3, this.player.x, this.player.y - 60));
+    kb.on('keydown-THREE', () => this.vfx.playTypeVfx('electric', 3, this.player.x, this.player.y - 60));
+    kb.on('keydown-FOUR', () => {
+      for (const id of this.build.getOwnedMoveIds()) this.build.moves[id] = this.data_.balance.maxLevels.move;
+      this.build.refreshModifiers();
+    });
+    kb.on('keydown-FIVE', () => {
+      const legendary = this.managers.item.getAllByGrade('legendary');
+      const pool = legendary.length ? legendary : this.managers.item.getAllByGrade('epic');
+      if (pool.length) this.build.addOrUpgradeItem(PS.RandomUtils.pick(pool).id);
+    });
+  }
+};

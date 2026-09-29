@@ -1,0 +1,13 @@
+{
+  "name": "pokesurvivors",
+  "version": "1.0.0",
+  "description": "Pokémon x Vampire Survivors style HTML5 prototype built on Phaser 3. Fully offline at runtime.",
+  "main": "index.html",
+  "scripts": {
+    "start": "node -e \"const s=require('http').createServer(require('fs').existsSync('node_modules/serve-handler')?require('serve-handler'):(req,res)=>{const fs=require('fs'),path=require('path');const url=decodeURIComponent(req.url.split('?')[0]);let p=path.join(process.cwd(), url==='/'?'/index.html':url);fs.readFile(p,(err,data)=>{if(err){res.writeHead(404);res.end('Not found');return;}const ext=path.extname(p);const types={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png'};res.writeHead(200,{'Content-Type':types[ext]||'application/octet-stream'});res.end(data);});});s.listen(8080,()=>console.log('Serving on http://localhost:8080'));\"",
+    "download-pokeapi": "node tools/download-pokeapi.js"
+  },
+  "keywords": ["phaser", "pokemon", "survivors", "game"],
+  "author": "",
+  "license": "ISC"
+}

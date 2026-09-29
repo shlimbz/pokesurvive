@@ -1,0 +1,35 @@
+{
+  "forest": {
+    "id": "forest",
+    "name": "Forest",
+    "background": { "color": "0x1c3a1c", "pattern": "grass" },
+    "enemyPool": ["rattata", "oddish", "weedle", "bellsprout"],
+    "elitePool": ["beedrill"],
+    "miniBossPool": ["scyther"],
+    "boss": "vileplume",
+    "spawnRate": 1.0,
+    "difficulty": 1.0
+  },
+  "beach": {
+    "id": "beach",
+    "name": "Beach",
+    "background": { "color": "0x1c3040", "pattern": "sand" },
+    "enemyPool": ["poliwag", "psyduck", "tentacool", "staryu"],
+    "elitePool": ["golduck"],
+    "miniBossPool": ["poliwrath"],
+    "boss": "gyarados",
+    "spawnRate": 1.05,
+    "difficulty": 1.1
+  },
+  "volcano": {
+    "id": "volcano",
+    "name": "Volcano",
+    "background": { "color": "0x3a1c14", "pattern": "ash" },
+    "enemyPool": ["growlithe", "ponyta", "numel", "slugma"],
+    "elitePool": ["rapidash"],
+    "miniBossPool": ["ninetales"],
+    "boss": "magmar",
+    "spawnRate": 1.15,
+    "difficulty": 1.25
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "rattata":    { "id": "rattata",    "name": "Rattata",    "types": ["normal"],          "tier": "normal", "map": "forest",  "baseStats": { "hp": 16, "attack": 7,  "defense": 5, "speed": 150 }, "expValue": 3, "color": "0xC8B090", "scale": 0.8 },
+  "oddish":     { "id": "oddish",     "name": "Oddish",     "types": ["grass", "poison"], "tier": "normal", "map": "forest",  "baseStats": { "hp": 20, "attack": 9,  "defense": 7, "speed": 85  }, "expValue": 3, "color": "0x5FB050", "scale": 0.9 },
+  "weedle":     { "id": "weedle",     "name": "Weedle",     "types": ["bug", "poison"],   "tier": "normal", "map": "forest",  "baseStats": { "hp": 15, "attack": 8,  "defense": 5, "speed": 80  }, "expValue": 3, "color": "0xC9C93C", "scale": 0.8 },
+  "bellsprout": { "id": "bellsprout", "name": "Bellsprout", "types": ["grass", "poison"], "tier": "normal", "map": "forest",  "baseStats": { "hp": 18, "attack": 10, "defense": 6, "speed": 90  }, "expValue": 3, "color": "0x7ACB3E", "scale": 0.9 },
+
+  "poliwag":  { "id": "poliwag",  "name": "Poliwag",  "types": ["water"],           "tier": "normal", "map": "beach", "baseStats": { "hp": 19, "attack": 7,  "defense": 6, "speed": 95  }, "expValue": 3, "color": "0x4FB5E0", "scale": 0.85 },
+  "psyduck":  { "id": "psyduck",  "name": "Psyduck",  "types": ["water"],           "tier": "normal", "map": "beach", "baseStats": { "hp": 22, "attack": 9,  "defense": 7, "speed": 90  }, "expValue": 3, "color": "0xF2D98A", "scale": 0.9 },
+  "tentacool":{ "id": "tentacool","name": "Tentacool","types": ["water", "poison"], "tier": "normal", "map": "beach", "baseStats": { "hp": 20, "attack": 8,  "defense": 9, "speed": 85  }, "expValue": 3, "color": "0x4A9FCB", "scale": 0.85 },
+  "staryu":   { "id": "staryu",   "name": "Staryu",   "types": ["water"],           "tier": "normal", "map": "beach", "baseStats": { "hp": 21, "attack": 10, "defense": 8, "speed": 110 }, "expValue": 3, "color": "0xE0A0A8", "scale": 0.8 },
+
+  "growlithe": { "id": "growlithe", "name": "Growlithe", "types": ["fire"],           "tier": "normal", "map": "volcano", "baseStats": { "hp": 22, "attack": 11, "defense": 7,  "speed": 120 }, "expValue": 3, "color": "0xE07A3E", "scale": 0.9 },
+  "ponyta":    { "id": "ponyta",    "name": "Ponyta",    "types": ["fire"],           "tier": "normal", "map": "volcano", "baseStats": { "hp": 21, "attack": 10, "defense": 6,  "speed": 150 }, "expValue": 3, "color": "0xF0A030", "scale": 0.9 },
+  "numel":     { "id": "numel",     "name": "Numel",     "types": ["fire", "ground"], "tier": "normal", "map": "volcano", "baseStats": { "hp": 24, "attack": 9,  "defense": 10, "speed": 60  }, "expValue": 3, "color": "0xC08050", "scale": 0.95 },
+  "slugma":    { "id": "slugma",    "name": "Slugma",    "types": ["fire"],           "tier": "normal", "map": "volcano", "baseStats": { "hp": 23, "attack": 9,  "defense": 8,  "speed": 55  }, "expValue": 3, "color": "0xE85A2A", "scale": 0.9 },
+
+  "beedrill": { "id": "beedrill", "name": "Beedrill", "types": ["bug", "poison"], "tier": "elite", "map": "forest", "baseStats": { "hp": 22, "attack": 11, "defense": 8,  "speed": 130 }, "expValue": 8, "color": "0xE8C020", "scale": 1.3, "moveId": "poison_sting", "moveCooldownMs": 1600 },
+  "golduck":  { "id": "golduck",  "name": "Golduck",  "types": ["water"],         "tier": "elite", "map": "beach",  "baseStats": { "hp": 24, "attack": 12, "defense": 9,  "speed": 110 }, "expValue": 8, "color": "0x3E7FBF", "scale": 1.3, "moveId": "water_gun",  "moveCooldownMs": 1700 },
+  "rapidash": { "id": "rapidash", "name": "Rapidash", "types": ["fire"],          "tier": "elite", "map": "volcano","baseStats": { "hp": 23, "attack": 13, "defense": 7,  "speed": 160 }, "expValue": 8, "color": "0xF08C1A", "scale": 1.3, "moveId": "ember",      "moveCooldownMs": 1500 },
+
+  "scyther":   { "id": "scyther",   "name": "Scyther",   "types": ["bug", "flying"],    "tier": "miniboss", "map": "forest",  "baseStats": { "hp": 28, "attack": 14, "defense": 10, "speed": 140 }, "expValue": 20, "color": "0x3FA040", "scale": 1.8, "moveId": "x_scissor",  "moveCooldownMs": 2000 },
+  "poliwrath": { "id": "poliwrath", "name": "Poliwrath", "types": ["water", "fighting"],"tier": "miniboss", "map": "beach",   "baseStats": { "hp": 30, "attack": 15, "defense": 12, "speed": 90  }, "expValue": 20, "color": "0x2E6EA8", "scale": 1.8, "moveId": "focus_punch", "moveCooldownMs": 2400 },
+  "ninetales": { "id": "ninetales", "name": "Ninetales", "types": ["fire"],             "tier": "miniboss", "map": "volcano", "baseStats": { "hp": 27, "attack": 13, "defense": 11, "speed": 150 }, "expValue": 20, "color": "0xE8CC7A", "scale": 1.7, "moveId": "fire_spin",   "moveCooldownMs": 1800 },
+
+  "vileplume": { "id": "vileplume", "name": "Vileplume", "types": ["grass", "poison"], "tier": "boss", "map": "forest",  "baseStats": { "hp": 32, "attack": 16, "defense": 12, "speed": 55 }, "expValue": 50, "color": "0xB03060", "scale": 2.6, "moveId": "petal_dance", "moveCooldownMs": 2600 },
+  "gyarados":  { "id": "gyarados",  "name": "Gyarados",  "types": ["water", "flying"], "tier": "boss", "map": "beach",   "baseStats": { "hp": 34, "attack": 17, "defense": 11, "speed": 75 }, "expValue": 50, "color": "0x2255AA", "scale": 2.8, "moveId": "hydro_pump",  "moveCooldownMs": 2200 },
+  "magmar":    { "id": "magmar",    "name": "Magmar",    "types": ["fire"],            "tier": "boss", "map": "volcano", "baseStats": { "hp": 33, "attack": 18, "defense": 10, "speed": 80 }, "expValue": 50, "color": "0xD8451A", "scale": 2.7, "moveId": "eruption",    "moveCooldownMs": 3000 }
+}

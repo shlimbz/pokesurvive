@@ -1,0 +1,133 @@
+{
+  "statConversion": {
+    "hp": { "base": 80, "perPoint": 3.2 },
+    "attack": { "base": 5, "perPoint": 0.35 },
+    "defense": { "base": 0, "perPoint": 0.55 },
+    "spAttack": { "base": 5, "perPoint": 0.35 },
+    "spDefense": { "base": 0, "perPoint": 0.55 },
+    "speed": {
+      "base": 100,
+      "perPoint": 0.55,
+      "attackSpeedShare": 0.35,
+      "comment": "speed stat becomes: moveSpeed(px/s) = base + perPoint*SPD ; attack cooldown is reduced by attackSpeedShare fraction of the speed bonus"
+    }
+  },
+  "stab": 1.5,
+  "critical": {
+    "baseChance": 0.05,
+    "baseDamageMult": 2.0
+  },
+  "typeEffectiveness": {
+    "min": 0.25,
+    "max": 4.0
+  },
+  "typePenetration": {
+    "rare": 0.10,
+    "epic": 0.20,
+    "legendary": 0.40
+  },
+  "rarity": {
+    "order": ["common", "uncommon", "rare", "epic", "legendary"],
+    "baseWeights": {
+      "common": 60,
+      "uncommon": 25,
+      "rare": 10,
+      "epic": 4,
+      "legendary": 1
+    },
+    "timeScaling": {
+      "comment": "every full minute elapsed shifts weight from common/uncommon toward rare/epic/legendary, clamped",
+      "perMinute": {
+        "common": -1.2,
+        "uncommon": -0.4,
+        "rare": 0.8,
+        "epic": 0.6,
+        "legendary": 0.2
+      },
+      "minWeights": {
+        "common": 20,
+        "uncommon": 15,
+        "rare": 8,
+        "epic": 3,
+        "legendary": 1
+      }
+    },
+    "colors": {
+      "common": "#b0b0b0",
+      "uncommon": "#4caf50",
+      "rare": "#2196f3",
+      "epic": "#9c27b0",
+      "legendary": "#ffb300"
+    }
+  },
+  "statUpgrade": {
+    "common": { "percent": 0.05 },
+    "uncommon": { "percent": 0.10 },
+    "rare": { "percent": 0.15 },
+    "epic": { "percent": 0.20, "extra": "minor_regen" },
+    "legendary": { "percent": 0.25, "extra": "conditional_shield" }
+  },
+  "moveUpgrade": {
+    "common": { "damagePercent": 0.10 },
+    "uncommon": { "damagePercent": 0.20 },
+    "rare": { "damagePercent": 0.30, "extra": "area_increase" },
+    "epic": { "damagePercent": 0.40, "extra": "bonus_effect" },
+    "legendary": { "damagePercent": 0.50, "extra": "pattern_change" }
+  },
+  "maxLevels": {
+    "move": 5,
+    "item": 5,
+    "ability": 3,
+    "stat": 10
+  },
+  "statusEffects": {
+    "burn": { "duration": 4, "chance": 0.25, "stackLimit": 1, "damagePercentPerSec": 0.04, "cooldown": 1.0 },
+    "poison": { "duration": 6, "chance": 0.30, "stackLimit": 3, "damagePercentPerSec": 0.03, "cooldown": 1.0 },
+    "paralysis": { "duration": 3, "chance": 0.20, "stackLimit": 1, "moveSpeedMult": 0.5, "attackSpeedMult": 0.5, "stunChance": 0.15, "cooldown": 0 },
+    "freeze": { "duration": 0.6, "chance": 0.12, "stackLimit": 1, "moveSpeedMult": 0.0, "cooldown": 0 },
+    "slow": { "duration": 2.5, "chance": 0.35, "stackLimit": 2, "moveSpeedMult": 0.6, "cooldown": 0 },
+    "confusion": { "duration": 3, "chance": 0.20, "stackLimit": 1, "accuracyMult": 0.5, "cooldown": 0 },
+    "defenseDown": { "duration": 5, "chance": 0.30, "stackLimit": 3, "defenseMultPerStack": 0.85, "cooldown": 0 },
+    "attackDown": { "duration": 5, "chance": 0.30, "stackLimit": 3, "attackMultPerStack": 0.85, "cooldown": 0 },
+    "armorBreak": { "duration": 4, "chance": 0.25, "stackLimit": 1, "defenseMult": 0.6, "cooldown": 0 }
+  },
+  "bossStatusResistance": {
+    "normal": { "durationMult": 1.0, "damageMult": 1.0, "chanceMult": 1.0 },
+    "elite": { "durationMult": 0.75, "damageMult": 0.85, "chanceMult": 0.85 },
+    "miniboss": { "durationMult": 0.5, "damageMult": 0.7, "chanceMult": 0.6 },
+    "boss": { "durationMult": 0.25, "damageMult": 0.5, "chanceMult": 0.4 }
+  },
+  "enemyTier": {
+    "normal":   { "hpMult": 1.0, "attackMult": 1.0, "defenseMult": 1.0, "speedMult": 1.0, "expMult": 1.0 },
+    "elite":    { "hpMult": 4.0, "attackMult": 1.6, "defenseMult": 1.4, "speedMult": 1.1, "expMult": 4.0 },
+    "miniboss": { "hpMult": 14.0, "attackMult": 2.2, "defenseMult": 1.8, "speedMult": 1.0, "expMult": 12.0 },
+    "boss":     { "hpMult": 60.0, "attackMult": 3.0, "defenseMult": 2.2, "speedMult": 0.9, "expMult": 50.0 }
+  },
+  "expCurve": {
+    "base": 20,
+    "growth": 1.16,
+    "comment": "expToLevel(n) = round(base * growth^(n-1))"
+  },
+  "timePhases": [
+    { "id": "opening",   "startSec": 0,   "endSec": 180,  "label": "초반",       "spawnRateMult": 1.0, "enemyHpMult": 1.0, "enemyDmgMult": 1.0, "eliteChanceMult": 0.0, "rarityBoostMinutes": 0 },
+    { "id": "growth",    "startSec": 180, "endSec": 360,  "label": "성장",       "spawnRateMult": 1.3, "enemyHpMult": 1.15, "enemyDmgMult": 1.1, "eliteChanceMult": 0.4, "rarityBoostMinutes": 3 },
+    { "id": "elites",    "startSec": 360, "endSec": 540,  "label": "Elite 등장", "spawnRateMult": 1.6, "enemyHpMult": 1.35, "enemyDmgMult": 1.2, "eliteChanceMult": 1.0, "rarityBoostMinutes": 6 },
+    { "id": "density",   "startSec": 540, "endSec": 720,  "label": "고밀도 전투", "spawnRateMult": 2.1, "enemyHpMult": 1.6, "enemyDmgMult": 1.35, "eliteChanceMult": 1.3, "rarityBoostMinutes": 9 },
+    { "id": "miniboss",  "startSec": 720, "endSec": 840,  "label": "Mini Boss",  "spawnRateMult": 2.4, "enemyHpMult": 1.9, "enemyDmgMult": 1.5, "eliteChanceMult": 1.6, "rarityBoostMinutes": 12, "spawnMiniBossAt": 720 },
+    { "id": "finalboss", "startSec": 840, "endSec": 900,  "label": "Final Boss", "spawnRateMult": 2.6, "enemyHpMult": 2.1, "enemyDmgMult": 1.6, "eliteChanceMult": 1.8, "rarityBoostMinutes": 14, "spawnBossAt": 840 }
+  ],
+  "matchDurationSec": 900,
+  "spawnSystem": {
+    "baseSpawnIntervalMs": 900,
+    "minSpawnIntervalMs": 140,
+    "maxAliveEnemies": 220,
+    "eliteBaseChance": 0.03,
+    "spawnRadius": 700,
+    "despawnRadius": 1400
+  },
+  "player": {
+    "baseMoveSpeed": 160,
+    "pickupRadius": 60,
+    "invulnerabilityMs": 400
+  }
+}

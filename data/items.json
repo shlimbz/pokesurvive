@@ -1,0 +1,87 @@
+{
+  "silk_scarf":     { "id": "silk_scarf",     "name": "Silk Scarf",     "grade": "common",   "category": "type_damage", "moveType": "normal",   "effects": [{ "type": "type_damage", "value": 0.12 }], "maxLevel": 5 },
+  "charcoal":       { "id": "charcoal",       "name": "Charcoal",       "grade": "uncommon", "category": "type_damage", "moveType": "fire",     "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "mystic_water":   { "id": "mystic_water",   "name": "Mystic Water",   "grade": "uncommon", "category": "type_damage", "moveType": "water",    "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "magnet":         { "id": "magnet",         "name": "Magnet",         "grade": "uncommon", "category": "type_damage", "moveType": "electric", "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "miracle_seed":   { "id": "miracle_seed",   "name": "Miracle Seed",   "grade": "uncommon", "category": "type_damage", "moveType": "grass",    "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "never_melt_ice": { "id": "never_melt_ice", "name": "Never-Melt Ice", "grade": "uncommon", "category": "type_damage", "moveType": "ice",      "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "black_belt":     { "id": "black_belt",     "name": "Black Belt",     "grade": "uncommon", "category": "type_damage", "moveType": "fighting", "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "poison_barb":    { "id": "poison_barb",    "name": "Poison Barb",    "grade": "uncommon", "category": "type_damage", "moveType": "poison",   "effects": [{ "type": "type_damage", "value": 0.12 }, { "type": "status_chance", "status": "poison", "value": 0.1 }], "maxLevel": 5 },
+  "soft_sand":      { "id": "soft_sand",      "name": "Soft Sand",      "grade": "uncommon", "category": "type_damage", "moveType": "ground",   "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "sharp_beak":     { "id": "sharp_beak",     "name": "Sharp Beak",     "grade": "uncommon", "category": "type_damage", "moveType": "flying",   "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "twisted_spoon":  { "id": "twisted_spoon",  "name": "Twisted Spoon",  "grade": "uncommon", "category": "type_damage", "moveType": "psychic",  "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "silver_powder":  { "id": "silver_powder",  "name": "Silver Powder",  "grade": "uncommon", "category": "type_damage", "moveType": "bug",      "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "hard_stone":     { "id": "hard_stone",     "name": "Hard Stone",     "grade": "uncommon", "category": "type_damage", "moveType": "rock",     "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "spell_tag":      { "id": "spell_tag",      "name": "Spell Tag",     "grade": "uncommon", "category": "type_damage", "moveType": "ghost",    "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "dragon_fang":    { "id": "dragon_fang",    "name": "Dragon Fang",   "grade": "rare",     "category": "type_damage", "moveType": "dragon",   "effects": [{ "type": "type_damage", "value": 0.18 }], "maxLevel": 5 },
+  "black_glasses":  { "id": "black_glasses",  "name": "Black Glasses", "grade": "uncommon", "category": "type_damage", "moveType": "dark",     "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "metal_coat":     { "id": "metal_coat",     "name": "Metal Coat",    "grade": "uncommon", "category": "type_damage", "moveType": "steel",    "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+  "pixie_plate":    { "id": "pixie_plate",    "name": "Pixie Plate",   "grade": "uncommon", "category": "type_damage", "moveType": "fairy",    "effects": [{ "type": "type_damage", "value": 0.15 }], "maxLevel": 5 },
+
+  "leftovers": {
+    "id": "leftovers", "name": "Leftovers", "grade": "rare", "category": "sustain",
+    "description": "매초 최대 HP의 일정 비율만큼 회복한다.",
+    "effects": [{ "type": "hp_regen_percent", "value": 0.015 }],
+    "maxLevel": 5
+  },
+  "shell_bell": {
+    "id": "shell_bell", "name": "Shell Bell", "grade": "rare", "category": "sustain",
+    "description": "가한 피해량의 일정 비율만큼 HP를 회복한다.",
+    "effects": [{ "type": "lifesteal_percent", "value": 0.06 }],
+    "maxLevel": 5
+  },
+  "life_orb": {
+    "id": "life_orb", "name": "Life Orb", "grade": "epic", "category": "offense",
+    "description": "모든 피해가 크게 증가하지만 공격할 때마다 소량의 HP를 잃는다.",
+    "effects": [{ "type": "global_damage", "value": 0.3 }, { "type": "self_damage_on_attack_percent", "value": 0.02 }],
+    "maxLevel": 5
+  },
+  "focus_sash": {
+    "id": "focus_sash", "name": "Focus Sash", "grade": "epic", "category": "defense",
+    "description": "치명적인 피해를 HP 1로 버틴다. 게임당 1회, 재충전 쿨다운 있음.",
+    "effects": [{ "type": "survive_lethal_hit", "usesPerRun": 1, "rechargeSec": 60 }],
+    "maxLevel": 3
+  },
+  "choice_scarf": {
+    "id": "choice_scarf", "name": "Choice Scarf", "grade": "rare", "category": "speed",
+    "description": "이동 속도와 공격 속도가 증가한다.",
+    "effects": [{ "type": "move_speed_percent", "value": 0.15 }, { "type": "cooldown_reduction_percent", "value": 0.12 }],
+    "maxLevel": 5
+  },
+  "kings_rock": {
+    "id": "kings_rock", "name": "King's Rock", "grade": "rare", "category": "control",
+    "description": "공격 적중 시 일정 확률로 적을 경직시킨다.",
+    "effects": [{ "type": "on_hit_stun_chance", "value": 0.10, "durationSec": 0.3 }],
+    "maxLevel": 5
+  },
+  "wide_lens": {
+    "id": "wide_lens", "name": "Wide Lens", "grade": "uncommon", "category": "utility",
+    "description": "기술의 사거리와 범위가 증가한다.",
+    "effects": [{ "type": "range_percent", "value": 0.15 }],
+    "maxLevel": 5
+  },
+  "quick_claw": {
+    "id": "quick_claw", "name": "Quick Claw", "grade": "rare", "category": "speed",
+    "description": "일정 확률로 공격 쿨다운을 즉시 초기화한다.",
+    "effects": [{ "type": "on_attack_cooldown_reset_chance", "value": 0.08 }],
+    "maxLevel": 5
+  },
+  "scope_lens": {
+    "id": "scope_lens", "name": "Scope Lens", "grade": "rare", "category": "crit",
+    "description": "치명타 확률이 증가한다.",
+    "effects": [{ "type": "crit_chance", "value": 0.10 }],
+    "maxLevel": 5
+  },
+  "razor_claw": {
+    "id": "razor_claw", "name": "Razor Claw", "grade": "epic", "category": "crit",
+    "description": "치명타 피해가 크게 증가한다.",
+    "effects": [{ "type": "crit_damage", "value": 0.5 }],
+    "maxLevel": 5
+  },
+  "type_penetration_charm": {
+    "id": "type_penetration_charm", "name": "Type Penetration Charm", "grade": "epic", "category": "utility",
+    "description": "불리한 타입 상성 저항의 일부를 무시한다.",
+    "effects": [{ "type": "type_penetration", "value": 0.15 }],
+    "maxLevel": 3
+  }
+}

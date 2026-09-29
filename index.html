@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Pokémon × Survivors</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <!-- Local Phaser build - no CDN, fully offline (see vendor/phaser.min.js) -->
+  <script src="vendor/phaser.min.js"></script>
+
+  <!-- Utils -->
+  <script src="src/utils/MathUtils.js"></script>
+  <script src="src/utils/RandomUtils.js"></script>
+  <script src="src/utils/ObjectPool.js"></script>
+
+  <!-- Managers -->
+  <script src="src/managers/AssetManager.js"></script>
+  <script src="src/managers/PokemonManager.js"></script>
+  <script src="src/managers/MoveManager.js"></script>
+  <script src="src/managers/ItemManager.js"></script>
+  <script src="src/managers/AbilityManager.js"></script>
+  <script src="src/managers/EnemyManager.js"></script>
+
+  <!-- Systems -->
+  <script src="src/systems/TypeEffectivenessSystem.js"></script>
+  <script src="src/systems/StatusEffectSystem.js"></script>
+  <script src="src/systems/ItemSystem.js"></script>
+  <script src="src/systems/AbilitySystem.js"></script>
+  <script src="src/systems/BuildSystem.js"></script>
+  <script src="src/systems/CombatSystem.js"></script>
+  <script src="src/systems/VFXSystem.js"></script>
+  <script src="src/systems/LevelSystem.js"></script>
+  <script src="src/systems/EvolutionSystem.js"></script>
+  <script src="src/systems/WaveSystem.js"></script>
+  <script src="src/systems/SpawnSystem.js"></script>
+  <script src="src/systems/SaveSystem.js"></script>
+  <script src="src/systems/AudioSystem.js"></script>
+
+  <!-- Entities -->
+  <script src="src/entities/DamageNumber.js"></script>
+  <script src="src/entities/ExpGem.js"></script>
+  <script src="src/entities/Projectile.js"></script>
+  <script src="src/entities/Enemy.js"></script>
+  <script src="src/entities/Boss.js"></script>
+  <script src="src/entities/Player.js"></script>
+
+  <!-- Scenes -->
+  <script src="src/scenes/BootScene.js"></script>
+  <script src="src/scenes/PreloadScene.js"></script>
+  <script src="src/scenes/MenuScene.js"></script>
+  <script src="src/scenes/PokemonSelectScene.js"></script>
+  <script src="src/scenes/MapSelectScene.js"></script>
+  <script src="src/scenes/GameScene.js"></script>
+  <script src="src/scenes/LevelUpScene.js"></script>
+  <script src="src/scenes/EvolutionScene.js"></script>
+  <script src="src/scenes/GameOverScene.js"></script>
+
+  <script src="src/main.js"></script>
+</body>
+</html>
