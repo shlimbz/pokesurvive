@@ -1,7 +1,7 @@
 {
   "rattata": {
     "id": "rattata",
-    "name": "Rattata",
+    "name": "꼬렛",
     "types": [
       "normal"
     ],
@@ -15,11 +15,13 @@
     },
     "expValue": 3,
     "color": "0xC8B090",
-    "scale": 0.8
+    "scale": 0.8,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "oddish": {
     "id": "oddish",
-    "name": "Oddish",
+    "name": "뚜벅쵸",
     "types": [
       "grass",
       "poison"
@@ -34,11 +36,13 @@
     },
     "expValue": 3,
     "color": "0x5FB050",
-    "scale": 0.9
+    "scale": 0.9,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "weedle": {
     "id": "weedle",
-    "name": "Weedle",
+    "name": "뿔충이",
     "types": [
       "bug",
       "poison"
@@ -53,11 +57,13 @@
     },
     "expValue": 3,
     "color": "0xC9C93C",
-    "scale": 0.8
+    "scale": 0.8,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "bellsprout": {
     "id": "bellsprout",
-    "name": "Bellsprout",
+    "name": "모다피",
     "types": [
       "grass",
       "poison"
@@ -72,11 +78,13 @@
     },
     "expValue": 3,
     "color": "0x7ACB3E",
-    "scale": 0.9
+    "scale": 0.9,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "poliwag": {
     "id": "poliwag",
-    "name": "Poliwag",
+    "name": "발챙이",
     "types": [
       "water"
     ],
@@ -90,11 +98,13 @@
     },
     "expValue": 3,
     "color": "0x4FB5E0",
-    "scale": 0.85
+    "scale": 0.85,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "psyduck": {
     "id": "psyduck",
-    "name": "Psyduck",
+    "name": "고라파덕",
     "types": [
       "water"
     ],
@@ -108,11 +118,13 @@
     },
     "expValue": 3,
     "color": "0xF2D98A",
-    "scale": 0.9
+    "scale": 0.9,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "tentacool": {
     "id": "tentacool",
-    "name": "Tentacool",
+    "name": "왕눈이",
     "types": [
       "water",
       "poison"
@@ -127,11 +139,13 @@
     },
     "expValue": 3,
     "color": "0x4A9FCB",
-    "scale": 0.85
+    "scale": 0.85,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "staryu": {
     "id": "staryu",
-    "name": "Staryu",
+    "name": "아쿠스타",
     "types": [
       "water"
     ],
@@ -145,11 +159,13 @@
     },
     "expValue": 3,
     "color": "0xE0A0A8",
-    "scale": 0.8
+    "scale": 0.8,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "growlithe": {
     "id": "growlithe",
-    "name": "Growlithe",
+    "name": "가디",
     "types": [
       "fire"
     ],
@@ -163,11 +179,13 @@
     },
     "expValue": 3,
     "color": "0xE07A3E",
-    "scale": 0.9
+    "scale": 0.9,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "ponyta": {
     "id": "ponyta",
-    "name": "Ponyta",
+    "name": "포니타",
     "types": [
       "fire"
     ],
@@ -181,11 +199,13 @@
     },
     "expValue": 3,
     "color": "0xF0A030",
-    "scale": 0.9
+    "scale": 0.9,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "numel": {
     "id": "numel",
-    "name": "Numel",
+    "name": "둔타",
     "types": [
       "fire",
       "ground"
@@ -200,11 +220,13 @@
     },
     "expValue": 3,
     "color": "0xC08050",
-    "scale": 0.95
+    "scale": 0.95,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "slugma": {
     "id": "slugma",
-    "name": "Slugma",
+    "name": "마그마그",
     "types": [
       "fire"
     ],
@@ -218,11 +240,13 @@
     },
     "expValue": 3,
     "color": "0xE85A2A",
-    "scale": 0.9
+    "scale": 0.9,
+    "evolutionStage": 0,
+    "generation": 1
   },
   "beedrill": {
     "id": "beedrill",
-    "name": "Beedrill",
+    "name": "독침붕",
     "types": [
       "bug",
       "poison"
@@ -239,11 +263,13 @@
     "color": "0xE8C020",
     "scale": 1.3,
     "moveId": "poison_sting",
-    "moveCooldownMs": 1600
+    "moveCooldownMs": 1600,
+    "evolutionStage": 2,
+    "generation": 1
   },
   "golduck": {
     "id": "golduck",
-    "name": "Golduck",
+    "name": "골덕",
     "types": [
       "water"
     ],
@@ -259,11 +285,13 @@
     "color": "0x3E7FBF",
     "scale": 1.3,
     "moveId": "water_gun",
-    "moveCooldownMs": 1700
+    "moveCooldownMs": 1700,
+    "evolutionStage": 1,
+    "generation": 1
   },
   "rapidash": {
     "id": "rapidash",
-    "name": "Rapidash",
+    "name": "날쌩마",
     "types": [
       "fire"
     ],
@@ -279,11 +307,13 @@
     "color": "0xF08C1A",
     "scale": 1.3,
     "moveId": "ember",
-    "moveCooldownMs": 1500
+    "moveCooldownMs": 1500,
+    "evolutionStage": 1,
+    "generation": 1
   },
   "scyther": {
     "id": "scyther",
-    "name": "Scyther",
+    "name": "스라크",
     "types": [
       "bug",
       "flying"
@@ -300,11 +330,21 @@
     "color": "0x3FA040",
     "scale": 1.8,
     "moveId": "x_scissor",
-    "moveCooldownMs": 2000
+    "moveCooldownMs": 2000,
+    "evolutionStage": 1,
+    "generation": 1,
+    "movePool": [
+      {
+        "id": "x_scissor"
+      },
+      {
+        "id": "wing_attack"
+      }
+    ]
   },
   "poliwrath": {
     "id": "poliwrath",
-    "name": "Poliwrath",
+    "name": "강챙이",
     "types": [
       "water",
       "fighting"
@@ -321,11 +361,21 @@
     "color": "0x2E6EA8",
     "scale": 1.8,
     "moveId": "focus_punch",
-    "moveCooldownMs": 2400
+    "moveCooldownMs": 2400,
+    "evolutionStage": 2,
+    "generation": 1,
+    "movePool": [
+      {
+        "id": "focus_punch"
+      },
+      {
+        "id": "water_gun"
+      }
+    ]
   },
   "ninetales": {
     "id": "ninetales",
-    "name": "Ninetales",
+    "name": "나인테일",
     "types": [
       "fire"
     ],
@@ -341,11 +391,21 @@
     "color": "0xE8CC7A",
     "scale": 1.7,
     "moveId": "fire_spin",
-    "moveCooldownMs": 1800
+    "moveCooldownMs": 1800,
+    "evolutionStage": 1,
+    "generation": 1,
+    "movePool": [
+      {
+        "id": "fire_spin"
+      },
+      {
+        "id": "ember"
+      }
+    ]
   },
   "vileplume": {
     "id": "vileplume",
-    "name": "Vileplume",
+    "name": "라플레시아",
     "types": [
       "grass",
       "poison"
@@ -373,11 +433,13 @@
       {
         "id": "toxic_spikes"
       }
-    ]
+    ],
+    "evolutionStage": 2,
+    "generation": 1
   },
   "gyarados": {
     "id": "gyarados",
-    "name": "Gyarados",
+    "name": "갸라도스",
     "types": [
       "water",
       "flying"
@@ -405,11 +467,13 @@
       {
         "id": "aqua_jet"
       }
-    ]
+    ],
+    "evolutionStage": 1,
+    "generation": 1
   },
   "magmar": {
     "id": "magmar",
-    "name": "Magmar",
+    "name": "마그마",
     "types": [
       "fire"
     ],
@@ -436,11 +500,13 @@
       {
         "id": "flame_burst"
       }
-    ]
+    ],
+    "evolutionStage": 1,
+    "generation": 1
   },
   "cleffa": {
     "id": "cleffa",
-    "name": "Cleffa",
+    "name": "삐",
     "types": [
       "fairy"
     ],
@@ -454,6 +520,284 @@
     },
     "expValue": 4,
     "color": "0xFFD1F2",
+    "scale": 0.85,
+    "evolutionStage": 0,
+    "generation": 1
+  },
+  "moltres": {
+    "id": "moltres",
+    "name": "파이어",
+    "types": [
+      "fire",
+      "flying"
+    ],
+    "tier": "elite",
+    "rarity": "legendary",
+    "map": "volcano",
+    "evolutionStage": 2,
+    "generation": 1,
+    "baseStats": {
+      "hp": 45,
+      "attack": 25,
+      "defense": 18,
+      "speed": 95
+    },
+    "expValue": 120,
+    "color": "0xFF7A1A",
+    "scale": 1.7,
+    "moveId": "fire_blast",
+    "moveCooldownMs": 1800,
+    "spawnProfile": {
+      "opening": 0,
+      "growth": 0,
+      "elites": 0,
+      "density": 0.5,
+      "miniboss": 1.0,
+      "finalboss": 1.5
+    }
+  },
+  "articuno": {
+    "id": "articuno",
+    "name": "프리져",
+    "types": [
+      "ice",
+      "flying"
+    ],
+    "tier": "elite",
+    "rarity": "subLegendary",
+    "map": "beach",
+    "evolutionStage": 2,
+    "generation": 1,
+    "baseStats": {
+      "hp": 42,
+      "attack": 20,
+      "defense": 22,
+      "speed": 85
+    },
+    "expValue": 100,
+    "color": "0x7ADCFF",
+    "scale": 1.7,
+    "moveId": "powder_snow",
+    "moveCooldownMs": 1500,
+    "spawnProfile": {
+      "opening": 0,
+      "growth": 0,
+      "elites": 0,
+      "density": 0.5,
+      "miniboss": 1.0,
+      "finalboss": 1.5
+    }
+  },
+  "geodude": {
+    "id": "geodude",
+    "name": "꼬마돌",
+    "types": [
+      "rock",
+      "ground"
+    ],
+    "tier": "normal",
+    "map": "cave",
+    "evolutionStage": 0,
+    "generation": 1,
+    "baseStats": {
+      "hp": 22,
+      "attack": 9,
+      "defense": 14,
+      "speed": 50
+    },
+    "expValue": 4,
+    "color": "0x8A7A5C",
     "scale": 0.85
+  },
+  "zubat": {
+    "id": "zubat",
+    "name": "주뱃",
+    "types": [
+      "poison",
+      "flying"
+    ],
+    "tier": "normal",
+    "map": "cave",
+    "evolutionStage": 0,
+    "generation": 1,
+    "baseStats": {
+      "hp": 14,
+      "attack": 6,
+      "defense": 4,
+      "speed": 140
+    },
+    "expValue": 4,
+    "color": "0x6A4C8A",
+    "scale": 0.85
+  },
+  "onix": {
+    "id": "onix",
+    "name": "롱스톤",
+    "types": [
+      "rock",
+      "ground"
+    ],
+    "tier": "boss",
+    "map": "cave",
+    "evolutionStage": 2,
+    "generation": 1,
+    "baseStats": {
+      "hp": 34,
+      "attack": 15,
+      "defense": 20,
+      "speed": 45
+    },
+    "expValue": 130,
+    "color": "0xA0A0B0",
+    "scale": 2.4,
+    "movePool": [
+      {
+        "id": "rock_throw"
+      },
+      {
+        "id": "mud_slap"
+      }
+    ]
+  },
+  "sandshrew": {
+    "id": "sandshrew",
+    "name": "모래두지",
+    "types": [
+      "ground"
+    ],
+    "tier": "normal",
+    "map": "desert",
+    "evolutionStage": 0,
+    "generation": 1,
+    "baseStats": {
+      "hp": 18,
+      "attack": 8,
+      "defense": 10,
+      "speed": 90
+    },
+    "expValue": 4,
+    "color": "0xD8C078",
+    "scale": 0.85
+  },
+  "cubone": {
+    "id": "cubone",
+    "name": "탕구리",
+    "types": [
+      "ground"
+    ],
+    "tier": "normal",
+    "map": "desert",
+    "evolutionStage": 0,
+    "generation": 1,
+    "baseStats": {
+      "hp": 16,
+      "attack": 10,
+      "defense": 12,
+      "speed": 60
+    },
+    "expValue": 4,
+    "color": "0xC8A868",
+    "scale": 0.85
+  },
+  "sandslash": {
+    "id": "sandslash",
+    "name": "고지모래두지",
+    "types": [
+      "ground"
+    ],
+    "tier": "boss",
+    "map": "desert",
+    "evolutionStage": 1,
+    "generation": 1,
+    "baseStats": {
+      "hp": 30,
+      "attack": 17,
+      "defense": 22,
+      "speed": 95
+    },
+    "expValue": 130,
+    "color": "0xC09850",
+    "scale": 2.2,
+    "movePool": [
+      {
+        "id": "mud_slap"
+      },
+      {
+        "id": "rock_throw"
+      }
+    ]
+  },
+  "gastly": {
+    "id": "gastly",
+    "name": "고오스",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "tier": "normal",
+    "map": "ruins",
+    "evolutionStage": 0,
+    "generation": 1,
+    "baseStats": {
+      "hp": 14,
+      "attack": 6,
+      "defense": 3,
+      "speed": 100
+    },
+    "expValue": 4,
+    "color": "0x6050A0",
+    "scale": 0.85
+  },
+  "koffing": {
+    "id": "koffing",
+    "name": "또가스",
+    "types": [
+      "poison"
+    ],
+    "tier": "normal",
+    "map": "ruins",
+    "evolutionStage": 0,
+    "generation": 1,
+    "baseStats": {
+      "hp": 18,
+      "attack": 8,
+      "defense": 9,
+      "speed": 60
+    },
+    "expValue": 4,
+    "color": "0x8A6AAA",
+    "scale": 0.9
+  },
+  "haunter": {
+    "id": "haunter",
+    "name": "고우스트",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "tier": "boss",
+    "map": "ruins",
+    "evolutionStage": 1,
+    "generation": 1,
+    "baseStats": {
+      "hp": 30,
+      "attack": 15,
+      "defense": 8,
+      "speed": 130
+    },
+    "expValue": 130,
+    "color": "0x4A3A7A",
+    "scale": 2.0,
+    "movePool": [
+      {
+        "id": "shadow_ball"
+      },
+      {
+        "id": "sludge_bomb"
+      },
+      {
+        "id": "confuse_ray"
+      }
+    ]
   }
 }

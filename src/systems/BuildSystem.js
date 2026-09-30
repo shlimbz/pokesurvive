@@ -26,6 +26,10 @@ PS.BuildSystem = class BuildSystem {
 
     this.statPicks = { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
     this.statPercent = { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
+    // Bugfix: epic/legendary stat cards advertise an "extra" bonus (balance.json statUpgrade.*.extra,
+    // surfaced to the player by LevelSystem.describeChoice) that was never actually applied -
+    // counted here and turned into real modifiers in refreshModifiers() below.
+    this.statExtraCounts = { minor_regen: 0, conditional_shield: 0 };
 
     this.typeDamageDealt = {};
     this.typeMasteryXp = {};
@@ -75,6 +79,7 @@ PS.BuildSystem = class BuildSystem {
     if (this.statPicks[statKey] >= this.balance.maxLevels.stat) return;
     this.statPicks[statKey]++;
     this.statPercent[statKey] += cfg.percent;
+    if (cfg.extra && this.statExtraCounts[cfg.extra] !== undefined) this.statExtraCounts[cfg.extra]++;
     this.refreshModifiers();
   }
 
@@ -96,10 +101,16 @@ PS.BuildSystem = class BuildSystem {
     for (const moveId of this.species.moves) {
       if (!this.moves[moveId]) this.moves[moveId] = 1;
     }
-    // Evolved ability replaces the base ability but keeps its accumulated level.
-    const oldAbilityIds = Object.keys(this.abilities);
+    // Evolved ability replaces the base ability but keeps its accumulated level. Every
+    // existing evolution line keeps the same ability id end-to-end (e.g. Blaze all the way
+    // through Charmander -> Charizard), so this rarely actually swaps anything; the Ralts line
+    // is the first to change the equipped ability on evolution (Levitate -> Magic Guard on
+    // Gardevoir), so the old ability id must actually be removed, not just left in place
+    // alongside the new one.
     if (!this.abilities[this.species.ability]) {
+      const oldAbilityIds = Object.keys(this.abilities);
       const carryLevel = oldAbilityIds.length ? this.abilities[oldAbilityIds[0]] : 1;
+      for (const oldId of oldAbilityIds) delete this.abilities[oldId];
       this.abilities[this.species.ability] = carryLevel;
     }
     this.refreshModifiers();
@@ -189,6 +200,13 @@ PS.BuildSystem = class BuildSystem {
     PS.AbilitySystem.accumulate(this, this.managers.ability, mods);
     PS.RelicSystem.accumulate(this, this.managers.relic, mods);
     PS.TypeMasterySystem.accumulate(this, this.managers.typeMastery, mods);
+
+    // Epic/legendary stat-card "extra" bonuses (see statExtraCounts above). minor_regen stacks
+    // with any item/relic hpRegenPercent already accumulated; conditionalShieldCharges is read
+    // by Player.refreshFromBuild() the same way survivalCharges is (grant-the-difference, so
+    // already-consumed charges from earlier this run aren't refunded).
+    mods.hpRegenPercent += this.statExtraCounts.minor_regen * (this.balance.statExtras?.minorRegenPercentPerPick ?? 0.004);
+    mods.conditionalShieldCharges = this.statExtraCounts.conditional_shield;
 
     this.modifiers = mods;
   }

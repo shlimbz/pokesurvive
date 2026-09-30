@@ -205,5 +205,100 @@
       "from": "quick_attack",
       "to": "thunder"
     }
+  },
+  {
+    "from": "ralts",
+    "to": "kirlia",
+    "conditions": {
+      "requiredLevel": 5
+    }
+  },
+  {
+    "from": "kirlia",
+    "to": "gardevoir",
+    "conditions": {
+      "requiredLevel": 10,
+      "requiredMove": "psybeam",
+      "requiredMoveLevel": 3
+    },
+    "movePatternSwap": {
+      "from": "psybeam",
+      "to": "moonblast"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "espeon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "psychic",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "tackle",
+      "to": "psybeam"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "umbreon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "dark",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "tackle",
+      "to": "crunch"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "sylveon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "fairy",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "tackle",
+      "to": "moonblast"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "leafeon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "grass",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "tackle",
+      "to": "razor_leaf"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "glaceon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "ice",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "tackle",
+      "to": "powder_snow"
+    }
   }
 ]

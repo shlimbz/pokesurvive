@@ -1,7 +1,7 @@
 {
   "silk_scarf": {
     "id": "silk_scarf",
-    "name": "Silk Scarf",
+    "name": "실크스카프",
     "grade": "common",
     "category": "type_damage",
     "moveType": "normal",
@@ -16,7 +16,7 @@
   },
   "charcoal": {
     "id": "charcoal",
-    "name": "Charcoal",
+    "name": "목탄",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "fire",
@@ -31,7 +31,7 @@
   },
   "mystic_water": {
     "id": "mystic_water",
-    "name": "Mystic Water",
+    "name": "이상한물",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "water",
@@ -46,7 +46,7 @@
   },
   "magnet": {
     "id": "magnet",
-    "name": "Magnet",
+    "name": "자석",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "electric",
@@ -61,7 +61,7 @@
   },
   "miracle_seed": {
     "id": "miracle_seed",
-    "name": "Miracle Seed",
+    "name": "기적의씨",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "grass",
@@ -76,7 +76,7 @@
   },
   "never_melt_ice": {
     "id": "never_melt_ice",
-    "name": "Never-Melt Ice",
+    "name": "안녹는얼음",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "ice",
@@ -91,7 +91,7 @@
   },
   "black_belt": {
     "id": "black_belt",
-    "name": "Black Belt",
+    "name": "검은띠",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "fighting",
@@ -106,7 +106,7 @@
   },
   "poison_barb": {
     "id": "poison_barb",
-    "name": "Poison Barb",
+    "name": "맹독니",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "poison",
@@ -126,7 +126,7 @@
   },
   "soft_sand": {
     "id": "soft_sand",
-    "name": "Soft Sand",
+    "name": "부드러운모래",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "ground",
@@ -141,7 +141,7 @@
   },
   "sharp_beak": {
     "id": "sharp_beak",
-    "name": "Sharp Beak",
+    "name": "날카로운부리",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "flying",
@@ -156,7 +156,7 @@
   },
   "twisted_spoon": {
     "id": "twisted_spoon",
-    "name": "Twisted Spoon",
+    "name": "구부정한스푼",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "psychic",
@@ -171,7 +171,7 @@
   },
   "silver_powder": {
     "id": "silver_powder",
-    "name": "Silver Powder",
+    "name": "은가루",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "bug",
@@ -186,7 +186,7 @@
   },
   "hard_stone": {
     "id": "hard_stone",
-    "name": "Hard Stone",
+    "name": "단단한돌",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "rock",
@@ -201,7 +201,7 @@
   },
   "spell_tag": {
     "id": "spell_tag",
-    "name": "Spell Tag",
+    "name": "저주의부적",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "ghost",
@@ -216,7 +216,7 @@
   },
   "dragon_fang": {
     "id": "dragon_fang",
-    "name": "Dragon Fang",
+    "name": "용의이빨",
     "grade": "rare",
     "category": "type_damage",
     "moveType": "dragon",
@@ -231,7 +231,7 @@
   },
   "black_glasses": {
     "id": "black_glasses",
-    "name": "Black Glasses",
+    "name": "검은안경",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "dark",
@@ -246,7 +246,7 @@
   },
   "metal_coat": {
     "id": "metal_coat",
-    "name": "Metal Coat",
+    "name": "금속코트",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "steel",
@@ -261,7 +261,7 @@
   },
   "pixie_plate": {
     "id": "pixie_plate",
-    "name": "Pixie Plate",
+    "name": "페어리플레이트",
     "grade": "uncommon",
     "category": "type_damage",
     "moveType": "fairy",
@@ -276,7 +276,7 @@
   },
   "leftovers": {
     "id": "leftovers",
-    "name": "Leftovers",
+    "name": "먹다남은음식",
     "grade": "rare",
     "category": "sustain",
     "description": "매초 최대 HP의 일정 비율만큼 회복한다.",
@@ -290,7 +290,7 @@
   },
   "shell_bell": {
     "id": "shell_bell",
-    "name": "Shell Bell",
+    "name": "자그마한종",
     "grade": "rare",
     "category": "sustain",
     "description": "가한 피해량의 일정 비율만큼 HP를 회복한다.",
@@ -304,7 +304,7 @@
   },
   "life_orb": {
     "id": "life_orb",
-    "name": "Life Orb",
+    "name": "생명의구슬",
     "grade": "epic",
     "category": "offense",
     "description": "모든 피해가 크게 증가하지만 공격할 때마다 소량의 HP를 잃는다.",
@@ -322,7 +322,7 @@
   },
   "focus_sash": {
     "id": "focus_sash",
-    "name": "Focus Sash",
+    "name": "기합의띠",
     "grade": "epic",
     "category": "defense",
     "description": "치명적인 피해를 HP 1로 버틴다. 게임당 1회, 재충전 쿨다운 있음.",
@@ -337,7 +337,7 @@
   },
   "choice_scarf": {
     "id": "choice_scarf",
-    "name": "Choice Scarf",
+    "name": "선택의스카프",
     "grade": "rare",
     "category": "speed",
     "description": "이동 속도와 공격 속도가 증가한다.",
@@ -355,7 +355,7 @@
   },
   "kings_rock": {
     "id": "kings_rock",
-    "name": "King's Rock",
+    "name": "왕의징표",
     "grade": "rare",
     "category": "control",
     "description": "공격 적중 시 일정 확률로 적을 경직시킨다.",
@@ -370,7 +370,7 @@
   },
   "wide_lens": {
     "id": "wide_lens",
-    "name": "Wide Lens",
+    "name": "넓은렌즈",
     "grade": "uncommon",
     "category": "utility",
     "description": "기술의 사거리와 범위가 증가한다.",
@@ -384,7 +384,7 @@
   },
   "quick_claw": {
     "id": "quick_claw",
-    "name": "Quick Claw",
+    "name": "재빠른발톱",
     "grade": "rare",
     "category": "speed",
     "description": "일정 확률로 공격 쿨다운을 즉시 초기화한다.",
@@ -398,7 +398,7 @@
   },
   "scope_lens": {
     "id": "scope_lens",
-    "name": "Scope Lens",
+    "name": "스코프렌즈",
     "grade": "rare",
     "category": "crit",
     "description": "치명타 확률이 증가한다.",
@@ -412,7 +412,7 @@
   },
   "razor_claw": {
     "id": "razor_claw",
-    "name": "Razor Claw",
+    "name": "예리한손톱",
     "grade": "epic",
     "category": "crit",
     "description": "치명타 피해가 크게 증가한다.",
@@ -426,7 +426,7 @@
   },
   "type_penetration_charm": {
     "id": "type_penetration_charm",
-    "name": "Type Penetration Charm",
+    "name": "타입관통의부적",
     "grade": "epic",
     "category": "utility",
     "description": "불리한 타입 상성 저항의 일부를 무시한다.",
@@ -440,7 +440,7 @@
   },
   "orb_lens": {
     "id": "orb_lens",
-    "name": "Orb Lens",
+    "name": "오브렌즈",
     "grade": "rare",
     "category": "pattern_synergy",
     "effects": [
@@ -462,7 +462,7 @@
   },
   "poison_fang": {
     "id": "poison_fang",
-    "name": "Poison Fang",
+    "name": "맹독의이빨",
     "grade": "rare",
     "category": "status_synergy",
     "moveType": "poison",

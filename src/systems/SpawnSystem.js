@@ -40,7 +40,9 @@ PS.SpawnSystem = class SpawnSystem {
     const pos = this.randomPosAround(playerX, playerY);
     const eliteChance = this.cfg.eliteBaseChance * phase.eliteChanceMult;
     const isElite = PS.RandomUtils.chance(eliteChance);
-    const species = isElite ? this.enemyManager.pickElite(this.mapId) : this.enemyManager.pickNormal(this.mapId);
+    const species = isElite
+      ? this.enemyManager.pickElite(this.mapId, phase.id)
+      : this.enemyManager.pickNormal(this.mapId, phase.id);
     if (!species) return;
     const stats = this.enemyManager.computeSpawnStats(species);
     stats.maxHp = Math.round(stats.maxHp * phase.enemyHpMult);

@@ -41,12 +41,20 @@ const DEFAULT_ROSTER = [
   'charmander', 'charmeleon', 'charizard',
   'squirtle', 'wartortle', 'blastoise',
   'bulbasaur', 'ivysaur', 'venusaur',
-  'eevee', 'flareon', 'vaporeon', 'jolteon',
+  'eevee', 'flareon', 'vaporeon', 'jolteon', 'espeon', 'umbreon', 'leafeon', 'glaceon', 'sylveon',
   'gastly', 'haunter', 'gengar',
   'machop', 'machoke', 'machamp',
   'vulpix', 'ninetales',
   'piplup', 'prinplup', 'empoleon',
-  'riolu', 'lucario'
+  'riolu', 'lucario',
+  'clefairy',
+  'ralts', 'kirlia', 'gardevoir',
+  // Wild-encounter-only roster (data/enemies.json), not a playable starter line, but still
+  // worth having reference art/stats for when hand-tuning enemies.json entries.
+  'rattata', 'oddish', 'weedle', 'bellsprout', 'poliwag', 'psyduck', 'tentacool', 'staryu',
+  'growlithe', 'ponyta', 'numel', 'slugma', 'beedrill', 'golduck', 'rapidash', 'scyther',
+  'poliwrath', 'vileplume', 'gyarados', 'magmar', 'cleffa', 'moltres', 'articuno',
+  'geodude', 'zubat', 'onix', 'sandshrew', 'cubone', 'sandslash', 'koffing'
 ];
 
 function parseArgs(argv) {

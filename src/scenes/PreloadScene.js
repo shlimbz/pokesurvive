@@ -43,6 +43,7 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
     this.load.json('enemiesData', 'enemies.json');
     this.load.json('mapsData', 'maps.json');
     this.load.json('vfxData', 'vfx.json');
+    this.load.json('vfxEffectsData', 'vfx_effects.json');
     this.load.json('itemsData', 'items.json');
     this.load.json('relicsData', 'relics.json');
     this.load.json('typeMasteryData', 'type-mastery.json');
@@ -71,6 +72,7 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
       enemies: this.cache.json.get('enemiesData'),
       maps: this.cache.json.get('mapsData'),
       vfx: this.cache.json.get('vfxData'),
+      vfxEffects: this.cache.json.get('vfxEffectsData'),
       items: this.cache.json.get('itemsData'),
       relics: this.cache.json.get('relicsData'),
       typeMastery: this.cache.json.get('typeMasteryData'),

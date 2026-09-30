@@ -19,8 +19,13 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.evolutionSystem = PS.Game.evolutionSystem;
     this.moveEvolutionSystem = PS.Game.moveEvolutionSystem;
     this.assets = PS.Game.assets;
-    this.vfx = new PS.VFXSystem(this, data.vfx, this.assets);
-    this.audio = new PS.AudioSystem(this);
+    this.vfx = new PS.VFXSystem(this, data.vfx, this.assets, data.vfxEffects);
+    // Bugfix: GameScene.create() re-runs on every "다시 하기" (same Scene instance, Phaser never
+    // recreates it), so `new PS.AudioSystem(this)` here used to spin up a brand-new AudioContext
+    // per run with the old one never closed - most browsers cap concurrent live AudioContexts,
+    // so after enough replays in one tab, all sound effects would silently stop working. One
+    // AudioSystem (and its one AudioContext) now lives for the life of the page.
+    this.audio = PS.Game.audio || (PS.Game.audio = new PS.AudioSystem(this));
     this.waveSystem = new PS.WaveSystem(data.balance);
 
     this.mapId = PS.Game.selectedMapId || 'forest';
@@ -73,7 +78,14 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     );
     this.damageNumberPool = new PS.ObjectPool(
       () => new PS.DamageNumber(this),
-      (obj, x, y, value, options) => obj.fire(x, y, value, options),
+      // Bugfix: obj.onDone must be (re)bound on every obtain(), not just at construction -
+      // DamageNumber.fire()'s tween onComplete only calls onDone if it's set, so without this
+      // the pool's free list never refills and every damage number permanently leaks a Text
+      // object (obtain() always falls through to factory()).
+      (obj, x, y, value, options) => {
+        obj.onDone = (o) => this.damageNumberPool.release(o);
+        obj.fire(x, y, value, options);
+      },
       0
     );
 
@@ -118,11 +130,16 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     // aren't immediately eaten by it.
     this.mapHazardTimer = 3000;
 
-    this.events.on('resume', () => { this.isPaused = false; });
+    // Bugfix: scene.start('Game') re-runs create() on the SAME Scene instance (Phaser doesn't
+    // recreate it), and Scene shutdown only auto-clears input/tween listeners, not the scene's
+    // own `events` emitter - without this .off() first, every replay stacked one more 'resume'
+    // handler on top of the last (harmless individually since each just re-sets the same flag,
+    // but an unbounded per-run listener leak for the life of the page).
+    this.events.off('resume').on('resume', () => { this.isPaused = false; });
   }
 
   hex(v) {
-    return typeof v === 'string' ? parseInt(v.replace('0x', ''), 16) : v;
+    return typeof v === 'string' ? parseInt(v.replace('0x', '').replace('#', ''), 16) : v;
   }
 
   drawBackgroundGrid() {
@@ -135,27 +152,167 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   }
 
   // ================= HUD =================
+  // UI pass: every persistent HUD piece now sits inside one of a small number of rounded
+  // UITheme.panel() cards with consistent padding, instead of loose same-depth rectangles/text
+  // that used to overlap (the kill-count/species text and the mobile pause button used to sit
+  // almost exactly on top of each other in the top-right corner - see UITheme.js).
   buildHud() {
     const w = this.cameras.main.width;
-    this.hpBarBg = this.add.rectangle(20, 20, 220, 16, 0x220000, 0.8).setOrigin(0, 0).setScrollFactor(0).setDepth(50);
-    this.hpBarFg = this.add.rectangle(22, 22, 216, 12, 0xff4444, 1).setOrigin(0, 0).setScrollFactor(0).setDepth(51);
-    this.expBarBg = this.add.rectangle(20, 40, 220, 8, 0x002222, 0.8).setOrigin(0, 0).setScrollFactor(0).setDepth(50);
-    this.expBarFg = this.add.rectangle(22, 42, 216, 4, 0x62ffb0, 1).setOrigin(0, 0).setScrollFactor(0).setDepth(51);
+    const T = PS.UITheme;
 
-    this.levelText = this.add.text(20, 52, 'Lv.1', { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffffff' }).setScrollFactor(0).setDepth(51);
-    this.timerText = this.add.text(w / 2, 20, '15:00', { fontFamily: 'Arial Black', fontSize: '20px', color: '#ffffff' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(51);
-    this.killText = this.add.text(w - 20, 20, '처치: 0', { fontFamily: 'Arial', fontSize: '13px', color: '#cccccc' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
-    this.speciesText = this.add.text(w - 20, 40, this.build.species.name, { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffd400' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+    // ---- Top-left: HP + EXP + Level card ----
+    const tlW = 240, tlH = 64;
+    this.hudTopLeftPanel = T.panel(this, 16, 16, tlW, tlH, 0, 0, { scrollFactor: 0, depth: 49 });
+    this.hpMeter = T.meter(this, 16 + 14, 16 + 14, tlW - 28, 14, T.colors.accentHp, { scrollFactor: 0, depth: 50 });
+    this.expMeter = T.meter(this, 16 + 14, 16 + 36, tlW - 28, 8, T.colors.accentGood, { scrollFactor: 0, depth: 50 });
+    this.levelText = this.add.text(16 + 14, 16 + 48, 'Lv.1', {
+      fontFamily: 'Arial Black', fontSize: '12px', color: T.text.secondary
+    }).setScrollFactor(0).setDepth(51);
+
+    // ---- Top-center: run timer, as a small pill instead of bare text floating on the world ----
+    const timerPanel = T.panel(this, w / 2, 16, 100, 34, 0.5, 0, { scrollFactor: 0, depth: 49, radius: 17 });
+    this.timerText = this.add.text(w / 2, 16 + 17, '15:00', {
+      fontFamily: 'Arial Black', fontSize: '18px', color: T.text.primary
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(51);
+
+    // ---- Top-right: pause button gets its own clear spot, info card sits below it (was
+    // overlapping before - both anchored to nearly the same y). ----
+    this.mobilePauseBtn = this.add.text(w - 16, 16, '⏸', {
+      fontFamily: 'Arial', fontSize: '18px', color: T.text.primary,
+      backgroundColor: '#11161dcc', padding: { left: 10, right: 10, top: 6, bottom: 6 }
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(151).setInteractive({ useHandCursor: true });
+    this.mobilePauseBtn.on('pointerover', () => this.mobilePauseBtn.setBackgroundColor('#1c2530ee'));
+    this.mobilePauseBtn.on('pointerout', () => this.mobilePauseBtn.setBackgroundColor('#11161dcc'));
+    this.mobilePauseBtn.on('pointerdown', () => {
+      if (this.buildOverviewOpen) { this.hideBuildOverview(); return; }
+      if (this.isPaused || this.matchEnded) return;
+      this.togglePause();
+    });
+
+    const trW = 220, trH = 62, trY = 56;
+    T.panel(this, w - 16, trY, trW, trH, 1, 0, { scrollFactor: 0, depth: 49 });
+    this.killText = this.add.text(w - 16 - 14, trY + 10, '처치 0', {
+      fontFamily: 'Arial', fontSize: '12px', color: T.text.secondary
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+    this.speciesText = this.add.text(w - 16 - 14, trY + 28, this.build.species.name, {
+      fontFamily: 'Arial Black', fontSize: '13px', color: T.text.gold
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
     // Build Summary (spec section 54): a compact, always-visible readout of the build's current
     // "identity" (top mastered type(s) + level) - not the whole TAB overview, just the headline.
-    this.buildSummaryText = this.add.text(w - 20, 58, '', { fontFamily: 'Arial', fontSize: '11px', color: '#8fd3ff' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
-    this.muteText = this.add.text(20, this.cameras.main.height - 20, '🔊 M: 음소거', { fontFamily: 'Arial', fontSize: '11px', color: '#666666' }).setOrigin(0, 1).setScrollFactor(0).setDepth(51);
+    this.buildSummaryText = this.add.text(w - 16 - 14, trY + 46, '', {
+      fontFamily: 'Arial', fontSize: '11px', color: T.text.blue
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+
+    this.muteText = this.add.text(20, this.cameras.main.height - 20, '🔊 M: 음소거', {
+      fontFamily: 'Arial', fontSize: '11px', color: T.text.muted
+    }).setOrigin(0, 1).setScrollFactor(0).setDepth(51);
 
     // Prominent top-of-screen HP bar(s) for miniboss/boss fights (separate from the small
     // floating bar every enemy already has, which is easy to lose track of against a boss's
     // huge HP pool or when it scrolls off-camera). Keyed by enemy instance; supports the rare
     // case of a miniboss still alive when the final boss spawns (both bars stack).
     this.bossBars = new Map();
+
+    this.buildStatPanel();
+  }
+
+  // Spec section 7/30 (우측 상단 플레이어 스탯 표시): a compact, always-visible panel with the
+  // full stat readout (HP/공격/방어/특공/특방/스피드), current ability, current type(s) and the
+  // owned move list with level/damage/cooldown - not just the TAB build overview, which requires
+  // an extra keypress to see. Collapsible via a toggle button so it stays out of the way on a
+  // small (mobile) screen; expanded by default on a normal desktop view.
+  buildStatPanel() {
+    const w = this.cameras.main.width;
+    const T = PS.UITheme;
+    const rightX = w - 16 - 14; // inner-right text edge, matching the top-right card's padding
+    const panelRight = w - 16;
+    const panelW = 240;
+    const topY = 128; // clear of the top-right info card (ends at y=118)
+
+    this.statPanelExpanded = true;
+    this.statPanelLines = [];
+
+    this.statPanelToggle = this.add.text(panelRight, topY, '▼ 상세정보 접기', {
+      fontFamily: 'Arial Black', fontSize: '11px', color: T.text.blue,
+      backgroundColor: '#11161dcc', padding: { left: 8, right: 8, top: 4, bottom: 4 }
+    }).setOrigin(1, 0).setScrollFactor(0).setDepth(51).setInteractive({ useHandCursor: true });
+    this.statPanelToggle.on('pointerover', () => this.statPanelToggle.setColor('#ffffff'));
+    this.statPanelToggle.on('pointerout', () => this.statPanelToggle.setColor(T.text.blue));
+    this.statPanelToggle.on('pointerdown', () => {
+      this.statPanelExpanded = !this.statPanelExpanded;
+      this.statPanelToggle.setText(this.statPanelExpanded ? '▼ 상세정보 접기' : '▲ 상세정보 보기');
+      // updateStatPanel() (not a blanket setVisible here) so an empty move slot stays hidden
+      // even while expanded, instead of popping back in as an empty background box.
+      this.updateStatPanel();
+    });
+
+    // ONE shared card behind every line below, instead of each line carrying its own
+    // backgroundColor - that used to stack a ragged column of differently-sized bars (each
+    // auto-sized to its own text) rather than reading as a single panel.
+    const panelY = topY + 32;
+    const panelH = 220;
+    this.statPanelBg = T.panel(this, panelRight, panelY, panelW, panelH, 1, 0, { scrollFactor: 0, depth: 49 });
+
+    const innerTop = panelY + 12;
+    const mkLine = (y, size, color) => {
+      const t = this.add.text(rightX, y, '', {
+        fontFamily: 'Arial', fontSize: size || '11px', color: color || T.text.primary, align: 'right'
+      }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+      this.statPanelLines.push(t);
+      return t;
+    };
+
+    this.statTypeLine = mkLine(innerTop, '11px', T.text.blue);
+    this.statAbilityLine = mkLine(innerTop + 18, '11px', '#ffd98a');
+    this.statLine1 = mkLine(innerTop + 40, '11px', T.text.primary);
+    this.statLine2 = mkLine(innerTop + 58, '11px', T.text.primary);
+    this.statMovesHeaderLine = mkLine(innerTop + 80, '11px', T.text.good);
+    // Fixed pool of move-row slots (updated in place, not recreated every frame - a build rarely
+    // has more than a handful of moves at once, so 6 comfortably covers it).
+    this.statMoveLines = [];
+    for (let i = 0; i < 6; i++) {
+      this.statMoveLines.push(mkLine(innerTop + 98 + i * 16, '10px', '#cfeeff'));
+    }
+  }
+
+  updateStatPanel() {
+    for (const line of this.statPanelLines) line.setVisible(this.statPanelExpanded);
+    this.statPanelBg.setVisible(this.statPanelExpanded);
+    if (!this.statPanelExpanded) return;
+    const build = this.build;
+    const species = build.species;
+    const gs = build.gameStats;
+    const modMult = (statKey) => build.getStatMultiplier ? build.getStatMultiplier(statKey) : 1;
+
+    this.statTypeLine.setText(`타입: ${species.types.map(PS.typeNameKo).join(' / ')}`);
+
+    const abilityIds = Object.keys(build.abilities || {});
+    const abilityLabel = abilityIds.length
+      ? abilityIds.map(id => `${this.managers.ability.getAbility(id).name} Lv${build.getAbilityLevel(id)}`).join(', ')
+      : '(없음)';
+    this.statAbilityLine.setText(`특성: ${abilityLabel}`);
+
+    const hp = build.getMaxHp ? build.getMaxHp() : Math.round(gs.maxHp);
+    const atk = Math.round(gs.physicalPower * modMult('attack'));
+    const def = Math.round(gs.physicalReduction * modMult('defense'));
+    const spa = Math.round(gs.specialPower * modMult('spAttack'));
+    const spd = Math.round(gs.specialReduction * modMult('spDefense'));
+    const spe = Math.round(build.getMoveSpeed ? build.getMoveSpeed() : gs.moveSpeed);
+    this.statLine1.setText(`HP ${hp} · 공격 ${atk} · 방어 ${def}`);
+    this.statLine2.setText(`특공 ${spa} · 특방 ${spd} · 스피드 ${spe}`);
+
+    this.statMovesHeaderLine.setText('보유 기술 (레벨/피해/쿨다운)');
+    const ownedMoveIds = build.getOwnedMoveIds ? build.getOwnedMoveIds() : Object.keys(build.moves || {});
+    for (let i = 0; i < this.statMoveLines.length; i++) {
+      const line = this.statMoveLines[i];
+      const moveId = ownedMoveIds[i];
+      if (!moveId) { line.setText(''); line.setVisible(false); continue; }
+      const move = this.managers.move.getMove(moveId);
+      const level = build.getMoveLevel(moveId);
+      const dmg = Math.round((move.baseDamage || 0) * (1 + (level - 1) * 0.25));
+      line.setText(`${move.name} Lv${level} · 피해${dmg} · ${move.cooldownMs}ms`);
+      line.setVisible(true);
+    }
   }
 
   // ================= Boss/miniboss top-screen HP bar =================
@@ -207,14 +364,15 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   }
 
   updateHud() {
-    this.hpBarFg.width = 216 * this.player.getHpRatio();
+    PS.UITheme.setMeterFill(this.hpMeter, this.player.getHpRatio());
     const expNeeded = this.levelSystem.expForLevel(this.build.level);
-    this.expBarFg.width = 216 * PS.MathUtils.clamp(this.build.exp / expNeeded, 0, 1);
+    PS.UITheme.setMeterFill(this.expMeter, PS.MathUtils.clamp(this.build.exp / expNeeded, 0, 1));
     this.levelText.setText(`Lv.${this.build.level}`);
     this.timerText.setText(this.waveSystem.getTimeRemainingLabel(this.runTimeSec));
-    this.killText.setText(`처치: ${this.build.kills}`);
-    this.speciesText.setText(this.build.species.name);
+    this.killText.setText(`처치 ${this.build.kills}`);
+    this.speciesText.setText(`${this.build.species.name} Lv.${this.build.level}`);
     this.buildSummaryText.setText(this.getBuildSummaryLabel());
+    this.updateStatPanel();
   }
 
   /** Top 1-2 mastered types + their levels, e.g. "⚡전기 Lv.3 · 🔥불꽃 Lv.1" - see buildHud(). */
@@ -238,9 +396,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     kb.on('keydown-ESC', () => {
       if (this.buildOverviewOpen) { this.hideBuildOverview(); return; }
       if (this.isPaused || this.matchEnded) return; // a LevelUp/Evolution overlay owns the pause
-      this.manualPaused = !this.manualPaused;
-      this.pauseOverlay.setVisible(this.manualPaused);
-      if (this.manualPaused) this.audio.playPause(); else this.audio.playUnpause();
+      this.togglePause();
     });
     kb.on('keydown-TAB', (e) => {
       e.preventDefault?.();
@@ -255,27 +411,82 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       this.muteText.setText(muted ? '🔇 M: 음소거 해제' : '🔊 M: 음소거');
     });
 
+    // NOTE: these HUD overlays are deliberately built as plain scene objects (each with its own
+    // setScrollFactor(0)), not Phaser Containers - Container children combined with
+    // scrollFactor(0) hit-test incorrectly once the camera has scrolled away from (0,0) (which
+    // it always has here, since the camera follows the player through a large world), so a
+    // Container-nested interactive button never receives real pointer clicks even though it
+    // renders in the right screen position. Grouping is done with plain arrays instead.
     const w = this.cameras.main.width, h = this.cameras.main.height;
-    this.pauseOverlay = this.add.container(0, 0).setScrollFactor(0).setDepth(200).setVisible(false);
-    this.pauseOverlay.add(this.add.rectangle(0, 0, w, h, 0x000000, 0.7).setOrigin(0));
-    this.pauseOverlay.add(this.add.text(w / 2, h / 2 - 20, '일시정지', {
-      fontFamily: 'Arial Black', fontSize: '32px', color: '#ffffff'
-    }).setOrigin(0.5));
-    this.pauseOverlay.add(this.add.text(w / 2, h / 2 + 24, 'ESC 키를 눌러 계속하기', {
-      fontFamily: 'Arial', fontSize: '14px', color: '#aaaaaa'
+    const T = PS.UITheme;
+    this.pauseOverlayObjects = [];
+    const addToPause = (obj) => { obj.setScrollFactor(0).setDepth(200); this.pauseOverlayObjects.push(obj); return obj; };
+    addToPause(this.add.rectangle(0, 0, w, h, 0x000000, 0.7).setOrigin(0));
+
+    // One card behind the title + buttons instead of the title floating loose on the dim
+    // background - matches the panel/border look the HUD now uses everywhere else.
+    const cardW = 280, cardH = 210, cardY = h / 2 - 20;
+    addToPause(T.panel(this, w / 2, cardY, cardW, cardH, 0.5, 0.5, { radius: 14 }));
+    addToPause(this.add.text(w / 2, cardY - cardH / 2 + 36, '일시정지', {
+      fontFamily: 'Arial Black', fontSize: '26px', color: T.text.primary
     }).setOrigin(0.5));
 
-    this.buildOverviewContainer = this.add.container(0, 0).setScrollFactor(0).setDepth(200).setVisible(false);
+    const mkBtn = (y, label, onClick, color) => {
+      const btn = this.add.text(w / 2, y, label, {
+        fontFamily: 'Arial Black', fontSize: '15px', color: color || T.text.blue,
+        backgroundColor: '#1c2530ee', padding: { left: 20, right: 20, top: 9, bottom: 9 }
+      }).setOrigin(0.5).setInteractive({ useHandCursor: true });
+      btn.on('pointerover', () => btn.setColor('#ffffff'));
+      btn.on('pointerout', () => btn.setColor(color || T.text.blue));
+      btn.on('pointerdown', onClick);
+      addToPause(btn);
+      return btn;
+    };
+
+    // Spec section 1: 계속하기/현재 빌드/메인으로, all reachable by touch (no keyboard needed) so
+    // mobile players without ESC/TAB keys can still resume, check their build, or quit to menu.
+    mkBtn(cardY - 6, '계속하기', () => this.togglePause(), T.text.good);
+    mkBtn(cardY + 42, '현재 빌드', () => { this.togglePause(); this.showBuildOverview(); });
+    mkBtn(cardY + 88, '메인으로', () => {
+      this.audio.playUnpause();
+      this.scene.stop('LevelUp');
+      this.scene.start('Menu');
+    }, '#ff8888');
+
+    this.setPauseOverlayVisible(false);
+    this.buildOverviewObjects = [];
+    // Spec section 1 (모바일 pause 버튼): the always-visible on-screen pause icon itself is built
+    // in buildHud() now (it lives in the same top-right HUD cluster it needs to not overlap).
+  }
+
+  setPauseOverlayVisible(visible) {
+    for (const obj of this.pauseOverlayObjects) obj.setVisible(visible);
+  }
+
+  togglePause() {
+    this.manualPaused = !this.manualPaused;
+    this.setPauseOverlayVisible(this.manualPaused);
+    if (this.manualPaused) this.audio.playPause(); else this.audio.playUnpause();
   }
 
   showBuildOverview() {
     this.buildOverviewOpen = true;
-    const c = this.buildOverviewContainer;
-    c.removeAll(true);
+    // Same Container-vs-scrollFactor(0)-vs-scrolled-camera input issue as the pause overlay
+    // (see setupPauseAndBuildOverview's comment) - this tiny shim keeps the c.add(...)/
+    // c.setVisible(...) call shape below unchanged while actually tracking plain scene objects
+    // instead of Container children, so the "✕ 닫기" button's real pointer clicks land on it.
+    for (const obj of this.buildOverviewObjects) obj.destroy();
+    this.buildOverviewObjects = [];
+    const c = {
+      add: (obj) => { obj.setScrollFactor(0).setDepth(200); this.buildOverviewObjects.push(obj); return obj; },
+      setVisible: (v) => { for (const obj of this.buildOverviewObjects) obj.setVisible(v); }
+    };
     const w = this.cameras.main.width, h = this.cameras.main.height;
+    const T = PS.UITheme;
     c.add(this.add.rectangle(0, 0, w, h, 0x000000, 0.75).setOrigin(0));
-    c.add(this.add.text(w / 2, 30, `현재 빌드 - ${this.build.species.name} Lv.${this.build.level}`, {
-      fontFamily: 'Arial Black', fontSize: '18px', color: '#ffd400'
+    c.add(T.panel(this, w / 2, 12, w - 24, 40, 0.5, 0, { radius: 10 }));
+    c.add(this.add.text(w / 2, 32, `현재 빌드 - ${this.build.species.name} Lv.${this.build.level}`, {
+      fontFamily: 'Arial Black', fontSize: '18px', color: T.text.gold
     }).setOrigin(0.5));
 
     const col1X = 40, col2X = w / 2 + 20;
@@ -372,13 +583,21 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       fontFamily: 'Arial', fontSize: '13px', color: '#aaaaaa'
     }).setOrigin(0.5));
 
+    // Touch-friendly close button (TAB has no equivalent on a phone).
+    const closeBtn = this.add.text(w - 20, 20, '✕ 닫기', {
+      fontFamily: 'Arial Black', fontSize: '14px', color: '#ffffff',
+      backgroundColor: '#3a2020', padding: { left: 10, right: 10, top: 6, bottom: 6 }
+    }).setOrigin(1, 0).setInteractive({ useHandCursor: true });
+    closeBtn.on('pointerdown', () => this.hideBuildOverview());
+    c.add(closeBtn);
+
     c.setVisible(true);
     this.isPaused = true; // reuse the existing pause gate so combat truly freezes while reading
   }
 
   hideBuildOverview() {
     this.buildOverviewOpen = false;
-    this.buildOverviewContainer.setVisible(false);
+    for (const obj of this.buildOverviewObjects) obj.setVisible(false);
     this.isPaused = false;
   }
 
@@ -425,7 +644,21 @@ PS.GameScene = class GameScene extends Phaser.Scene {
 
   // ================= Update loop =================
   update(time, deltaMs) {
-    if (this.isPaused || this.manualPaused || this.matchEnded) return;
+    // Spec section 1 (일시정지 기능): the early-return below already freezes everything inside
+    // this function (player/enemy movement, spawning, the game timer, move cooldowns via
+    // Player/Move update, map hazards, exp/levelup checks...). But several effects are driven
+    // by Phaser's own Clock (this.time.delayedCall) - status-effect DOT ticks scheduled from
+    // CombatSystem, boss attack telegraphs, map hazard tick callbacks, pickup expiry timers -
+    // and Phaser's Clock keeps advancing those on its own regardless of this function's early
+    // return. Syncing this.time.paused (and pausing tweens) to the same pause flags here, every
+    // frame, is what actually stops those too instead of leaving them ticking in real time while
+    // the screen is frozen.
+    const shouldPauseTime = this.isPaused || this.manualPaused || this.matchEnded;
+    if (this.time.paused !== shouldPauseTime) {
+      this.time.paused = shouldPauseTime;
+      if (shouldPauseTime) this.tweens.pauseAll(); else this.tweens.resumeAll();
+    }
+    if (shouldPauseTime) return;
     const dt = Math.min(deltaMs, 50) / 1000;
     this.runTimeSec += dt;
 
@@ -575,6 +808,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       }
       case 'chain':
         this.firePlayerProjectile(move, player.x, player.y, aimAngle, 'chain', range);
+        this.vfx.playTypeVfx(move.type, moveLevel, player.x + Math.cos(aimAngle) * 30, player.y + Math.sin(aimAngle) * 30, aimAngle);
         return true;
       case 'homing':
         this.firePlayerProjectile(move, player.x, player.y, aimAngle, 'homing', range);
@@ -639,7 +873,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const ey = player.y + Math.sin(aimAngle) * range;
         const targets = this.findEnemiesNearSegment(player.x, player.y, ex, ey, width / 2);
         this.resolveAoe(move, targets, hpRatio, player);
-        this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x + Math.cos(aimAngle) * (range * 0.5), player.y + Math.sin(aimAngle) * (range * 0.5), aimAngle);
+        this.vfx.playBeam(move.type, moveLevel, player.x, player.y, ex, ey);
         return true;
       }
       case 'cone': {
@@ -668,8 +902,8 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const corridorWidth = this.getPatternScaledField(move, moveLevel, 'beamWidth', move.beamWidth || 60);
         const targets = this.findEnemiesNearSegment(player.x, player.y, targetX, targetY, corridorWidth / 2);
         this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playDashFx(move.type, moveLevel, player.x, player.y, targetX, targetY);
         this.tweens.add({ targets: player, x: targetX, y: targetY, duration: 160, ease: 'Cubic.easeOut' });
-        this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x, player.y, aimAngle);
         return true;
       }
       case 'aura': {
@@ -679,7 +913,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const radius = this.getEffectiveAreaRadius(move, 130);
         const targets = this.findEnemiesInRadius(player.x, player.y, radius);
         this.resolveAoe(move, targets, hpRatio, player);
-        this.vfx.playCircleVfx(move.type, moveLevel, player.x, player.y, radius);
+        this.vfx.playAuraFx(move.type, moveLevel, player.x, player.y, radius);
         return true;
       }
       case 'ground_zone': {
@@ -694,7 +928,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         this.vfx.playCircleVfx(move.type, 1, point.x, point.y, radius * 0.5);
         this.time.delayedCall(telegraphMs, () => {
           if (this.matchEnded) return;
-          this.vfx.playCircleVfx(move.type, moveLevel, point.x, point.y, radius);
+          this.vfx.playGroundZoneFx(move.type, moveLevel, point.x, point.y, radius, durationSec * 1000);
           const ticks = Math.max(1, Math.round((durationSec * 1000) / tickMs));
           for (let i = 0; i < ticks; i++) {
             this.time.delayedCall(i * tickMs, () => {
@@ -795,7 +1029,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const targets = this.findEnemiesInRadius(s.sprite.x, s.sprite.y, s.radius);
         if (targets.length > 0) {
           this.resolveAoe(s.move, [targets[0]], s.hpRatio, s.attackerEntity);
-          this.vfx.playTypeVfx(s.move.type, 1, targets[0].x, targets[0].y);
+          this.vfx.playSwarmFx(s.move.type, 1, s.sprite.x, s.sprite.y, targets[0].x, targets[0].y);
         }
       }
     }
@@ -817,6 +1051,11 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     }
   }
 
+  // Spec section 2 (파란 원형 오브젝트 확인/개선): a hazard zone must be immediately identifiable
+  // as more than "a plain colored circle" - it gets a Korean name label on spawn, a distinct
+  // double-ring + inner pattern per hazard type (not just one flat color), and a one-time
+  // on-enter feedback text (이동속도 감소!/피해!/etc.) the moment the player steps into it,
+  // rather than only a passive tint.
   spawnMapHazardZone(hazard) {
     const angle = Math.random() * Math.PI * 2;
     const dist = 160 + Math.random() * 220;
@@ -826,24 +1065,55 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     const tickMs = hazard.tickMs || 700;
     const durationSec = hazard.durationSec || 5;
     const colorByType = { heal_zone: 0x55ff88, slow_zone: 0x55aaff, damage_zone: 0xff5533 };
+    const feedbackKeyByType = { heal_zone: 'hazardHeal', slow_zone: 'hazardSlow', damage_zone: 'hazardDamage' };
     const color = colorByType[hazard.type] || 0xaaaaaa;
 
     const zone = this.add.circle(x, y, radius, color, 0.16).setDepth(3);
-    zone.setStrokeStyle(2, color, 0.55);
+    zone.setStrokeStyle(3, color, 0.65);
+    // Inner ring makes the zone read as a distinct "pool/field" shape rather than a flat disc,
+    // and differs visually by hazard type: a tight glowing core for damage, a rippling inner
+    // ring for slow (water-pool feel), a soft halo for heal.
+    const innerRadius = hazard.type === 'damage_zone' ? radius * 0.35 : radius * 0.62;
+    const innerZone = this.add.circle(x, y, innerRadius, color, 0.22).setDepth(3);
+    innerZone.setStrokeStyle(2, 0xffffff, 0.35);
     this.tweens.add({ targets: zone, alpha: { from: 0.5, to: 0.16 }, duration: 400, yoyo: true, repeat: -1 });
+    this.tweens.add({
+      targets: innerZone,
+      radius: hazard.type === 'slow_zone' ? { from: innerRadius, to: innerRadius * 1.25 } : innerRadius,
+      alpha: { from: 0.35, to: 0.12 },
+      duration: 650,
+      yoyo: true,
+      repeat: -1
+    });
+
+    // Name label so the hazard is never just an unlabeled colored shape.
+    const label = this.add.text(x, y - radius - 14, hazard.name || '', {
+      fontFamily: 'Arial Black, sans-serif', fontSize: '12px', color: '#ffffff',
+      stroke: '#000000', strokeThickness: 3
+    }).setOrigin(0.5).setDepth(31).setAlpha(0);
+    this.tweens.add({ targets: label, alpha: 1, duration: 300 });
+    this.tweens.add({ targets: label, alpha: 0, duration: 300, delay: Math.max(0, durationSec * 1000 - 300) });
+
+    let playerWasInside = false;
 
     const ticks = Math.max(1, Math.round((durationSec * 1000) / tickMs));
     for (let i = 0; i < ticks; i++) {
       this.time.delayedCall(300 + i * tickMs, () => {
         if (this.matchEnded) return;
+        const playerInside = PS.MathUtils.distance(this.player.x, this.player.y, x, y) <= radius;
+        if (playerInside && !playerWasInside) {
+          this.vfx.showFeedbackText(this.player.x, this.player.y - 40, feedbackKeyByType[hazard.type]);
+        }
+        playerWasInside = playerInside;
+
         if (hazard.type === 'heal_zone') {
           for (const e of this.findEnemiesInRadius(x, y, radius)) e.heal(e.maxHp * (hazard.value || 0.03));
         } else if (hazard.type === 'slow_zone') {
-          if (PS.MathUtils.distance(this.player.x, this.player.y, x, y) <= radius) {
+          if (playerInside) {
             this.player.applyHazardSlow(1 - (hazard.value || 0.4), (tickMs / 1000) + 0.15);
           }
         } else if (hazard.type === 'damage_zone') {
-          if (PS.MathUtils.distance(this.player.x, this.player.y, x, y) <= radius) {
+          if (playerInside) {
             const dmg = Math.round(this.player.maxHp * (hazard.value || 0.035));
             const applied = this.player.takeDamage(dmg);
             if (applied) {
@@ -854,7 +1124,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         }
       });
     }
-    this.time.delayedCall(durationSec * 1000 + 50, () => zone.destroy());
+    this.time.delayedCall(durationSec * 1000 + 50, () => { zone.destroy(); innerZone.destroy(); label.destroy(); });
   }
 
   findEnemiesNearSegment(x1, y1, x2, y2, halfWidth) {
@@ -915,6 +1185,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     });
     this.vfx.showFeedbackText(enemy.x, enemy.y, result.label);
     this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), enemy.x, enemy.y);
+    this.vfx.playHit({ type: move.type, x: enemy.x, y: enemy.y, critical: result.isCrit });
     this.audio.playHit(result.isCrit);
     if (result.label === 'superEffective') this.audio.playSuperEffective();
 
@@ -1009,7 +1280,12 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   }
 
   applyEnemyHitToPlayer(enemySource, move) {
-    const enemyStats = { attack: enemySource.attack * (enemySource.phaseDamageMult || 1) };
+    // Bugfix: the aura_debuff ability applies 'attackDown' to enemies (see updateAuraAbilities
+    // below) but StatusEffectSystem.getAttackMult() was never consulted here, so the debuff was
+    // purely cosmetic. Safe to call unconditionally - it reads entity.statusEffects and no-ops
+    // (returns 1) for a reconstructed projectile-hit source that has none.
+    const attackStatusMult = this.statusFx.getAttackMult(enemySource);
+    const enemyStats = { attack: enemySource.attack * (enemySource.phaseDamageMult || 1) * attackStatusMult };
     const enemyTypes = enemySource.types;
     const result = this.combat.resolveEnemyHitOnPlayer(enemyStats, enemyTypes, move, this.build, this.player);
 
@@ -1051,7 +1327,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   // relic_phoenix: full heal + temp invuln + damage buff, so it needs a much bigger, distinct
   // callout than the plain 1-HP survival-charge save below.
   triggerPhoenixSaveFeedback() {
-    this.vfx.playEvolutionFlash(this.player.x, this.player.y);
+    this.vfx.playEvolutionFlash(this.player.x, this.player.y, 'fire');
     this.audio.playPhoenixRevive();
     const banner = this.add.text(this.cameras.main.width / 2, 150, '불사조의 힘으로 부활!', {
       fontFamily: 'Arial Black, sans-serif', fontSize: '22px', color: '#ff8a3d',
@@ -1109,6 +1385,16 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     if (!proj.active || !enemyObj.active) return;
     if (proj.hitSet.has(enemyObj)) return;
     this.applyPlayerHitToEnemy(proj.move, enemyObj, this.player.getHpRatio(), this.player);
+
+    if (proj.kind === 'chain') {
+      // A real connecting link from the previous hop (or the cast point) to this one, instead
+      // of the generic type burst used for other projectile kinds (spec: Electric+Chain).
+      this.vfx.playChain(proj.move.type, proj.moveLevel, [
+        { x: proj.chainFromX, y: proj.chainFromY }, { x: enemyObj.x, y: enemyObj.y }
+      ]);
+      proj.chainFromX = enemyObj.x;
+      proj.chainFromY = enemyObj.y;
+    }
 
     if (proj.splashRadius > 0) {
       const splashTargets = this.findEnemiesInRadius(enemyObj.x, enemyObj.y, proj.splashRadius).filter(e => e !== enemyObj);
@@ -1214,13 +1500,32 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   spawnEnemy(species, stats, x, y, isBig) {
     const enemy = this.enemyPool.obtain(species, stats, x, y);
     if (isBig) {
+      this.vfx.playBossSpawn({ x, y, type: species.types[0] });
       PS.Boss.announce(this, enemy);
       this.addBossHpBar(enemy);
       this.audio.playBossAppear();
     } else if (stats.eliteModifier) {
       this.showEliteTag(enemy, stats.eliteModifier);
     }
+    // Spec section 28-③ (희귀 포켓몬 등장 연출): a legendary/sub-legendary spawn is rare enough
+    // (spawnProfile + tiny pool weight, see maps.json/enemies.json) that it deserves its own
+    // callout distinct from the ordinary elite tag - a screen banner + name highlight + a
+    // distinct sound, reusing Boss.announce's exact banner pattern rather than inventing a new one.
+    if (species.rarity === 'legendary' || species.rarity === 'subLegendary') {
+      this.announceRareSpawn(species);
+    }
     return enemy;
+  }
+
+  announceRareSpawn(species) {
+    const label = species.rarity === 'legendary' ? '전설의 포켓몬 출현!' : '준전설 포켓몬 출현!';
+    const color = species.rarity === 'legendary' ? '#ffd400' : '#8fe3ff';
+    const banner = this.add.text(this.cameras.main.width / 2, 90, `${label}\n${species.name}`, {
+      fontFamily: 'Arial Black, sans-serif', fontSize: '22px', color, align: 'center',
+      stroke: '#000000', strokeThickness: 5
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+    this.tweens.add({ targets: banner, alpha: 1, duration: 300, yoyo: true, hold: 1400, onComplete: () => banner.destroy() });
+    this.audio.playRelicPickup();
   }
 
   // Small floating name tag over a freshly-spawned elite so its modifier (spec section 57) is
@@ -1260,6 +1565,38 @@ PS.GameScene = class GameScene extends Phaser.Scene {
           this.damageNumberPool.obtain(target.x, target.y - 20, explosionDamage, { color: '#ff8a3d' });
           if (targetDied) this.killEnemy(target, 'fire');
         }
+      }
+    }
+
+    // Elite modifiers 폭발형/분열형 (spec section 28-⑤): resolved here, once, right before the
+    // enemy is actually released back to the pool - after this point `enemy` fields (x/y/
+    // species/maxHp) are about to be reused by the pool, so both hooks read what they need first.
+    if (enemy.eliteModifier && enemy.eliteModifier.explodeOnDeath) {
+      const cfg = enemy.eliteModifier.explodeOnDeath;
+      this.vfx.playCircleVfx(enemy.types[0], 3, enemy.x, enemy.y, cfg.radius);
+      if (PS.MathUtils.distance(enemy.x, enemy.y, this.player.x, this.player.y) <= cfg.radius) {
+        const dmg = Math.round(this.player.maxHp * cfg.damagePercentOfPlayerMaxHp);
+        const applied = this.player.takeDamage(dmg);
+        if (applied) {
+          this.damageNumberPool.obtain(this.player.x, this.player.y - 24, dmg, { color: '#ff5533' });
+          this.audio.playPlayerHurt();
+        }
+      }
+    }
+    if (enemy.eliteModifier && enemy.eliteModifier.splitOnDeath) {
+      const cfg = enemy.eliteModifier.splitOnDeath;
+      for (let i = 0; i < cfg.count; i++) {
+        const angle = (Math.PI * 2 * i) / cfg.count + Math.random() * 0.5;
+        const dist = 30 + Math.random() * 20;
+        const cloneStats = {
+          maxHp: Math.max(1, Math.round(enemy.maxHp * cfg.hpPercent)),
+          attack: enemy.attack * cfg.statPercent,
+          defense: enemy.defense * cfg.statPercent,
+          speed: enemy.speed,
+          exp: Math.max(1, Math.round(enemy.expValue * 0.3))
+          // deliberately no eliteModifier on the clones - prevents an infinite split chain.
+        };
+        this.spawnEnemy(enemy.species, cloneStats, enemy.x + Math.cos(angle) * dist, enemy.y + Math.sin(angle) * dist, false);
       }
     }
 
@@ -1340,7 +1677,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   triggerMoveEvolution(entry) {
     this.moveEvolutionSystem.apply(this.build, entry);
     this.player.refreshFromBuild();
-    this.vfx.playEvolutionFlash(this.player.x, this.player.y);
+    this.vfx.playEvolutionFlash(this.player.x, this.player.y, entry.toMove.type);
     this.audio.playEvolution();
     const banner = this.add.text(this.cameras.main.width / 2, 150,
       `기술 진화!\n${entry.fromMove.name} → ${entry.toMove.name}`, {
@@ -1383,6 +1720,12 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         this.audio.playCardSelect(choice.grade);
         this.levelSystem.applyChoice(this.build, choice);
         this.player.refreshFromBuild();
+        // Skill Level Up VFX (spec section 24) - only meaningful for an actual move pick; a new
+        // item/ability/stat upgrade already gets its own card-selection feedback in LevelUpScene.
+        if (choice.kind === 'move') {
+          const move = this.managers.move.getMove(choice.id);
+          if (move) this.vfx.playLevelUp({ type: move.type, x: this.player.x, y: this.player.y });
+        }
         this.scene.stop('LevelUp');
         if (this.pendingLevelUps > 0) this.openNextLevelUp();
         else this.isPaused = false;
@@ -1403,7 +1746,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.evolutionSystem.apply(this.build, entry);
     this.player.setSpeciesTexture(this.build.speciesId);
     this.player.refreshFromBuild();
-    this.vfx.playEvolutionFlash(this.player.x, this.player.y);
+    this.vfx.playEvolutionFlash(this.player.x, this.player.y, this.build.species.types[0]);
     this.audio.playEvolution();
 
     this.scene.launch('Evolution', {

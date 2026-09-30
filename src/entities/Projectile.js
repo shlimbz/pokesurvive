@@ -33,6 +33,10 @@ PS.Projectile = class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.originX = x;
     this.originY = y;
     this.hitSet.clear();
+    // Chain pattern VFX (VFXSystem.playChain) needs the previous link point to draw a
+    // connecting line between each hop - starts at the cast point, advances on every hit.
+    this.chainFromX = x;
+    this.chainFromY = y;
 
     this.body.enable = true;
     this.setActive(true);

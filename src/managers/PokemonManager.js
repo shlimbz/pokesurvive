@@ -32,8 +32,15 @@ PS.PokemonManager = class PokemonManager {
     const specialPower = conv.spAttack.base + b.spAttack * conv.spAttack.perPoint;
     const physicalReduction = b.defense * conv.defense.perPoint;
     const specialReduction = b.spDefense * conv.spDefense.perPoint;
-    const moveSpeed = conv.speed.base + b.speed * conv.speed.perPoint;
-    const attackSpeedBonus = ((b.speed - 50) * conv.speed.perPoint * conv.speed.attackSpeedShare) / 100;
+    // Speed is now proportional to base movement speed, so slow/fast Pokemon feel
+    // dramatically different (a ~3.7x spread across the roster) instead of the old
+    // flat-additive formula's ~1.25x spread. speedMult=1 at referenceSpeed.
+    const speedMult = b.speed / conv.speed.referenceSpeed;
+    const rawMoveSpeed = conv.speed.baseMoveSpeed * speedMult;
+    const moveSpeed = PS.MathUtils.clamp(rawMoveSpeed, conv.speed.minMoveSpeed, conv.speed.maxMoveSpeed);
+    // Attack-speed bonus stays a smaller, separate contribution (per design: Speed should not
+    // become a "do everything" stat) — it scales off how far the speed multiplier deviates from 1.
+    const attackSpeedBonus = (speedMult - 1) * conv.speed.attackSpeedShare;
 
     return {
       maxHp,
@@ -42,7 +49,7 @@ PS.PokemonManager = class PokemonManager {
       physicalReduction,
       specialReduction,
       moveSpeed,
-      attackSpeedBonus: PS.MathUtils.clamp(attackSpeedBonus, -0.5, 0.6)
+      attackSpeedBonus: PS.MathUtils.clamp(attackSpeedBonus, -0.35, 0.45)
     };
   }
 };

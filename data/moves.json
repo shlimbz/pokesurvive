@@ -1,7 +1,7 @@
 {
   "thunder_shock": {
     "id": "thunder_shock",
-    "name": "Thunder Shock",
+    "name": "전기충격",
     "type": "electric",
     "category": "special",
     "pattern": "chain",
@@ -27,7 +27,7 @@
   },
   "thunderbolt": {
     "id": "thunderbolt",
-    "name": "Thunderbolt",
+    "name": "10만볼트",
     "type": "electric",
     "category": "special",
     "pattern": "strike",
@@ -44,7 +44,7 @@
   },
   "thunder": {
     "id": "thunder",
-    "name": "Thunder",
+    "name": "번개",
     "type": "electric",
     "category": "special",
     "pattern": "chain",
@@ -63,7 +63,7 @@
   },
   "spark": {
     "id": "spark",
-    "name": "Spark",
+    "name": "스파크",
     "type": "electric",
     "category": "physical",
     "pattern": "melee",
@@ -78,7 +78,7 @@
   },
   "quick_attack": {
     "id": "quick_attack",
-    "name": "Quick Attack",
+    "name": "전광석화",
     "type": "normal",
     "category": "physical",
     "pattern": "melee",
@@ -89,7 +89,7 @@
   },
   "tackle": {
     "id": "tackle",
-    "name": "Tackle",
+    "name": "몸통박치기",
     "type": "normal",
     "category": "physical",
     "pattern": "melee",
@@ -100,7 +100,7 @@
   },
   "growl": {
     "id": "growl",
-    "name": "Growl",
+    "name": "울음소리",
     "type": "normal",
     "category": "status",
     "pattern": "circle",
@@ -115,7 +115,7 @@
   },
   "ember": {
     "id": "ember",
-    "name": "Ember",
+    "name": "불꽃세례",
     "type": "fire",
     "category": "special",
     "pattern": "projectile",
@@ -139,7 +139,7 @@
   },
   "flamethrower": {
     "id": "flamethrower",
-    "name": "Flamethrower",
+    "name": "화염방사",
     "type": "fire",
     "category": "special",
     "pattern": "beam",
@@ -156,7 +156,7 @@
   },
   "fire_blast": {
     "id": "fire_blast",
-    "name": "Fire Blast",
+    "name": "불대문자",
     "type": "fire",
     "category": "special",
     "pattern": "explosion",
@@ -172,7 +172,7 @@
   },
   "scratch": {
     "id": "scratch",
-    "name": "Scratch",
+    "name": "할퀴기",
     "type": "normal",
     "category": "physical",
     "pattern": "melee",
@@ -183,7 +183,7 @@
   },
   "water_gun": {
     "id": "water_gun",
-    "name": "Water Gun",
+    "name": "물대포",
     "type": "water",
     "category": "special",
     "pattern": "projectile",
@@ -203,7 +203,7 @@
   },
   "bubble": {
     "id": "bubble",
-    "name": "Bubble",
+    "name": "물거품",
     "type": "water",
     "category": "special",
     "pattern": "spread",
@@ -222,7 +222,7 @@
   },
   "hydro_pump": {
     "id": "hydro_pump",
-    "name": "Hydro Pump",
+    "name": "하이드로펌프",
     "type": "water",
     "category": "special",
     "pattern": "beam",
@@ -236,7 +236,7 @@
   },
   "vine_whip": {
     "id": "vine_whip",
-    "name": "Vine Whip",
+    "name": "덩굴채찍",
     "type": "grass",
     "category": "physical",
     "pattern": "spread",
@@ -259,7 +259,7 @@
   },
   "razor_leaf": {
     "id": "razor_leaf",
-    "name": "Razor Leaf",
+    "name": "잎날가르기",
     "type": "grass",
     "category": "physical",
     "pattern": "spread",
@@ -277,7 +277,7 @@
   },
   "solar_beam": {
     "id": "solar_beam",
-    "name": "Solar Beam",
+    "name": "솔라빔",
     "type": "grass",
     "category": "special",
     "pattern": "strike",
@@ -289,7 +289,7 @@
   },
   "petal_dance": {
     "id": "petal_dance",
-    "name": "Petal Dance",
+    "name": "꽃보라",
     "type": "grass",
     "category": "special",
     "pattern": "circle",
@@ -304,7 +304,7 @@
   },
   "lick": {
     "id": "lick",
-    "name": "Lick",
+    "name": "혀날름",
     "type": "ghost",
     "category": "physical",
     "pattern": "melee",
@@ -321,7 +321,7 @@
   },
   "confuse_ray": {
     "id": "confuse_ray",
-    "name": "Confuse Ray",
+    "name": "혼란시키기",
     "type": "ghost",
     "category": "status",
     "pattern": "circle",
@@ -336,7 +336,7 @@
   },
   "shadow_ball": {
     "id": "shadow_ball",
-    "name": "Shadow Ball",
+    "name": "섀도볼",
     "type": "ghost",
     "category": "special",
     "pattern": "projectile",
@@ -350,7 +350,7 @@
   },
   "karate_chop": {
     "id": "karate_chop",
-    "name": "Karate Chop",
+    "name": "공수차기",
     "type": "fighting",
     "category": "physical",
     "pattern": "melee",
@@ -362,7 +362,7 @@
   },
   "low_kick": {
     "id": "low_kick",
-    "name": "Low Kick",
+    "name": "낮은차기",
     "type": "fighting",
     "category": "physical",
     "pattern": "melee",
@@ -377,7 +377,7 @@
   },
   "cross_chop": {
     "id": "cross_chop",
-    "name": "Cross Chop",
+    "name": "크로스촙",
     "type": "fighting",
     "category": "physical",
     "pattern": "melee",
@@ -393,7 +393,7 @@
   },
   "focus_punch": {
     "id": "focus_punch",
-    "name": "Focus Punch",
+    "name": "기합펀치",
     "type": "fighting",
     "category": "physical",
     "pattern": "melee",
@@ -405,7 +405,7 @@
   },
   "force_palm": {
     "id": "force_palm",
-    "name": "Force Palm",
+    "name": "손바닥공격",
     "type": "fighting",
     "category": "physical",
     "pattern": "strike",
@@ -421,7 +421,7 @@
   },
   "aura_sphere": {
     "id": "aura_sphere",
-    "name": "Aura Sphere",
+    "name": "아우라구슬",
     "type": "fighting",
     "category": "special",
     "pattern": "homing",
@@ -433,7 +433,7 @@
   },
   "drain_punch": {
     "id": "drain_punch",
-    "name": "Drain Punch",
+    "name": "드레인펀치",
     "type": "fighting",
     "category": "physical",
     "pattern": "melee",
@@ -445,7 +445,7 @@
   },
   "fire_spin": {
     "id": "fire_spin",
-    "name": "Fire Spin",
+    "name": "불꽃소용돌이",
     "type": "fire",
     "category": "special",
     "pattern": "circle",
@@ -460,7 +460,7 @@
   },
   "poison_sting": {
     "id": "poison_sting",
-    "name": "Poison Sting",
+    "name": "독침",
     "type": "poison",
     "category": "physical",
     "pattern": "projectile",
@@ -476,7 +476,7 @@
   },
   "sludge_bomb": {
     "id": "sludge_bomb",
-    "name": "Sludge Bomb",
+    "name": "오물폭탄",
     "type": "poison",
     "category": "special",
     "pattern": "explosion",
@@ -492,7 +492,7 @@
   },
   "x_scissor": {
     "id": "x_scissor",
-    "name": "X-Scissor",
+    "name": "시저크로스",
     "type": "bug",
     "category": "physical",
     "pattern": "strike",
@@ -508,7 +508,7 @@
   },
   "rock_throw": {
     "id": "rock_throw",
-    "name": "Rock Throw",
+    "name": "돌던지기",
     "type": "rock",
     "category": "physical",
     "pattern": "projectile",
@@ -525,7 +525,7 @@
   },
   "shadow_punch": {
     "id": "shadow_punch",
-    "name": "Shadow Punch",
+    "name": "섀도펀치",
     "type": "ghost",
     "category": "physical",
     "pattern": "homing",
@@ -537,7 +537,7 @@
   },
   "dragon_breath": {
     "id": "dragon_breath",
-    "name": "Dragon Breath",
+    "name": "용의숨결",
     "type": "dragon",
     "category": "special",
     "pattern": "beam",
@@ -554,7 +554,7 @@
   },
   "crunch": {
     "id": "crunch",
-    "name": "Crunch",
+    "name": "어금니깨물기",
     "type": "dark",
     "category": "physical",
     "pattern": "melee",
@@ -569,7 +569,7 @@
   },
   "moonblast": {
     "id": "moonblast",
-    "name": "Moonblast",
+    "name": "문포스",
     "type": "fairy",
     "category": "special",
     "pattern": "projectile",
@@ -585,7 +585,7 @@
   },
   "gust": {
     "id": "gust",
-    "name": "Gust",
+    "name": "회오리바람",
     "type": "flying",
     "category": "special",
     "pattern": "spread",
@@ -603,7 +603,7 @@
   },
   "wing_attack": {
     "id": "wing_attack",
-    "name": "Wing Attack",
+    "name": "날개치기",
     "type": "flying",
     "category": "physical",
     "pattern": "melee",
@@ -614,7 +614,7 @@
   },
   "psybeam": {
     "id": "psybeam",
-    "name": "Psybeam",
+    "name": "사이키델릭",
     "type": "psychic",
     "category": "special",
     "pattern": "beam",
@@ -631,7 +631,7 @@
   },
   "powder_snow": {
     "id": "powder_snow",
-    "name": "Powder Snow",
+    "name": "가루눈",
     "type": "ice",
     "category": "special",
     "pattern": "spread",
@@ -649,7 +649,7 @@
   },
   "mud_slap": {
     "id": "mud_slap",
-    "name": "Mud Slap",
+    "name": "진흙뿌리기",
     "type": "ground",
     "category": "physical",
     "pattern": "circle",
@@ -664,7 +664,7 @@
   },
   "hyper_beam": {
     "id": "hyper_beam",
-    "name": "Hyper Beam",
+    "name": "하이퍼빔",
     "type": "normal",
     "category": "special",
     "pattern": "beam",
@@ -677,7 +677,7 @@
   },
   "eruption": {
     "id": "eruption",
-    "name": "Eruption",
+    "name": "분화",
     "type": "fire",
     "category": "special",
     "pattern": "explosion",
@@ -693,7 +693,7 @@
   },
   "thunder_shock_plus": {
     "id": "thunder_shock_plus",
-    "name": "Thunder Shock+",
+    "name": "전기충격+",
     "evolvedFrom": "thunder_shock",
     "type": "electric",
     "category": "special",
@@ -714,7 +714,7 @@
   },
   "ember_plus": {
     "id": "ember_plus",
-    "name": "Ember+",
+    "name": "불꽃세례+",
     "evolvedFrom": "ember",
     "type": "fire",
     "category": "special",
@@ -734,7 +734,7 @@
   },
   "water_gun_plus": {
     "id": "water_gun_plus",
-    "name": "Water Gun+",
+    "name": "물대포+",
     "evolvedFrom": "water_gun",
     "type": "water",
     "category": "special",
@@ -750,7 +750,7 @@
   },
   "vine_whip_plus": {
     "id": "vine_whip_plus",
-    "name": "Vine Whip+",
+    "name": "덩굴채찍+",
     "evolvedFrom": "vine_whip",
     "type": "grass",
     "category": "physical",
@@ -768,7 +768,7 @@
   },
   "leech_seed": {
     "id": "leech_seed",
-    "name": "Leech Seed",
+    "name": "씨뿌리기",
     "type": "grass",
     "category": "special",
     "pattern": "homing",
@@ -784,7 +784,7 @@
   },
   "flame_burst": {
     "id": "flame_burst",
-    "name": "Flame Burst",
+    "name": "화염구",
     "type": "fire",
     "category": "special",
     "pattern": "cone",
@@ -800,7 +800,7 @@
   },
   "mach_punch": {
     "id": "mach_punch",
-    "name": "Mach Punch",
+    "name": "마하펀치",
     "type": "fighting",
     "category": "physical",
     "pattern": "dash",
@@ -813,7 +813,7 @@
   },
   "moonlight_orb": {
     "id": "moonlight_orb",
-    "name": "Moonlight Orb",
+    "name": "달빛구슬",
     "type": "fairy",
     "category": "special",
     "pattern": "orbit",
@@ -827,7 +827,7 @@
   },
   "disarming_voice": {
     "id": "disarming_voice",
-    "name": "Disarming Voice",
+    "name": "홀리는목소리",
     "type": "fairy",
     "category": "special",
     "pattern": "homing",
@@ -843,7 +843,7 @@
   },
   "fairy_aura": {
     "id": "fairy_aura",
-    "name": "Fairy Aura",
+    "name": "페어리오라",
     "type": "fairy",
     "category": "special",
     "pattern": "aura",
@@ -854,7 +854,7 @@
   },
   "toxic_spikes": {
     "id": "toxic_spikes",
-    "name": "Toxic Spikes",
+    "name": "독압정",
     "type": "poison",
     "category": "special",
     "pattern": "ground_zone",
@@ -873,7 +873,7 @@
   },
   "shadow_clone": {
     "id": "shadow_clone",
-    "name": "Shadow Clone",
+    "name": "그림자분신",
     "type": "ghost",
     "category": "special",
     "pattern": "summon",
@@ -887,7 +887,7 @@
   },
   "counter": {
     "id": "counter",
-    "name": "Counter",
+    "name": "카운터",
     "type": "fighting",
     "category": "physical",
     "pattern": "counter",
@@ -898,7 +898,7 @@
   },
   "aqua_jet": {
     "id": "aqua_jet",
-    "name": "Aqua Jet",
+    "name": "아쿠아제트",
     "type": "water",
     "category": "physical",
     "pattern": "dash",

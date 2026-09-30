@@ -21,10 +21,12 @@
       "perPoint": 0.55
     },
     "speed": {
-      "base": 130,
-      "perPoint": 0.55,
-      "attackSpeedShare": 0.35,
-      "comment": "speed stat becomes: moveSpeed(px/s) = base + perPoint*SPD ; attack cooldown is reduced by attackSpeedShare fraction of the speed bonus"
+      "baseMoveSpeed": 165,
+      "referenceSpeed": 70,
+      "minMoveSpeed": 70,
+      "maxMoveSpeed": 320,
+      "attackSpeedShare": 0.3,
+      "comment": "moveSpeed(px/s) = clamp(baseMoveSpeed * (SPD/referenceSpeed), minMoveSpeed, maxMoveSpeed); attackSpeedBonus = (SPD/referenceSpeed - 1) * attackSpeedShare, clamped [-0.35,0.45] in code. Produces a dramatic (~3.7x) speed spread across the roster (e.g. Machop 35 SPD -> ~82px/s, Jolteon 130 SPD -> ~306px/s) so slow/fast Pokemon feel clearly different, while attack-cooldown gets only a smaller secondary bonus so Speed is not an all-purpose stat."
     }
   },
   "stab": 1.5,
@@ -100,6 +102,10 @@
       "extra": "conditional_shield"
     }
   },
+  "statExtras": {
+    "comment": "Values for statUpgrade's epic/legendary 'extra' bonuses (BuildSystem.refreshModifiers).",
+    "minorRegenPercentPerPick": 0.004
+  },
   "moveUpgrade": {
     "common": {
       "damagePercent": 0.1
@@ -132,14 +138,16 @@
       "chance": 0.25,
       "stackLimit": 1,
       "damagePercentPerSec": 0.04,
-      "cooldown": 1
+      "cooldown": 1,
+      "name": "화상"
     },
     "poison": {
       "duration": 6,
       "chance": 0.3,
       "stackLimit": 3,
       "damagePercentPerSec": 0.03,
-      "cooldown": 1
+      "cooldown": 1,
+      "name": "중독"
     },
     "paralysis": {
       "duration": 3,
@@ -148,56 +156,64 @@
       "moveSpeedMult": 0.5,
       "attackSpeedMult": 0.5,
       "stunChance": 0.15,
-      "cooldown": 0
+      "cooldown": 0,
+      "name": "마비"
     },
     "freeze": {
       "duration": 0.6,
       "chance": 0.12,
       "stackLimit": 1,
       "moveSpeedMult": 0,
-      "cooldown": 0
+      "cooldown": 0,
+      "name": "빙결"
     },
     "slow": {
       "duration": 2.5,
       "chance": 0.35,
       "stackLimit": 2,
       "moveSpeedMult": 0.6,
-      "cooldown": 0
+      "cooldown": 0,
+      "name": "둔화"
     },
     "confusion": {
       "duration": 3,
       "chance": 0.2,
       "stackLimit": 1,
       "accuracyMult": 0.5,
-      "cooldown": 0
+      "cooldown": 0,
+      "name": "혼란"
     },
     "defenseDown": {
       "duration": 5,
       "chance": 0.3,
       "stackLimit": 3,
       "defenseMultPerStack": 0.85,
-      "cooldown": 0
+      "cooldown": 0,
+      "name": "방어력 감소"
     },
     "attackDown": {
       "duration": 5,
       "chance": 0.3,
       "stackLimit": 3,
       "attackMultPerStack": 0.85,
-      "cooldown": 0
+      "cooldown": 0,
+      "name": "공격력 감소"
     },
     "armorBreak": {
       "duration": 4,
       "chance": 0.25,
       "stackLimit": 1,
       "defenseMult": 0.6,
-      "cooldown": 0
+      "cooldown": 0,
+      "name": "방어구 파괴"
     },
     "seed": {
       "duration": 6,
       "chance": 0.85,
       "stackLimit": 1,
       "damagePercentPerSec": 0.035,
-      "cooldown": 1
+      "cooldown": 1,
+      "name": "씨뿌리기"
     }
   },
   "bossStatusResistance": {
@@ -372,6 +388,32 @@
       "nameKo": "흡혈",
       "vampiricPercent": 0.4,
       "tint": "0xff4d6d"
+    },
+    "splitter": {
+      "name": "Splitter",
+      "nameKo": "분열형",
+      "splitOnDeath": {
+        "count": 2,
+        "hpPercent": 0.35,
+        "statPercent": 0.6
+      },
+      "tint": "0xffe066"
+    },
+    "sniper": {
+      "name": "Sniper",
+      "nameKo": "투사체형",
+      "sniperMoveId": "rock_throw",
+      "sniperCooldownMs": 1600,
+      "tint": "0xff9d3b"
+    },
+    "explosive": {
+      "name": "Explosive",
+      "nameKo": "폭발형",
+      "explodeOnDeath": {
+        "radius": 130,
+        "damagePercentOfPlayerMaxHp": 0.12
+      },
+      "tint": "0xff3b3b"
     }
   },
   "patternGrowth": {
@@ -440,5 +482,36 @@
       "cooldownMult": 0.6,
       "damageMult": 1.35
     }
-  ]
+  ],
+  "spawnProfileByEvolutionStage": {
+    "comment": "단계별 시간대 가중치 - 초반엔 미진화종 위주, 후반으로 갈수록 진화체 비중 상승 (스펙 17/18)",
+    "0": {
+      "opening": 3.0,
+      "growth": 2.0,
+      "elites": 1.0,
+      "density": 0.6,
+      "miniboss": 0.35,
+      "finalboss": 0.25
+    },
+    "1": {
+      "opening": 0.35,
+      "growth": 1.4,
+      "elites": 1.8,
+      "density": 1.5,
+      "miniboss": 1.2,
+      "finalboss": 1.0
+    },
+    "2": {
+      "opening": 0.05,
+      "growth": 0.3,
+      "elites": 1.0,
+      "density": 1.8,
+      "miniboss": 2.0,
+      "finalboss": 2.2
+    }
+  },
+  "enemyDifficulty": {
+    "evolutionStageBonus": 0.16,
+    "comment": "종족값 기반 난이도 (스펙 19/20): 최종 스탯 = 기본 스탯 x (1 + evolutionStage x evolutionStageBonus) x 티어 보정(enemyTier) x 시간 보정(timePhases.enemyHpMult/enemyDmgMult, SpawnSystem에서 적용). 진화체(evolutionStage 1~2)는 같은 티어 안에서도 확실히 더 강하게 느껴지도록 하는 계층."
+  }
 }

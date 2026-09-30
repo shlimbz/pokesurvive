@@ -1,0 +1,2208 @@
+{
+ "comment": "Auto-generated from PokeSurvivors_VFX_Spec.xlsx (VFX_Spec sheet) by tools-adjacent build_vfx_effects.py. Keyed by '<type>_<pattern>' (lowercase type, spec-cased pattern lowercased). 'ALL' type entries (hit/critical/levelup/evolution/bossspawn) apply to every Pokemon type - VFXSystem substitutes the literal 'TYPE_COLOR' token in their colors array with the real move/species type color at runtime. See VFXPatternMap.js for how a move's data-driven `pattern` field (projectile/melee/beam/chain/circle/...) maps onto this spec's pattern groups (Projectile/Melee/Beam/Chain/Explosion/GroundZone/Dash/Aura/Swarm) plus the ALL-type Hit/Critical/LevelUp/Evolution/BossSpawn entries.",
+ "effects": {
+  "normal_projectile": {
+   "id": "normal_projectile",
+   "type": "normal",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "작은 충격탄/에너지탄이 직선 이동",
+   "particlesDesc": "작은 흰색 파편 2~4개",
+   "particleCount": {
+    "min": 2,
+    "max": 4
+   },
+   "trailDesc": "짧은 회색/흰색 잔상",
+   "hitEndDesc": "작은 원형 충격파",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 120,
+     "label": "cast"
+    },
+    {
+     "ms": 180,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.7,
+   "colors": [
+    "#F5F5F5",
+    "#A0A0A0"
+   ],
+   "priority": "P2"
+  },
+  "normal_melee": {
+   "id": "normal_melee",
+   "type": "normal",
+   "pattern": "Melee",
+   "trigger": "공격",
+   "coreVisual": "짧은 부채꼴 타격선",
+   "particlesDesc": "2~4개 속도선",
+   "particleCount": {
+    "min": 2,
+    "max": 4
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "흰색 초승달형 slash + impact",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 80,
+     "label": "cast"
+    },
+    {
+     "ms": 160,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#FFFFFF",
+    "#BDBDBD"
+   ],
+   "priority": "P2"
+  },
+  "normal_explosion": {
+   "id": "normal_explosion",
+   "type": "normal",
+   "pattern": "Explosion",
+   "trigger": "적중/폭발",
+   "coreVisual": "회색 충격파",
+   "particlesDesc": "원형 파편 8~12개",
+   "particleCount": {
+    "min": 8,
+    "max": 12
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "2중 원형 shockwave",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.2,
+   "colors": [
+    "#FFFFFF",
+    "#8E8E8E"
+   ],
+   "priority": "P2"
+  },
+  "fire_projectile": {
+   "id": "fire_projectile",
+   "type": "fire",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "작은 불꽃 덩어리",
+   "particlesDesc": "불씨 3~6개",
+   "particleCount": {
+    "min": 3,
+    "max": 6
+   },
+   "trailDesc": "주황색 화염 trail",
+   "hitEndDesc": "작은 화염 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 250,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#FF3D00",
+    "#FF9800",
+    "#FFD54F"
+   ],
+   "priority": "P1"
+  },
+  "fire_beam": {
+   "id": "fire_beam",
+   "type": "fire",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "굵은 화염 빔",
+   "particlesDesc": "불씨가 빔 주변으로 튐",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "연속 화염 trail",
+   "hitEndDesc": "끝점 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 180,
+     "label": "charge"
+    },
+    {
+     "ms": 350,
+     "label": "beam"
+    },
+    {
+     "ms": 250,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.4,
+   "colors": [
+    "#FF3D00",
+    "#FF9800",
+    "#FFE082"
+   ],
+   "priority": "P1"
+  },
+  "fire_explosion": {
+   "id": "fire_explosion",
+   "type": "fire",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "화염구가 순간적으로 팽창",
+   "particlesDesc": "불꽃 파편 12~20개",
+   "particleCount": {
+    "min": 12,
+    "max": 20
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "큰 화염 폭발 + 2중 충격파",
+   "groundResidueDesc": "짧은 불꽃 잔류",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 450,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#D50000",
+    "#FF5722",
+    "#FFC107"
+   ],
+   "priority": "P1"
+  },
+  "fire_groundzone": {
+   "id": "fire_ground",
+   "type": "fire",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "금이 간 바닥에서 불꽃 발생",
+   "particlesDesc": "불씨 지속 3~6개",
+   "particleCount": {
+    "min": 3,
+    "max": 6
+   },
+   "trailDesc": "작은 연기",
+   "hitEndDesc": "주기적 작은 폭발",
+   "groundResidueDesc": "붉은 균열 + 화염 웅덩이",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "생성"
+    },
+    {
+     "ms": 2500,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#D50000",
+    "#FF5722",
+    "#FFB300"
+   ],
+   "priority": "P1"
+  },
+  "fire_dash": {
+   "id": "fire_dash",
+   "type": "fire",
+   "pattern": "Dash",
+   "trigger": "돌진",
+   "coreVisual": "플레이어가 화염 잔상을 남기며 돌진",
+   "particlesDesc": "불씨 8~15개",
+   "particleCount": {
+    "min": 8,
+    "max": 15
+   },
+   "trailDesc": "긴 화염 trail",
+   "hitEndDesc": "종료 지점 폭발",
+   "groundResidueDesc": "짧은 불길 자국",
+   "timing": [
+    {
+     "ms": 80,
+     "label": "start"
+    },
+    {
+     "ms": 350,
+     "label": "dash"
+    },
+    {
+     "ms": 250,
+     "label": "end"
+    }
+   ],
+   "scale": 1.2,
+   "colors": [
+    "#FF3D00",
+    "#FF9800"
+   ],
+   "priority": "P1"
+  },
+  "water_projectile": {
+   "id": "water_projectile",
+   "type": "water",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "압축된 물방울/물탄",
+   "particlesDesc": "물방울 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "푸른 물 trail",
+   "hitEndDesc": "물보라 pop",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 250,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#29B6F6",
+    "#0288D1",
+    "#B3E5FC"
+   ],
+   "priority": "P1"
+  },
+  "water_beam": {
+   "id": "water_beam",
+   "type": "water",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "굵은 물줄기/Hydro Pump",
+   "particlesDesc": "물방울 지속 방출",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "물결형 trail",
+   "hitEndDesc": "끝점 큰 물보라",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 150,
+     "label": "charge"
+    },
+    {
+     "ms": 400,
+     "label": "beam"
+    },
+    {
+     "ms": 250,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#03A9F4",
+    "#0288D1",
+    "#E1F5FE"
+   ],
+   "priority": "P1"
+  },
+  "water_explosion": {
+   "id": "water_explosion",
+   "type": "water",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "물이 둥글게 팽창 후 터짐",
+   "particlesDesc": "물방울 12~20개",
+   "particleCount": {
+    "min": 12,
+    "max": 20
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "큰 물보라 + 링",
+   "groundResidueDesc": "짧은 물웅덩이",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 350,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.4,
+   "colors": [
+    "#0288D1",
+    "#03A9F4",
+    "#B3E5FC"
+   ],
+   "priority": "P1"
+  },
+  "water_groundzone": {
+   "id": "water_ground",
+   "type": "water",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "얕은 물웅덩이",
+   "particlesDesc": "작은 물방울 지속",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "잔물결",
+   "hitEndDesc": "주기적 물보라",
+   "groundResidueDesc": "동심원 ripple",
+   "timing": [
+    {
+     "ms": 300,
+     "label": "생성"
+    },
+    {
+     "ms": 2500,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#0277BD",
+    "#29B6F6",
+    "#B3E5FC"
+   ],
+   "priority": "P1"
+  },
+  "water_dash": {
+   "id": "water_dash",
+   "type": "water",
+   "pattern": "Dash",
+   "trigger": "돌진",
+   "coreVisual": "플레이어가 물보라를 두르고 돌진",
+   "particlesDesc": "물방울 10~18개",
+   "particleCount": {
+    "min": 10,
+    "max": 18
+   },
+   "trailDesc": "긴 물결 trail",
+   "hitEndDesc": "종료 물폭발",
+   "groundResidueDesc": "짧은 젖은 바닥 ripple",
+   "timing": [
+    {
+     "ms": 80,
+     "label": "start"
+    },
+    {
+     "ms": 350,
+     "label": "dash"
+    },
+    {
+     "ms": 250,
+     "label": "end"
+    }
+   ],
+   "scale": 1.2,
+   "colors": [
+    "#03A9F4",
+    "#81D4FA"
+   ],
+   "priority": "P1"
+  },
+  "electric_projectile": {
+   "id": "electric_projectile",
+   "type": "electric",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "작은 전기 구체",
+   "particlesDesc": "미세 번개 3~5개",
+   "particleCount": {
+    "min": 3,
+    "max": 5
+   },
+   "trailDesc": "지그재그 전기 trail",
+   "hitEndDesc": "작은 방전",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 80,
+     "label": "cast"
+    },
+    {
+     "ms": 200,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#FFEB3B",
+    "#FFC107",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "electric_chain": {
+   "id": "electric_chain",
+   "type": "electric",
+   "pattern": "Chain",
+   "trigger": "적중",
+   "coreVisual": "첫 대상에서 다음 대상까지 번개 연결",
+   "particlesDesc": "연결점 주변 spark",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "지그재그 lightning line",
+   "hitEndDesc": "각 대상 작은 방전",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 80,
+     "label": "per chain"
+    },
+    {
+     "ms": 150,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#FFEB3B",
+    "#FFF176",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "electric_beam": {
+   "id": "electric_beam",
+   "type": "electric",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "수직/직선 번개 기둥",
+   "particlesDesc": "작은 spark 지속",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "전기 arc",
+   "hitEndDesc": "끝점 강한 방전",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 120,
+     "label": "charge"
+    },
+    {
+     "ms": 180,
+     "label": "strike"
+    },
+    {
+     "ms": 250,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#FFEB3B",
+    "#FFFFFF",
+    "#7C4DFF"
+   ],
+   "priority": "P1"
+  },
+  "electric_explosion": {
+   "id": "electric_explosion",
+   "type": "electric",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "전기 에너지가 사방으로 튐",
+   "particlesDesc": "번개 파편 12~20개",
+   "particleCount": {
+    "min": 12,
+    "max": 20
+   },
+   "trailDesc": "짧은 arc",
+   "hitEndDesc": "원형 방전 shockwave",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 40,
+     "label": "flash"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#FFEB3B",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "electric_aura": {
+   "id": "electric_aura",
+   "type": "electric",
+   "pattern": "Aura",
+   "trigger": "플레이어 주변",
+   "coreVisual": "플레이어 주변에 지속 전기장",
+   "particlesDesc": "작은 spark 3~6개",
+   "particleCount": {
+    "min": 3,
+    "max": 6
+   },
+   "trailDesc": "짧은 arc",
+   "hitEndDesc": "근처 적에 작은 방전",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 250,
+     "label": "pulse"
+    }
+   ],
+   "scale": 1.1,
+   "colors": [
+    "#FFEB3B",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "grass_projectile": {
+   "id": "grass_projectile",
+   "type": "grass",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "회전하는 Razor Leaf",
+   "particlesDesc": "잎 파편 2~4개",
+   "particleCount": {
+    "min": 2,
+    "max": 4
+   },
+   "trailDesc": "초록 잎 잔상",
+   "hitEndDesc": "잎이 터지며 작은 pollen",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 200,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#66BB6A",
+    "#2E7D32",
+    "#C5E1A5"
+   ],
+   "priority": "P1"
+  },
+  "grass_beam": {
+   "id": "grass_beam",
+   "type": "grass",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "Solar Beam 형태의 강한 빛줄기",
+   "particlesDesc": "잎/꽃가루가 주변에 회전",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "초록빛 trail",
+   "hitEndDesc": "끝점 꽃잎 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "charge"
+    },
+    {
+     "ms": 350,
+     "label": "beam"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.6,
+   "colors": [
+    "#8BC34A",
+    "#FFEB3B",
+    "#2E7D32"
+   ],
+   "priority": "P1"
+  },
+  "grass_groundzone": {
+   "id": "grass_ground",
+   "type": "grass",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "땅에서 덩굴과 풀잎이 솟음",
+   "particlesDesc": "꽃가루 지속",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "적중 시 작은 덩굴 타격",
+   "groundResidueDesc": "풀/꽃 원형 장판",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "생성"
+    },
+    {
+     "ms": 3000,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#43A047",
+    "#8BC34A",
+    "#C5E1A5"
+   ],
+   "priority": "P1"
+  },
+  "grass_aura": {
+   "id": "grass_aura",
+   "type": "grass",
+   "pattern": "Aura",
+   "trigger": "플레이어 주변",
+   "coreVisual": "작은 잎과 꽃가루가 회전",
+   "particlesDesc": "잎 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "초록 잔상",
+   "hitEndDesc": "회복/강화 pulse",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "pulse"
+    }
+   ],
+   "scale": 1.1,
+   "colors": [
+    "#66BB6A",
+    "#A5D6A7"
+   ],
+   "priority": "P1"
+  },
+  "ice_projectile": {
+   "id": "ice_projectile",
+   "type": "ice",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "얼음 결정체",
+   "particlesDesc": "얼음 조각 3~5개",
+   "particleCount": {
+    "min": 3,
+    "max": 5
+   },
+   "trailDesc": "서리 trail",
+   "hitEndDesc": "얼음 파편 burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 250,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#80DEEA",
+    "#29B6F6",
+    "#E0F7FA"
+   ],
+   "priority": "P1"
+  },
+  "ice_beam": {
+   "id": "ice_beam",
+   "type": "ice",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "차가운 얼음 빔",
+   "particlesDesc": "작은 snowflake",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "서리 trail",
+   "hitEndDesc": "결정화 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 150,
+     "label": "charge"
+    },
+    {
+     "ms": 350,
+     "label": "beam"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.4,
+   "colors": [
+    "#4DD0E1",
+    "#81D4FA",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "ice_groundzone": {
+   "id": "ice_ground",
+   "type": "ice",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "얼어붙은 바닥",
+   "particlesDesc": "snowflake 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "서리 안개",
+   "hitEndDesc": "적 발밑 작은 얼음 파편",
+   "groundResidueDesc": "푸른 얼음 원 + crack",
+   "timing": [
+    {
+     "ms": 300,
+     "label": "생성"
+    },
+    {
+     "ms": 2800,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#4DD0E1",
+    "#81D4FA",
+    "#E0F7FA"
+   ],
+   "priority": "P1"
+  },
+  "ice_explosion": {
+   "id": "ice_explosion",
+   "type": "ice",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "얼음 결정이 사방으로 깨짐",
+   "particlesDesc": "결정 파편 14~24개",
+   "particleCount": {
+    "min": 14,
+    "max": 24
+   },
+   "trailDesc": "서리 안개",
+   "hitEndDesc": "큰 얼음 링",
+   "groundResidueDesc": "짧은 얼음 crack",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 400,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.4,
+   "colors": [
+    "#29B6F6",
+    "#B3E5FC",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "fighting_melee": {
+   "id": "fighting_melee",
+   "type": "fighting",
+   "pattern": "Melee",
+   "trigger": "공격",
+   "coreVisual": "강한 주먹/발차기 충격선",
+   "particlesDesc": "속도선 4~7개",
+   "particleCount": {
+    "min": 4,
+    "max": 7
+   },
+   "trailDesc": "짧은 붉은 잔상",
+   "hitEndDesc": "원형 impact ring",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 60,
+     "label": "cast"
+    },
+    {
+     "ms": 140,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#EF5350",
+    "#FFCDD2",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "fighting_dash": {
+   "id": "fighting_dash",
+   "type": "fighting",
+   "pattern": "Dash",
+   "trigger": "돌진",
+   "coreVisual": "순간 돌진 + 잔상",
+   "particlesDesc": "속도선 8~12개",
+   "particleCount": {
+    "min": 8,
+    "max": 12
+   },
+   "trailDesc": "긴 잔상",
+   "hitEndDesc": "종료 충격파",
+   "groundResidueDesc": "짧은 crack",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "start"
+    },
+    {
+     "ms": 250,
+     "label": "dash"
+    },
+    {
+     "ms": 200,
+     "label": "end"
+    }
+   ],
+   "scale": 1.2,
+   "colors": [
+    "#E53935",
+    "#FF7043",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "fighting_explosion": {
+   "id": "fighting_impact",
+   "type": "fighting",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "압축된 힘이 순간 폭발",
+   "particlesDesc": "충격 파편 8~14개",
+   "particleCount": {
+    "min": 8,
+    "max": 14
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "두꺼운 shockwave + hit spark",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 30,
+     "label": "flash"
+    },
+    {
+     "ms": 250,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#F44336",
+    "#FFCCBC",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "poison_projectile": {
+   "id": "poison_projectile",
+   "type": "poison",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "독액 덩어리",
+   "particlesDesc": "보라색 기포 3~6개",
+   "particleCount": {
+    "min": 3,
+    "max": 6
+   },
+   "trailDesc": "독성 trail",
+   "hitEndDesc": "독방울 splash",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 250,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#9C27B0",
+    "#7B1FA2",
+    "#CE93D8"
+   ],
+   "priority": "P1"
+  },
+  "poison_explosion": {
+   "id": "poison_explosion",
+   "type": "poison",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "독액이 넓게 튐",
+   "particlesDesc": "독성 방울 12~18개",
+   "particleCount": {
+    "min": 12,
+    "max": 18
+   },
+   "trailDesc": "보라색 연기",
+   "hitEndDesc": "점액 폭발",
+   "groundResidueDesc": "짧은 독 웅덩이",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 450,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.4,
+   "colors": [
+    "#7B1FA2",
+    "#AB47BC",
+    "#CE93D8"
+   ],
+   "priority": "P1"
+  },
+  "poison_groundzone": {
+   "id": "poison_ground",
+   "type": "poison",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "보라색 독 웅덩이 + 독성 가시",
+   "particlesDesc": "기포 5~10개",
+   "particleCount": {
+    "min": 5,
+    "max": 10
+   },
+   "trailDesc": "얇은 독안개",
+   "hitEndDesc": "주기적 기포 burst",
+   "groundResidueDesc": "보라색 얼룩/가시",
+   "timing": [
+    {
+     "ms": 300,
+     "label": "생성"
+    },
+    {
+     "ms": 3000,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#6A1B9A",
+    "#9C27B0",
+    "#E1BEE7"
+   ],
+   "priority": "P1"
+  },
+  "ground_projectile": {
+   "id": "ground_projectile",
+   "type": "ground",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "바위/흙 덩어리",
+   "particlesDesc": "돌 파편 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "먼지 trail",
+   "hitEndDesc": "작은 흙먼지 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 250,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#795548",
+    "#A1887F",
+    "#D7CCC8"
+   ],
+   "priority": "P1"
+  },
+  "ground_explosion": {
+   "id": "ground_explosion",
+   "type": "ground",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "땅이 솟구치며 폭발",
+   "particlesDesc": "돌 파편 12~20개",
+   "particleCount": {
+    "min": 12,
+    "max": 20
+   },
+   "trailDesc": "먼지 cloud",
+   "hitEndDesc": "큰 지면 충격파",
+   "groundResidueDesc": "금이 간 바닥",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 400,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#5D4037",
+    "#795548",
+    "#BCAAA4"
+   ],
+   "priority": "P1"
+  },
+  "ground_groundzone": {
+   "id": "ground_zone",
+   "type": "ground",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "바닥이 솟아오른 위험지대",
+   "particlesDesc": "먼지 3~6개",
+   "particleCount": {
+    "min": 3,
+    "max": 6
+   },
+   "trailDesc": "미세 먼지",
+   "hitEndDesc": "주기적 돌 솟음",
+   "groundResidueDesc": "갈라진 지면",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "생성"
+    },
+    {
+     "ms": 2800,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#6D4C41",
+    "#8D6E63",
+    "#BCAAA4"
+   ],
+   "priority": "P1"
+  },
+  "flying_projectile": {
+   "id": "flying_projectile",
+   "type": "flying",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "회전하는 깃털/바람 칼날",
+   "particlesDesc": "깃털 2~4개",
+   "particleCount": {
+    "min": 2,
+    "max": 4
+   },
+   "trailDesc": "바람 trail",
+   "hitEndDesc": "작은 wind burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 200,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#90CAF9",
+    "#42A5F5",
+    "#E3F2FD"
+   ],
+   "priority": "P1"
+  },
+  "flying_beam": {
+   "id": "flying_beam",
+   "type": "flying",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "압축된 바람의 직선 파동",
+   "particlesDesc": "작은 깃털/바람선",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "나선형 wind trail",
+   "hitEndDesc": "끝점 vortex burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 150,
+     "label": "charge"
+    },
+    {
+     "ms": 300,
+     "label": "beam"
+    },
+    {
+     "ms": 250,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.4,
+   "colors": [
+    "#64B5F6",
+    "#90CAF9",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "flying_explosion": {
+   "id": "flying_explosion",
+   "type": "flying",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "회오리 바람이 순간 팽창",
+   "particlesDesc": "깃털/바람 파편 10~16개",
+   "particleCount": {
+    "min": 10,
+    "max": 16
+   },
+   "trailDesc": "회전하는 arc",
+   "hitEndDesc": "원형 wind ring",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 350,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#42A5F5",
+    "#BBDEFB",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "psychic_projectile": {
+   "id": "psychic_projectile",
+   "type": "psychic",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "분홍/보라 정신 에너지 구체",
+   "particlesDesc": "작은 별 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "왜곡 trail",
+   "hitEndDesc": "별 모양 burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 250,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#EC407A",
+    "#AB47BC",
+    "#F8BBD0"
+   ],
+   "priority": "P1"
+  },
+  "psychic_beam": {
+   "id": "psychic_beam",
+   "type": "psychic",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "물결치는 정신파 빔",
+   "particlesDesc": "작은 눈/별 spark",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "나선형 왜곡",
+   "hitEndDesc": "끝점 psychic burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 200,
+     "label": "charge"
+    },
+    {
+     "ms": 350,
+     "label": "beam"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#D81B60",
+    "#8E24AA",
+    "#F48FB1"
+   ],
+   "priority": "P1"
+  },
+  "psychic_aura": {
+   "id": "psychic_aura",
+   "type": "psychic",
+   "pattern": "Aura",
+   "trigger": "플레이어 주변",
+   "coreVisual": "회전하는 정신파 링",
+   "particlesDesc": "별/점 6~10개",
+   "particleCount": {
+    "min": 6,
+    "max": 10
+   },
+   "trailDesc": "얇은 회전 링",
+   "hitEndDesc": "pulse마다 작은 파동",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 300,
+     "label": "pulse"
+    }
+   ],
+   "scale": 1.1,
+   "colors": [
+    "#EC407A",
+    "#AB47BC",
+    "#FCE4EC"
+   ],
+   "priority": "P1"
+  },
+  "bug_projectile": {
+   "id": "bug_projectile",
+   "type": "bug",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "곤충의 침/작은 에너지",
+   "particlesDesc": "작은 날개/점 3~5개",
+   "particleCount": {
+    "min": 3,
+    "max": 5
+   },
+   "trailDesc": "초록 잔상",
+   "hitEndDesc": "작은 독성/벌레 burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 200,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.85,
+   "colors": [
+    "#8BC34A",
+    "#CDDC39",
+    "#F0F4C3"
+   ],
+   "priority": "P1"
+  },
+  "bug_swarm": {
+   "id": "bug_swarm",
+   "type": "bug",
+   "pattern": "Swarm",
+   "trigger": "시전",
+   "coreVisual": "작은 곤충 떼가 적을 향해 몰려감",
+   "particlesDesc": "벌레 6~12마리",
+   "particleCount": {
+    "min": 6,
+    "max": 12
+   },
+   "trailDesc": "떼 전체의 점선 trail",
+   "hitEndDesc": "여러 작은 hit spark",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 200,
+     "label": "summon"
+    },
+    {
+     "ms": 800,
+     "label": "active"
+    }
+   ],
+   "scale": 1.2,
+   "colors": [
+    "#689F38",
+    "#9E9D24",
+    "#FFF59D"
+   ],
+   "priority": "P1"
+  },
+  "bug_explosion": {
+   "id": "bug_explosion",
+   "type": "bug",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "곤충 에너지가 흩어짐",
+   "particlesDesc": "날개/잎 파편 12~18개",
+   "particleCount": {
+    "min": 12,
+    "max": 18
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "작은 swarm burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.2,
+   "colors": [
+    "#7CB342",
+    "#CDDC39",
+    "#FFF176"
+   ],
+   "priority": "P1"
+  },
+  "rock_projectile": {
+   "id": "rock_projectile",
+   "type": "rock",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "무거운 암석",
+   "particlesDesc": "작은 돌 3~5개",
+   "particleCount": {
+    "min": 3,
+    "max": 5
+   },
+   "trailDesc": "먼지 trail",
+   "hitEndDesc": "돌 파편 burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 250,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#757575",
+    "#9E9E9E",
+    "#D7CCC8"
+   ],
+   "priority": "P1"
+  },
+  "rock_explosion": {
+   "id": "rock_explosion",
+   "type": "rock",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "큰 바위가 깨지며 충격",
+   "particlesDesc": "돌 파편 14~24개",
+   "particleCount": {
+    "min": 14,
+    "max": 24
+   },
+   "trailDesc": "먼지 cloud",
+   "hitEndDesc": "두꺼운 지면 shockwave",
+   "groundResidueDesc": "금 crack",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 450,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#616161",
+    "#8D6E63",
+    "#BDBDBD"
+   ],
+   "priority": "P1"
+  },
+  "rock_groundzone": {
+   "id": "rock_ground",
+   "type": "rock",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "돌기둥/바위가 주변에 솟음",
+   "particlesDesc": "작은 자갈 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "먼지",
+   "hitEndDesc": "주기적 rock spike",
+   "groundResidueDesc": "원형 돌/균열",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "생성"
+    },
+    {
+     "ms": 2800,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#616161",
+    "#795548",
+    "#BDBDBD"
+   ],
+   "priority": "P1"
+  },
+  "ghost_projectile": {
+   "id": "ghost_projectile",
+   "type": "ghost",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "유령불/Shadow Ball",
+   "particlesDesc": "작은 wisp 4~7개",
+   "particleCount": {
+    "min": 4,
+    "max": 7
+   },
+   "trailDesc": "연기 trail",
+   "hitEndDesc": "영혼 파편 burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 300,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#5E35B1",
+    "#7E57C2",
+    "#B39DDB"
+   ],
+   "priority": "P1"
+  },
+  "ghost_explosion": {
+   "id": "ghost_explosion",
+   "type": "ghost",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "검은 보라색 영혼이 팽창",
+   "particlesDesc": "wisp 10~16개",
+   "particleCount": {
+    "min": 10,
+    "max": 16
+   },
+   "trailDesc": "연기 vortex",
+   "hitEndDesc": "유령 얼굴/눈 모양 flash",
+   "groundResidueDesc": "짧은 그림자 얼룩",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 500,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#311B92",
+    "#512DA8",
+    "#9575CD"
+   ],
+   "priority": "P1"
+  },
+  "ghost_aura": {
+   "id": "ghost_aura",
+   "type": "ghost",
+   "pattern": "Aura",
+   "trigger": "플레이어 주변",
+   "coreVisual": "유령불과 연기가 플레이어 주위를 회전",
+   "particlesDesc": "wisp 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "연기 trail",
+   "hitEndDesc": "pulse마다 작은 영혼 파동",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "pulse"
+    }
+   ],
+   "scale": 1.1,
+   "colors": [
+    "#4527A0",
+    "#7E57C2",
+    "#D1C4E9"
+   ],
+   "priority": "P1"
+  },
+  "dragon_projectile": {
+   "id": "dragon_projectile",
+   "type": "dragon",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "용의 에너지 구체/불꽃",
+   "particlesDesc": "비늘 모양 파편 3~6개",
+   "particleCount": {
+    "min": 3,
+    "max": 6
+   },
+   "trailDesc": "용 에너지 trail",
+   "hitEndDesc": "용 머리 형태 burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 280,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.1,
+   "colors": [
+    "#3949AB",
+    "#5E35B1",
+    "#FF7043"
+   ],
+   "priority": "P1"
+  },
+  "dragon_beam": {
+   "id": "dragon_beam",
+   "type": "dragon",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "거대한 용의 숨결 빔",
+   "particlesDesc": "에너지 파편 지속",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "두꺼운 에너지 trail",
+   "hitEndDesc": "끝점 대폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 180,
+     "label": "charge"
+    },
+    {
+     "ms": 450,
+     "label": "beam"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.6,
+   "colors": [
+    "#3949AB",
+    "#7E57C2",
+    "#FF7043"
+   ],
+   "priority": "P1"
+  },
+  "dragon_explosion": {
+   "id": "dragon_explosion",
+   "type": "dragon",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "용 에너지가 폭발",
+   "particlesDesc": "비늘/불꽃 파편 18~28개",
+   "particleCount": {
+    "min": 18,
+    "max": 28
+   },
+   "trailDesc": "짧은 vortex",
+   "hitEndDesc": "대형 원형 폭발",
+   "groundResidueDesc": "짧은 잔류 에너지",
+   "timing": [
+    {
+     "ms": 40,
+     "label": "flash"
+    },
+    {
+     "ms": 500,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.6,
+   "colors": [
+    "#303F9F",
+    "#7E57C2",
+    "#FF8A65"
+   ],
+   "priority": "P1"
+  },
+  "dark_projectile": {
+   "id": "dark_projectile",
+   "type": "dark",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "검은 에너지 구체",
+   "particlesDesc": "검은 입자 4~8개",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "어두운 연기 trail",
+   "hitEndDesc": "검은 파편 burst",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 300,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#212121",
+    "#424242",
+    "#7E57C2"
+   ],
+   "priority": "P1"
+  },
+  "dark_beam": {
+   "id": "dark_beam",
+   "type": "dark",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "압축된 어둠의 빔",
+   "particlesDesc": "검은 입자 지속",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "검은 연기 trail",
+   "hitEndDesc": "끝점 암흑 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 200,
+     "label": "charge"
+    },
+    {
+     "ms": 350,
+     "label": "beam"
+    },
+    {
+     "ms": 350,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#111111",
+    "#311B92",
+    "#7E57C2"
+   ],
+   "priority": "P1"
+  },
+  "dark_groundzone": {
+   "id": "dark_ground",
+   "type": "dark",
+   "pattern": "GroundZone",
+   "trigger": "장판 생성",
+   "coreVisual": "검은 그림자 웅덩이",
+   "particlesDesc": "어두운 입자 5~10개",
+   "particleCount": {
+    "min": 5,
+    "max": 10
+   },
+   "trailDesc": "연기",
+   "hitEndDesc": "주기적 shadow pulse",
+   "groundResidueDesc": "검은 원 + 보라 crack",
+   "timing": [
+    {
+     "ms": 300,
+     "label": "생성"
+    },
+    {
+     "ms": 3000,
+     "label": "지속"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#121212",
+    "#311B92",
+    "#512DA8"
+   ],
+   "priority": "P1"
+  },
+  "steel_projectile": {
+   "id": "steel_projectile",
+   "type": "steel",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "금속 탄환/칼날",
+   "particlesDesc": "금속 파편 3~5개",
+   "particleCount": {
+    "min": 3,
+    "max": 5
+   },
+   "trailDesc": "짧은 흰색 trail",
+   "hitEndDesc": "금속 spark",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 80,
+     "label": "cast"
+    },
+    {
+     "ms": 200,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.9,
+   "colors": [
+    "#90A4AE",
+    "#607D8B",
+    "#ECEFF1"
+   ],
+   "priority": "P1"
+  },
+  "steel_melee": {
+   "id": "steel_melee",
+   "type": "steel",
+   "pattern": "Melee",
+   "trigger": "공격",
+   "coreVisual": "금속 칼날 slash",
+   "particlesDesc": "spark 5~8개",
+   "particleCount": {
+    "min": 5,
+    "max": 8
+   },
+   "trailDesc": "흰색 속도선",
+   "hitEndDesc": "강한 metal impact",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 60,
+     "label": "cast"
+    },
+    {
+     "ms": 140,
+     "label": "hit"
+    }
+   ],
+   "scale": 1.0,
+   "colors": [
+    "#B0BEC5",
+    "#78909C",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "steel_explosion": {
+   "id": "steel_explosion",
+   "type": "steel",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "금속 충돌/파편 폭발",
+   "particlesDesc": "금속 파편 14~22개",
+   "particleCount": {
+    "min": 14,
+    "max": 22
+   },
+   "trailDesc": "짧은 spark trail",
+   "hitEndDesc": "밝은 impact ring",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 30,
+     "label": "flash"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "#607D8B",
+    "#B0BEC5",
+    "#FFFFFF"
+   ],
+   "priority": "P1"
+  },
+  "fairy_projectile": {
+   "id": "fairy_projectile",
+   "type": "fairy",
+   "pattern": "Projectile",
+   "trigger": "발사",
+   "coreVisual": "별가루가 감긴 작은 빛 구체",
+   "particlesDesc": "별 5~10개",
+   "particleCount": {
+    "min": 5,
+    "max": 10
+   },
+   "trailDesc": "반짝이는 trail",
+   "hitEndDesc": "별 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 100,
+     "label": "cast"
+    },
+    {
+     "ms": 280,
+     "label": "hit"
+    }
+   ],
+   "scale": 0.95,
+   "colors": [
+    "#F48FB1",
+    "#F8BBD0",
+    "#FFF59D"
+   ],
+   "priority": "P1"
+  },
+  "fairy_beam": {
+   "id": "fairy_beam",
+   "type": "fairy",
+   "pattern": "Beam",
+   "trigger": "시전",
+   "coreVisual": "달빛/별빛 직선 빔",
+   "particlesDesc": "별 8~14개",
+   "particleCount": {
+    "min": 8,
+    "max": 14
+   },
+   "trailDesc": "반짝이는 ribbon trail",
+   "hitEndDesc": "별꽃 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 180,
+     "label": "charge"
+    },
+    {
+     "ms": 350,
+     "label": "beam"
+    },
+    {
+     "ms": 300,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#F48FB1",
+    "#CE93D8",
+    "#FFF9C4"
+   ],
+   "priority": "P1"
+  },
+  "fairy_explosion": {
+   "id": "fairy_explosion",
+   "type": "fairy",
+   "pattern": "Explosion",
+   "trigger": "적중",
+   "coreVisual": "별가루가 크게 팽창 후 반짝임",
+   "particlesDesc": "별/하트 파편 16~24개",
+   "particleCount": {
+    "min": 16,
+    "max": 24
+   },
+   "trailDesc": "반짝임 trail",
+   "hitEndDesc": "2중 star ring",
+   "groundResidueDesc": "짧은 분홍빛 glow",
+   "timing": [
+    {
+     "ms": 50,
+     "label": "flash"
+    },
+    {
+     "ms": 450,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "#EC407A",
+    "#F48FB1",
+    "#FFF59D"
+   ],
+   "priority": "P1"
+  },
+  "fairy_aura": {
+   "id": "fairy_aura",
+   "type": "fairy",
+   "pattern": "Aura",
+   "trigger": "플레이어 주변",
+   "coreVisual": "달/별/리본이 천천히 회전",
+   "particlesDesc": "별 6~12개",
+   "particleCount": {
+    "min": 6,
+    "max": 12
+   },
+   "trailDesc": "반짝이는 ribbon",
+   "hitEndDesc": "주기적 sparkle pulse",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 350,
+     "label": "pulse"
+    }
+   ],
+   "scale": 1.1,
+   "colors": [
+    "#F48FB1",
+    "#CE93D8",
+    "#FFF59D"
+   ],
+   "priority": "P1"
+  },
+  "all_hit": {
+   "id": "universal_hit",
+   "type": "all",
+   "pattern": "Hit",
+   "trigger": "피해 적중",
+   "coreVisual": "타격 방향에 맞춘 짧은 impact flash",
+   "particlesDesc": "2~6 spark",
+   "particleCount": {
+    "min": 2,
+    "max": 6
+   },
+   "trailDesc": "없음",
+   "hitEndDesc": "작은 원형 ring + 방향성 spark",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 30,
+     "label": "flash"
+    },
+    {
+     "ms": 150,
+     "label": "fade"
+    }
+   ],
+   "scale": 0.8,
+   "colors": [
+    "TYPE_COLOR",
+    "#FFFFFF"
+   ],
+   "priority": "P0"
+  },
+  "all_critical": {
+   "id": "universal_critical",
+   "type": "all",
+   "pattern": "Critical",
+   "trigger": "치명타",
+   "coreVisual": "일반 hit보다 큰 별/충격 표시",
+   "particlesDesc": "8~14 spark",
+   "particleCount": {
+    "min": 8,
+    "max": 14
+   },
+   "trailDesc": "짧은 속도선",
+   "hitEndDesc": "큰 ring + 중앙 flash",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 40,
+     "label": "flash"
+    },
+    {
+     "ms": 250,
+     "label": "fade"
+    }
+   ],
+   "scale": 1.3,
+   "colors": [
+    "TYPE_COLOR",
+    "#FFFFFF",
+    "#FFD740"
+   ],
+   "priority": "P0"
+  },
+  "all_levelup": {
+   "id": "universal_levelup",
+   "type": "all",
+   "pattern": "LevelUp",
+   "trigger": "기술 레벨업",
+   "coreVisual": "플레이어 주변 에너지 링이 확장",
+   "particlesDesc": "별/입자 20~30개",
+   "particleCount": {
+    "min": 20,
+    "max": 30
+   },
+   "trailDesc": "상승 particle trail",
+   "hitEndDesc": "2~3중 expanding ring",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 250,
+     "label": "charge"
+    },
+    {
+     "ms": 650,
+     "label": "burst"
+    }
+   ],
+   "scale": 1.5,
+   "colors": [
+    "TYPE_COLOR",
+    "#FFFFFF",
+    "#FFD740"
+   ],
+   "priority": "P0"
+  },
+  "all_evolution": {
+   "id": "universal_evolution",
+   "type": "all",
+   "pattern": "Evolution",
+   "trigger": "포켓몬 진화",
+   "coreVisual": "플레이어/포켓몬 실루엣을 감싸는 진화 에너지",
+   "particlesDesc": "입자 30~50개",
+   "particleCount": {
+    "min": 30,
+    "max": 50
+   },
+   "trailDesc": "나선형 상승 trail",
+   "hitEndDesc": "큰 빛 폭발",
+   "groundResidueDesc": "없음",
+   "timing": [
+    {
+     "ms": 700,
+     "label": "charge"
+    },
+    {
+     "ms": 400,
+     "label": "reveal"
+    },
+    {
+     "ms": 600,
+     "label": "fade"
+    }
+   ],
+   "scale": 2.0,
+   "colors": [
+    "#FFFFFF",
+    "TYPE_COLOR",
+    "#FFD740"
+   ],
+   "priority": "P0"
+  },
+  "all_bossspawn": {
+   "id": "universal_boss_spawn",
+   "type": "all",
+   "pattern": "BossSpawn",
+   "trigger": "보스 등장",
+   "coreVisual": "화면 중심/보스 주변 경고 연출",
+   "particlesDesc": "검은/붉은 입자",
+   "particleCount": {
+    "min": 4,
+    "max": 8
+   },
+   "trailDesc": "원형 energy trail",
+   "hitEndDesc": "큰 충격파",
+   "groundResidueDesc": "보스 경고 문양",
+   "timing": [
+    {
+     "ms": 700,
+     "label": "telegraph"
+    },
+    {
+     "ms": 400,
+     "label": "spawn"
+    }
+   ],
+   "scale": 2.2,
+   "colors": [
+    "#FF1744",
+    "#7E57C2",
+    "#FFFFFF"
+   ],
+   "priority": "P0"
+  }
+ }
+}

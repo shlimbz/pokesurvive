@@ -37,8 +37,18 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.contactCooldown = 0;
     this.stunTimer = 0;
 
-    this.move = species.moveId ? moveManager.getMove(species.moveId) : null;
-    this.moveTimer = species.moveCooldownMs ? species.moveCooldownMs * 0.5 : 0;
+    // Elite modifier (spec section 57) - see EnemyManager.computeSpawnStats. Tinted so it reads
+    // as a visibly different enemy, not just a bigger health bar. Set BEFORE this.move below
+    // since the 'sniper' (투사체형) modifier can grant a ranged attack to a species that would
+    // otherwise have none at all (no moveId of its own).
+    this.eliteModifier = stats.eliteModifier || null;
+
+    const sniperMoveId = this.eliteModifier && this.eliteModifier.sniperMoveId;
+    this.move = species.moveId
+      ? moveManager.getMove(species.moveId)
+      : (sniperMoveId ? moveManager.getMove(sniperMoveId) : null);
+    this.moveCooldownMs = species.moveCooldownMs || (sniperMoveId && this.eliteModifier.sniperCooldownMs) || 0;
+    this.moveTimer = this.moveCooldownMs ? this.moveCooldownMs * 0.5 : 0;
 
     // Boss-specific multi-pattern behavior (spec section 58): a boss with a `movePool` rotates
     // between several differently-patterned moves, each on its OWN cooldown (from the move's
@@ -58,10 +68,6 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.phaseIndex = 0;
     this.phaseCooldownMult = 1;
     this.phaseDamageMult = 1;
-
-    // Elite modifier (spec section 57) - see EnemyManager.computeSpawnStats. Tinted so it reads
-    // as a visibly different enemy, not just a bigger health bar.
-    this.eliteModifier = stats.eliteModifier || null;
 
     const scale = species.scale || 1;
     if (this.texture.key !== species.id) this.setTexture(species.id);
@@ -101,17 +107,23 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     const dist = PS.MathUtils.distance(this.x, this.y, playerX, playerY);
     const frozenOrStunned = statusFx.isFrozen(this) || this.stunTimer > 0;
 
+    // Bugfix: paralysis's attackSpeedMult and stunChance, and confusion's accuracy penalty, were
+    // defined in balance.json and read by StatusEffectSystem but never actually consulted here -
+    // a paralyzed/confused enemy attacked at completely normal speed and accuracy. Rolled once
+    // per attack ATTEMPT (not per frame) so a low stunChance doesn't become near-certain over
+    // many frames of a paralysis duration.
+    const attackSpeedMult = statusFx.getAttackSpeedMult(this) || 1;
     if (this.movePool) {
       for (const entry of this.movePool) {
         entry.timer -= dtSec * 1000;
         if (entry.timer <= 0 && dist <= (entry.move.range || 300) * 1.2 && !frozenOrStunned) {
-          entry.timer = (entry.move.cooldownMs || 2000) * this.phaseCooldownMult;
-          onWantsToAttack(this, entry.move);
+          entry.timer = (entry.move.cooldownMs || 2000) * this.phaseCooldownMult / attackSpeedMult;
+          if (!statusFx.rollStunned(this) && !statusFx.isConfusedFumble(this)) onWantsToAttack(this, entry.move);
         }
       }
     } else if (this.move && this.moveTimer <= 0 && dist <= this.move.range * 1.2 && !frozenOrStunned) {
-      this.moveTimer = this.species.moveCooldownMs * this.phaseCooldownMult;
-      onWantsToAttack(this, this.move);
+      this.moveTimer = this.moveCooldownMs * this.phaseCooldownMult / attackSpeedMult;
+      if (!statusFx.rollStunned(this) && !statusFx.isConfusedFumble(this)) onWantsToAttack(this, this.move);
     }
 
     if (!frozenOrStunned) {

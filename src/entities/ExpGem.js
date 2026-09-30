@@ -7,7 +7,10 @@ PS.ExpGem = class ExpGem extends Phaser.Physics.Arcade.Sprite {
     super(scene, 0, 0, textureKey);
     scene.add.existing(this);
     scene.physics.add.existing(this);
-    this.setDepth(4);
+    // Bugfix: every other field pickup (heal/speed/magnet, relics) sits at depth 3 - gems were
+    // the one outlier at 4 (boss-telegraph layer), so gems and telegraph rings/hazard visuals
+    // could stack in an inconsistent order depending on add-order.
+    this.setDepth(3);
   }
 
   spawn(x, y, value) {

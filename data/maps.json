@@ -1,7 +1,7 @@
 {
   "forest": {
     "id": "forest",
-    "name": "Forest",
+    "name": "숲",
     "background": {
       "color": "0x1c3a1c",
       "pattern": "grass"
@@ -59,12 +59,13 @@
       "radius": 110,
       "durationSec": 6,
       "tickMs": 800,
-      "value": 0.03
+      "value": 0.03,
+      "name": "독포자 구름"
     }
   },
   "beach": {
     "id": "beach",
-    "name": "Beach",
+    "name": "해변",
     "background": {
       "color": "0x1c3040",
       "pattern": "sand"
@@ -103,6 +104,10 @@
       {
         "id": "rapidash",
         "weight": 5
+      },
+      {
+        "id": "articuno",
+        "weight": 1
       }
     ],
     "miniBossPool": [
@@ -118,12 +123,13 @@
       "radius": 100,
       "durationSec": 5,
       "tickMs": 400,
-      "value": 0.45
+      "value": 0.45,
+      "name": "밀물 웅덩이"
     }
   },
   "volcano": {
     "id": "volcano",
-    "name": "Volcano",
+    "name": "화산",
     "background": {
       "color": "0x3a1c14",
       "pattern": "ash"
@@ -162,6 +168,10 @@
       {
         "id": "beedrill",
         "weight": 5
+      },
+      {
+        "id": "moltres",
+        "weight": 1
       }
     ],
     "miniBossPool": [
@@ -177,7 +187,200 @@
       "radius": 90,
       "durationSec": 4,
       "tickMs": 600,
-      "value": 0.035
+      "value": 0.035,
+      "name": "용암 비말 지대"
+    }
+  },
+  "cave": {
+    "id": "cave",
+    "name": "동굴",
+    "background": {
+      "color": "0x2a2420",
+      "pattern": "cave"
+    },
+    "enemyPool": [
+      {
+        "id": "geodude",
+        "weight": 25
+      },
+      {
+        "id": "zubat",
+        "weight": 22
+      },
+      {
+        "id": "oddish",
+        "weight": 10
+      },
+      {
+        "id": "poliwag",
+        "weight": 8
+      },
+      {
+        "id": "weedle",
+        "weight": 8
+      },
+      {
+        "id": "growlithe",
+        "weight": 6
+      },
+      {
+        "id": "rattata",
+        "weight": 6
+      }
+    ],
+    "elitePool": [
+      {
+        "id": "scyther",
+        "weight": 15
+      },
+      {
+        "id": "golduck",
+        "weight": 5
+      }
+    ],
+    "miniBossPool": [
+      "poliwrath"
+    ],
+    "boss": "onix",
+    "spawnRate": 1.05,
+    "difficulty": 1.15,
+    "hazard": {
+      "type": "damage_zone",
+      "name": "낙석 지대",
+      "comment": "낙석 지대: 천장에서 돌이 떨어지는 구간에 있으면 지속 피해를 입는다.",
+      "intervalMs": 7500,
+      "radius": 95,
+      "durationSec": 4,
+      "tickMs": 550,
+      "value": 0.04
+    }
+  },
+  "desert": {
+    "id": "desert",
+    "name": "사막",
+    "background": {
+      "color": "0x5a4a2a",
+      "pattern": "sand_dune"
+    },
+    "enemyPool": [
+      {
+        "id": "sandshrew",
+        "weight": 24
+      },
+      {
+        "id": "cubone",
+        "weight": 20
+      },
+      {
+        "id": "numel",
+        "weight": 10
+      },
+      {
+        "id": "growlithe",
+        "weight": 8
+      },
+      {
+        "id": "tentacool",
+        "weight": 6
+      },
+      {
+        "id": "weedle",
+        "weight": 6
+      },
+      {
+        "id": "rattata",
+        "weight": 6
+      }
+    ],
+    "elitePool": [
+      {
+        "id": "rapidash",
+        "weight": 15
+      },
+      {
+        "id": "ninetales",
+        "weight": 5
+      }
+    ],
+    "miniBossPool": [
+      "ninetales"
+    ],
+    "boss": "sandslash",
+    "spawnRate": 1.1,
+    "difficulty": 1.2,
+    "hazard": {
+      "type": "slow_zone",
+      "name": "모래폭풍",
+      "comment": "모래폭풍: 시야를 가리는 모래바람 구간에 있으면 이동속도가 크게 감소한다.",
+      "intervalMs": 8500,
+      "radius": 110,
+      "durationSec": 5,
+      "tickMs": 450,
+      "value": 0.4
+    }
+  },
+  "ruins": {
+    "id": "ruins",
+    "name": "폐허",
+    "background": {
+      "color": "0x2e2a38",
+      "pattern": "ruins"
+    },
+    "enemyPool": [
+      {
+        "id": "gastly",
+        "weight": 24
+      },
+      {
+        "id": "koffing",
+        "weight": 20
+      },
+      {
+        "id": "oddish",
+        "weight": 8
+      },
+      {
+        "id": "bellsprout",
+        "weight": 8
+      },
+      {
+        "id": "weedle",
+        "weight": 8
+      },
+      {
+        "id": "rattata",
+        "weight": 8
+      },
+      {
+        "id": "cleffa",
+        "weight": 4
+      }
+    ],
+    "elitePool": [
+      {
+        "id": "golduck",
+        "weight": 10
+      },
+      {
+        "id": "beedrill",
+        "weight": 10
+      }
+    ],
+    "miniBossPool": [
+      "scyther"
+    ],
+    "boss": "haunter",
+    "spawnRate": 1.1,
+    "difficulty": 1.25,
+    "hazard": {
+      "type": "heal_zone",
+      "name": "저주받은 안개",
+      "comment": "저주받은 안개: 안에 있는 적을 지속적으로 회복시키는 음산한 안개 지대.",
+      "intervalMs": 9000,
+      "radius": 110,
+      "durationSec": 6,
+      "tickMs": 800,
+      "value": 0.03
     }
   }
 }

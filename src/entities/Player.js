@@ -24,7 +24,12 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
     this.invulnTimer = 0;
     this.moveCooldowns = {};
     this.survivalCharges = 0;
+    this.grantedSurvivalCharges = 0; // how many of build.modifiers.survivalCharges we've already granted
     this.survivalRechargeTimer = 0;
+    // Legendary-grade stat card's "conditional_shield" extra (see BuildSystem.refreshModifiers) -
+    // negates one otherwise-fatal hit outright (no HP-to-1 drawback, unlike survivalCharges).
+    this.conditionalShieldCharges = 0;
+    this.grantedConditionalShieldCharges = 0;
     this.flashFireStacks = 0;
     this.attackSpeedBuffMult = 1;
     this.attackSpeedBuffTimer = 0;
@@ -76,6 +81,21 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
     this.hp = Math.min(this.maxHp, Math.round(this.maxHp * ratio) + Math.round(this.maxHp * 0.15));
     for (const moveId of this.build.getOwnedMoveIds()) {
       if (this.moveCooldowns[moveId] === undefined) this.moveCooldowns[moveId] = 0;
+    }
+    // Bugfix: item_survival_charge (and any other source of mods.survivalCharges) was computed
+    // by ItemSystem but never copied onto the player, so takeDamage()'s survivalCharges>0 save
+    // branch was unreachable dead code. Top up by the DIFFERENCE whenever the build's total
+    // grows (item picked up/leveled) so already-consumed charges from earlier this run aren't
+    // refunded, but newly-unlocked ones are granted.
+    const totalSurvivalCharges = this.build.modifiers.survivalCharges || 0;
+    if (totalSurvivalCharges > this.grantedSurvivalCharges) {
+      this.survivalCharges += totalSurvivalCharges - this.grantedSurvivalCharges;
+      this.grantedSurvivalCharges = totalSurvivalCharges;
+    }
+    const totalShieldCharges = this.build.modifiers.conditionalShieldCharges || 0;
+    if (totalShieldCharges > this.grantedConditionalShieldCharges) {
+      this.conditionalShieldCharges += totalShieldCharges - this.grantedConditionalShieldCharges;
+      this.grantedConditionalShieldCharges = totalShieldCharges;
     }
   }
 
@@ -180,6 +200,14 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.invulnTimer > 0) return false;
     if (this.shieldCharges > 0) {
       this.shieldCharges--;
+      this.invulnTimer = 0.3;
+      this.lastSaveType = 'shield';
+      return false;
+    }
+    // conditional_shield only steps in for a hit that would actually be fatal, per its own
+    // description ("치명적 피해를 1회 무효화") - unlike the ability shield above, which blocks any hit.
+    if (this.conditionalShieldCharges > 0 && amount >= this.hp) {
+      this.conditionalShieldCharges--;
       this.invulnTimer = 0.3;
       this.lastSaveType = 'shield';
       return false;

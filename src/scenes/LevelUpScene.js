@@ -21,27 +21,33 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
     }).setOrigin(0.5).setDepth(1);
     this.add.text(width / 2, 96, `Lv.${build.level}`, { fontFamily: 'Arial', fontSize: '15px', color: '#ffffff' }).setOrigin(0.5).setDepth(1);
 
-    // relic_reroll: a limited number of re-draws of the whole card row, replenished each time
-    // this screen opens (not carried over between level-ups).
-    this.rerollsLeft = build.modifiers.extraRerolls || 0;
+    // Reroll count (spec: 레벨업 리롤 시스템 변경) - every level-up grants a BASE of 1 reroll
+    // always, even with zero relics; relic_reroll (extraRerolls, from RelicSystem) adds ON TOP
+    // of that base rather than being the only source. Neither is carried over between level-ups.
+    this.baseRerolls = 1;
+    this.relicRerolls = build.modifiers.extraRerolls || 0;
+    this.rerollsLeft = this.baseRerolls + this.relicRerolls;
     this.cardContainer = this.add.container(0, 0).setDepth(0);
-    if (this.rerollsLeft > 0) {
-      this.rerollText = this.add.text(width / 2, height - 34, '', {
-        fontFamily: 'Arial Black', fontSize: '14px', color: '#8fd3ff'
-      }).setOrigin(0.5).setDepth(5).setInteractive({ useHandCursor: true });
-      this.rerollText.on('pointerover', () => { if (this.rerollsLeft > 0) this.rerollText.setColor('#ffffff'); });
-      this.rerollText.on('pointerout', () => this.rerollText.setColor('#8fd3ff'));
-      this.rerollText.on('pointerdown', () => this.doReroll());
-      this.input.keyboard.on('keydown-R', () => this.doReroll());
-      this.updateRerollLabel();
-    }
+    this.rerollText = this.add.text(width / 2, height - 34, '', {
+      fontFamily: 'Arial Black', fontSize: '14px', color: '#8fd3ff'
+    }).setOrigin(0.5).setDepth(5).setInteractive({ useHandCursor: true });
+    this.rerollText.on('pointerover', () => { if (this.rerollsLeft > 0) this.rerollText.setColor('#ffffff'); });
+    this.rerollText.on('pointerout', () => this.rerollText.setColor('#8fd3ff'));
+    this.rerollText.on('pointerdown', () => this.doReroll());
+    this.input.keyboard.on('keydown-R', () => this.doReroll());
+    this.updateRerollLabel();
 
     this.renderCards(this.payload.choices);
   }
 
   updateRerollLabel() {
     if (!this.rerollText) return;
-    this.rerollText.setText(this.rerollsLeft > 0 ? `[R] 다시 뽑기 (${this.rerollsLeft}회 남음)` : '');
+    const sourceBreakdown = this.relicRerolls > 0
+      ? ` (기본 ${this.baseRerolls} + 유물 ${this.relicRerolls})`
+      : ` (기본 ${this.baseRerolls})`;
+    this.rerollText.setText(this.rerollsLeft > 0
+      ? `[R] 🔄 다시 뽑기 ${this.rerollsLeft}회${sourceBreakdown}`
+      : `다시 뽑기 소진${sourceBreakdown}`);
   }
 
   doReroll() {
@@ -57,10 +63,13 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
 
   renderCards(choices) {
     this.cardContainer.removeAll(true);
-    this.input.keyboard.removeAllListeners('keydown-ONE');
-    this.input.keyboard.removeAllListeners('keydown-TWO');
-    this.input.keyboard.removeAllListeners('keydown-THREE');
-    this.input.keyboard.removeAllListeners('keydown-FOUR');
+    // Bugfix: only ONE-FOUR were ever cleared, but relic_opportunity can push the choice count
+    // to 5-6 cards (see keyNames below) - a reroll with 5+ cards showing left the FIVE/SIX
+    // handlers from the PREVIOUS render stacked on top of the new ones, so pressing that key
+    // fired every stale onChosen callback too (double-applying an already-rerolled-away choice).
+    for (const k of ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX']) {
+      this.input.keyboard.removeAllListeners(`keydown-${k}`);
+    }
 
     const { width, height } = this.cameras.main;
     const balance = PS.Game.data.balance;
@@ -154,7 +163,7 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
   }
 
   hex(v) {
-    return typeof v === 'string' ? parseInt(v.replace('0x', ''), 16) : v;
+    return typeof v === 'string' ? parseInt(v.replace('0x', '').replace('#', ''), 16) : v;
   }
 
   stars(grade) {

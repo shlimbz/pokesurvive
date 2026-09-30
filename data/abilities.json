@@ -1,7 +1,7 @@
 {
   "static": {
     "id": "static",
-    "name": "Static",
+    "name": "정전기",
     "grade": "rare",
     "description": "피격 시 일정 확률로 주변 적을 마비시킨다.",
     "effects": [
@@ -16,7 +16,7 @@
   },
   "blaze": {
     "id": "blaze",
-    "name": "Blaze",
+    "name": "맹화",
     "grade": "rare",
     "description": "HP가 낮을수록 불꽃 기술 피해가 증가한다.",
     "effects": [
@@ -31,7 +31,7 @@
   },
   "torrent": {
     "id": "torrent",
-    "name": "Torrent",
+    "name": "급류",
     "grade": "rare",
     "description": "HP가 낮을수록 물 기술 피해가 증가한다.",
     "effects": [
@@ -46,7 +46,7 @@
   },
   "overgrow": {
     "id": "overgrow",
-    "name": "Overgrow",
+    "name": "심록",
     "grade": "rare",
     "description": "HP가 낮을수록 풀 기술 피해가 증가한다.",
     "effects": [
@@ -61,7 +61,7 @@
   },
   "intimidate": {
     "id": "intimidate",
-    "name": "Intimidate",
+    "name": "위협",
     "grade": "uncommon",
     "description": "주변 적의 공격력을 지속적으로 감소시킨다.",
     "effects": [
@@ -77,7 +77,7 @@
   },
   "swift_swim": {
     "id": "swift_swim",
-    "name": "Swift Swim",
+    "name": "쓱쓱",
     "grade": "uncommon",
     "description": "물 빌드에서 이동속도가 증가한다.",
     "effects": [
@@ -92,7 +92,7 @@
   },
   "chlorophyll": {
     "id": "chlorophyll",
-    "name": "Chlorophyll",
+    "name": "엽록소",
     "grade": "uncommon",
     "description": "풀 빌드에서 공격속도가 증가한다.",
     "effects": [
@@ -107,7 +107,7 @@
   },
   "flash_fire": {
     "id": "flash_fire",
-    "name": "Flash Fire",
+    "name": "타오르는불꽃",
     "grade": "rare",
     "description": "불꽃 피해를 받을 때마다 불꽃 기술 위력이 누적 상승한다.",
     "effects": [
@@ -122,7 +122,7 @@
   },
   "water_absorb": {
     "id": "water_absorb",
-    "name": "Water Absorb",
+    "name": "저수",
     "grade": "rare",
     "description": "물 속성 피해를 받으면 대신 체력을 회복한다.",
     "effects": [
@@ -135,7 +135,7 @@
   },
   "volt_absorb": {
     "id": "volt_absorb",
-    "name": "Volt Absorb",
+    "name": "축전",
     "grade": "rare",
     "description": "전기 속성 피해를 받으면 대신 체력을 회복한다.",
     "effects": [
@@ -148,7 +148,7 @@
   },
   "levitate": {
     "id": "levitate",
-    "name": "Levitate",
+    "name": "부유",
     "grade": "uncommon",
     "description": "땅 속성 피해에 대한 저항이 크게 증가한다.",
     "effects": [
@@ -162,7 +162,7 @@
   },
   "guts": {
     "id": "guts",
-    "name": "Guts",
+    "name": "근성",
     "grade": "uncommon",
     "description": "상태이상에 걸려있을 때 공격력이 증가한다.",
     "effects": [
@@ -175,7 +175,7 @@
   },
   "technician": {
     "id": "technician",
-    "name": "Technician",
+    "name": "테크니션",
     "grade": "epic",
     "description": "위력이 낮은 기술의 피해가 증가한다.",
     "effects": [
@@ -189,7 +189,7 @@
   },
   "huge_power": {
     "id": "huge_power",
-    "name": "Huge Power",
+    "name": "괴력",
     "grade": "epic",
     "description": "Physical 기술의 피해가 대폭 증가한다.",
     "effects": [
@@ -203,7 +203,7 @@
   },
   "adaptability": {
     "id": "adaptability",
-    "name": "Adaptability",
+    "name": "적응력",
     "grade": "rare",
     "description": "STAB(자기 타입 일치) 보너스가 더 크게 적용된다.",
     "effects": [
@@ -216,7 +216,7 @@
   },
   "run_away": {
     "id": "run_away",
-    "name": "Run Away",
+    "name": "도주",
     "grade": "common",
     "description": "이동 속도가 소폭 증가한다.",
     "effects": [
@@ -245,7 +245,7 @@
   },
   "steadfast": {
     "id": "steadfast",
-    "name": "Steadfast",
+    "name": "심지",
     "grade": "uncommon",
     "description": "상태이상에 걸릴 때마다 잠시 공격속도가 증가한다.",
     "effects": [

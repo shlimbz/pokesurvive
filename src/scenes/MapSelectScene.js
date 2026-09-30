@@ -14,15 +14,25 @@ PS.MapSelectScene = class MapSelectScene extends Phaser.Scene {
       fontFamily: 'Arial Black, sans-serif', fontSize: '26px', color: '#ffffff'
     }).setOrigin(0.5);
 
+    // Spec section 27 (맵 시스템 확장): this screen used to assume every map fit in one row -
+    // fine for 3 maps, but wraps into a second row once the roster grows past what the screen
+    // width can fit, so adding more maps to data/maps.json never silently pushes cards off-screen.
     const maps = Object.values(PS.Game.data.maps);
-    const cardW = 190, cardH = 240;
-    const gap = 30;
-    const totalW = maps.length * cardW + (maps.length - 1) * gap;
-    const startX = width / 2 - totalW / 2 + cardW / 2;
+    const cardW = 190, cardH = 220;
+    const gap = 24;
+    const maxPerRow = Math.max(1, Math.floor((width - 40 + gap) / (cardW + gap)));
+    const rows = Math.ceil(maps.length / maxPerRow);
+    const rowHeight = cardH + 30;
+    const gridStartY = height / 2 - ((rows - 1) * rowHeight) / 2;
 
     maps.forEach((map, i) => {
-      const x = startX + i * (cardW + gap);
-      const y = height / 2;
+      const row = Math.floor(i / maxPerRow);
+      const colCount = Math.min(maxPerRow, maps.length - row * maxPerRow);
+      const totalW = colCount * cardW + (colCount - 1) * gap;
+      const startX = width / 2 - totalW / 2 + cardW / 2;
+      const col = i % maxPerRow;
+      const x = startX + col * (cardW + gap);
+      const y = gridStartY + row * rowHeight;
       const bg = this.add.rectangle(x, y, cardW, cardH, this.hex(map.background.color), 1).setStrokeStyle(2, 0x33424f);
       this.add.text(x, y - cardH / 2 + 26, map.name, { fontFamily: 'Arial Black', fontSize: '18px', color: '#ffffff' }).setOrigin(0.5);
       this.add.text(x, y, `난이도 ${map.difficulty.toFixed(2)}`, { fontFamily: 'Arial', fontSize: '12px', color: '#cccccc' }).setOrigin(0.5);
@@ -40,7 +50,7 @@ PS.MapSelectScene = class MapSelectScene extends Phaser.Scene {
   }
 
   hex(v) {
-    return typeof v === 'string' ? parseInt(v.replace('0x', ''), 16) : v;
+    return typeof v === 'string' ? parseInt(v.replace('0x', '').replace('#', ''), 16) : v;
   }
 
   selectMap(mapId) {

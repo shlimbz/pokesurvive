@@ -1,10 +1,11 @@
 {
   "pikachu": {
     "id": "pikachu",
-    "name": "Pikachu",
+    "name": "피카츄",
     "types": [
       "electric"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 35,
@@ -24,10 +25,11 @@
   },
   "raichu": {
     "id": "raichu",
-    "name": "Raichu",
+    "name": "라이츄",
     "types": [
       "electric"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 60,
@@ -48,10 +50,11 @@
   },
   "charmander": {
     "id": "charmander",
-    "name": "Charmander",
+    "name": "파이리",
     "types": [
       "fire"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 39,
@@ -71,10 +74,11 @@
   },
   "charmeleon": {
     "id": "charmeleon",
-    "name": "Charmeleon",
+    "name": "리자드",
     "types": [
       "fire"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 58,
@@ -95,11 +99,12 @@
   },
   "charizard": {
     "id": "charizard",
-    "name": "Charizard",
+    "name": "리자몽",
     "types": [
       "fire",
       "flying"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 78,
@@ -121,10 +126,11 @@
   },
   "squirtle": {
     "id": "squirtle",
-    "name": "Squirtle",
+    "name": "꼬부기",
     "types": [
       "water"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 44,
@@ -144,10 +150,11 @@
   },
   "wartortle": {
     "id": "wartortle",
-    "name": "Wartortle",
+    "name": "어니부기",
     "types": [
       "water"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 59,
@@ -168,10 +175,11 @@
   },
   "blastoise": {
     "id": "blastoise",
-    "name": "Blastoise",
+    "name": "거북왕",
     "types": [
       "water"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 79,
@@ -192,11 +200,12 @@
   },
   "bulbasaur": {
     "id": "bulbasaur",
-    "name": "Bulbasaur",
+    "name": "이상해씨",
     "types": [
       "grass",
       "poison"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 45,
@@ -216,11 +225,12 @@
   },
   "ivysaur": {
     "id": "ivysaur",
-    "name": "Ivysaur",
+    "name": "이상해풀",
     "types": [
       "grass",
       "poison"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 60,
@@ -241,11 +251,12 @@
   },
   "venusaur": {
     "id": "venusaur",
-    "name": "Venusaur",
+    "name": "이상해꽃",
     "types": [
       "grass",
       "poison"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 80,
@@ -266,10 +277,11 @@
   },
   "eevee": {
     "id": "eevee",
-    "name": "Eevee",
+    "name": "이브이",
     "types": [
       "normal"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 55,
@@ -289,10 +301,11 @@
   },
   "flareon": {
     "id": "flareon",
-    "name": "Flareon",
+    "name": "부스터",
     "types": [
       "fire"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 65,
@@ -313,10 +326,11 @@
   },
   "vaporeon": {
     "id": "vaporeon",
-    "name": "Vaporeon",
+    "name": "샤미드",
     "types": [
       "water"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 130,
@@ -337,10 +351,11 @@
   },
   "jolteon": {
     "id": "jolteon",
-    "name": "Jolteon",
+    "name": "쥬피썬더",
     "types": [
       "electric"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 65,
@@ -361,11 +376,12 @@
   },
   "gastly": {
     "id": "gastly",
-    "name": "Gastly",
+    "name": "고오스",
     "types": [
       "ghost",
       "poison"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 30,
@@ -385,11 +401,12 @@
   },
   "haunter": {
     "id": "haunter",
-    "name": "Haunter",
+    "name": "고우스트",
     "types": [
       "ghost",
       "poison"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 45,
@@ -410,11 +427,12 @@
   },
   "gengar": {
     "id": "gengar",
-    "name": "Gengar",
+    "name": "팬텀",
     "types": [
       "ghost",
       "poison"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 60,
@@ -436,10 +454,11 @@
   },
   "machop": {
     "id": "machop",
-    "name": "Machop",
+    "name": "알통몬",
     "types": [
       "fighting"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 70,
@@ -460,10 +479,11 @@
   },
   "machoke": {
     "id": "machoke",
-    "name": "Machoke",
+    "name": "근육몬",
     "types": [
       "fighting"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 80,
@@ -484,10 +504,11 @@
   },
   "machamp": {
     "id": "machamp",
-    "name": "Machamp",
+    "name": "괴력몬",
     "types": [
       "fighting"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 90,
@@ -508,10 +529,11 @@
   },
   "vulpix": {
     "id": "vulpix",
-    "name": "Vulpix",
+    "name": "식스테일",
     "types": [
       "fire"
     ],
+    "generation": 1,
     "isStarter": true,
     "baseStats": {
       "hp": 38,
@@ -531,10 +553,11 @@
   },
   "ninetales": {
     "id": "ninetales",
-    "name": "Ninetales",
+    "name": "나인테일",
     "types": [
       "fire"
     ],
+    "generation": 1,
     "isStarter": false,
     "baseStats": {
       "hp": 73,
@@ -555,10 +578,11 @@
   },
   "piplup": {
     "id": "piplup",
-    "name": "Piplup",
+    "name": "팽도리",
     "types": [
       "water"
     ],
+    "generation": 4,
     "isStarter": true,
     "baseStats": {
       "hp": 53,
@@ -578,10 +602,11 @@
   },
   "prinplup": {
     "id": "prinplup",
-    "name": "Prinplup",
+    "name": "팽태자",
     "types": [
       "water"
     ],
+    "generation": 4,
     "isStarter": false,
     "baseStats": {
       "hp": 64,
@@ -602,11 +627,12 @@
   },
   "empoleon": {
     "id": "empoleon",
-    "name": "Empoleon",
+    "name": "엠페르트",
     "types": [
       "water",
       "steel"
     ],
+    "generation": 4,
     "isStarter": false,
     "baseStats": {
       "hp": 84,
@@ -627,10 +653,11 @@
   },
   "riolu": {
     "id": "riolu",
-    "name": "Riolu",
+    "name": "리오르",
     "types": [
       "fighting"
     ],
+    "generation": 4,
     "isStarter": true,
     "baseStats": {
       "hp": 40,
@@ -650,11 +677,12 @@
   },
   "lucario": {
     "id": "lucario",
-    "name": "Lucario",
+    "name": "루카리오",
     "types": [
       "fighting",
       "steel"
     ],
+    "generation": 4,
     "isStarter": false,
     "baseStats": {
       "hp": 70,
@@ -675,11 +703,12 @@
   },
   "clefairy": {
     "id": "clefairy",
-    "name": "Clefairy",
+    "name": "삐삐",
     "types": [
       "fairy"
     ],
-    "isStarter": true,
+    "generation": 1,
+    "isStarter": false,
     "baseStats": {
       "hp": 45,
       "attack": 35,
@@ -695,5 +724,200 @@
     ],
     "color": "0xFFB3EC",
     "description": "체력 소모 없는 Orbit+Homing 견제와 매직 가드(보호막)로 버티는 지속형 빌드."
+  },
+  "ralts": {
+    "id": "ralts",
+    "name": "랄토스",
+    "types": [
+      "psychic",
+      "fairy"
+    ],
+    "generation": 3,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 28,
+      "attack": 25,
+      "defense": 25,
+      "spAttack": 45,
+      "spDefense": 35,
+      "speed": 40
+    },
+    "ability": "levitate",
+    "moves": [
+      "disarming_voice"
+    ],
+    "color": "0xFFA8E0",
+    "description": "유도탄형 페어리 견제로 시작해 킬리아, 가디안으로 진화하는 특수공격 빌드."
+  },
+  "kirlia": {
+    "id": "kirlia",
+    "name": "킬리아",
+    "types": [
+      "psychic",
+      "fairy"
+    ],
+    "generation": 3,
+    "isStarter": false,
+    "baseStats": {
+      "hp": 38,
+      "attack": 35,
+      "defense": 35,
+      "spAttack": 65,
+      "spDefense": 55,
+      "speed": 50
+    },
+    "ability": "levitate",
+    "moves": [
+      "disarming_voice",
+      "psybeam"
+    ],
+    "color": "0xE896D8",
+    "description": "사이키델릭 빔이 추가되어 견제 범위가 넓어진 랄토스의 진화체."
+  },
+  "gardevoir": {
+    "id": "gardevoir",
+    "name": "가디안",
+    "types": [
+      "psychic",
+      "fairy"
+    ],
+    "generation": 3,
+    "isStarter": false,
+    "baseStats": {
+      "hp": 68,
+      "attack": 65,
+      "defense": 65,
+      "spAttack": 125,
+      "spDefense": 115,
+      "speed": 80
+    },
+    "ability": "magic_shield",
+    "moves": [
+      "disarming_voice",
+      "psybeam",
+      "fairy_aura"
+    ],
+    "color": "0xC06CC0",
+    "description": "문포스 유도탄, 페어리오라 범위 공격, 매직 가드 보호막을 갖춘 페어리/에스퍼 최종 진화체."
+  },
+  "espeon": {
+    "id": "espeon",
+    "name": "에스퍼",
+    "types": [
+      "psychic"
+    ],
+    "generation": 2,
+    "isStarter": false,
+    "baseStats": {
+      "hp": 65,
+      "attack": 65,
+      "defense": 60,
+      "spAttack": 130,
+      "spDefense": 95,
+      "speed": 110
+    },
+    "ability": "technician",
+    "moves": [
+      "quick_attack",
+      "tackle"
+    ],
+    "color": "0xFFC0E8",
+    "description": "이브이가 정신력을 갈고닦아 진화. 사이키델릭 빔으로 견제하는 고화력 특수공격형."
+  },
+  "umbreon": {
+    "id": "umbreon",
+    "name": "블래키",
+    "types": [
+      "dark"
+    ],
+    "generation": 2,
+    "isStarter": false,
+    "baseStats": {
+      "hp": 95,
+      "attack": 65,
+      "defense": 110,
+      "spAttack": 60,
+      "spDefense": 130,
+      "speed": 65
+    },
+    "ability": "steadfast",
+    "moves": [
+      "quick_attack",
+      "tackle"
+    ],
+    "color": "0x2A2A40",
+    "description": "이브이가 달빛 아래에서 진화. 높은 내구력과 심지 특성으로 버티는 탱커형."
+  },
+  "sylveon": {
+    "id": "sylveon",
+    "name": "님피아",
+    "types": [
+      "fairy"
+    ],
+    "generation": 6,
+    "isStarter": false,
+    "baseStats": {
+      "hp": 95,
+      "attack": 65,
+      "defense": 65,
+      "spAttack": 110,
+      "spDefense": 130,
+      "speed": 60
+    },
+    "ability": "magic_shield",
+    "moves": [
+      "quick_attack",
+      "tackle"
+    ],
+    "color": "0xFFD0E0",
+    "description": "이브이가 유대를 키워 진화. 문포스와 매직 가드로 견제와 생존을 겸비한 지원형."
+  },
+  "leafeon": {
+    "id": "leafeon",
+    "name": "리피아",
+    "types": [
+      "grass"
+    ],
+    "generation": 4,
+    "isStarter": false,
+    "baseStats": {
+      "hp": 65,
+      "attack": 110,
+      "defense": 130,
+      "spAttack": 60,
+      "spDefense": 65,
+      "speed": 95
+    },
+    "ability": "chlorophyll",
+    "moves": [
+      "quick_attack",
+      "tackle"
+    ],
+    "color": "0x4CAF50",
+    "description": "이브이가 이끼 바위 근처에서 진화. 잎날가르기 확산 공격과 높은 방어력의 근접형."
+  },
+  "glaceon": {
+    "id": "glaceon",
+    "name": "글레이시아",
+    "types": [
+      "ice"
+    ],
+    "generation": 4,
+    "isStarter": false,
+    "baseStats": {
+      "hp": 65,
+      "attack": 60,
+      "defense": 110,
+      "spAttack": 130,
+      "spDefense": 95,
+      "speed": 65
+    },
+    "ability": "adaptability",
+    "moves": [
+      "quick_attack",
+      "tackle"
+    ],
+    "color": "0xB0E8FF",
+    "description": "이브이가 얼어붙은 바위 근처에서 진화. 가루눈 확산과 적응력으로 밀어붙이는 특수공격형."
   }
 }

@@ -26,7 +26,7 @@ PS.MOVE_PATTERN_KO = {
 PS.STATUS_NAME_KO = {
   burn: '화상', poison: '중독', paralysis: '마비', freeze: '빙결',
   slow: '둔화', confusion: '혼란', defenseDown: '방어력 감소',
-  attackDown: '공격력 감소', armorBreak: '방어구 파괴'
+  attackDown: '공격력 감소', armorBreak: '방어구 파괴', seed: '씨뿌리기'
 };
 
 PS.typeNameKo = function typeNameKo(typeId) {
