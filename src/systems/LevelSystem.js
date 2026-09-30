@@ -138,11 +138,37 @@ PS.LevelSystem = class LevelSystem {
     if (choice.kind === 'move') {
       const move = this.managers.move.getMove(choice.id);
       const level = build.getMoveLevel(choice.id);
-      return {
-        title: move.name,
-        subtitle: choice.isNew ? '새로운 기술' : `Lv${level} → Lv${level + 1}`,
-        body: `${PS.typeNameKo(move.type)} · ${categoryLabels[move.category] || move.category} · 위력 ${move.baseDamage}`
-      };
+      const dmgMultTable = PS.Game.combat.moveLevelDamageMult;
+      const isStab = build.species.types.includes(move.type);
+
+      // Core line: type / pattern / category / power, so the player knows AT A GLANCE what
+      // this move actually does on the field - not just its flavor stats.
+      const parts = [
+        `${PS.typeNameKo(move.type)}${isStab ? '(STAB)' : ''}`,
+        PS.patternNameKo(move.pattern),
+        categoryLabels[move.category] || move.category,
+        `위력 ${move.baseDamage}`
+      ];
+      // Reach: melee uses `range` as its hit radius, area moves use `areaRadius`, everything
+      // else (projectile/spread/beam/chain/homing/boomerang) uses `range` as travel distance.
+      const reach = move.pattern === 'circle' || move.pattern === 'orbit' ? move.areaRadius : move.range;
+      if (reach) parts.push(`사거리 ${Math.round(reach * build.modifiers.rangeMult)}`);
+      if (move.cooldownMs) parts.push(`쿨타임 ${(move.cooldownMs / 1000).toFixed(1)}초`);
+
+      const statusDef = move.statusEffect || (move.statusOnly ? { id: move.statusOnly.status, chance: move.statusOnly.chance } : null);
+      if (statusDef) parts.push(`${PS.statusNameKo(statusDef.id)} ${Math.round(statusDef.chance * 100)}%`);
+
+      let subtitle;
+      if (choice.isNew) {
+        subtitle = '새로운 기술';
+      } else {
+        const curMult = dmgMultTable[Math.min(level, 5) - 1];
+        const nextMult = dmgMultTable[Math.min(level + 1, 5) - 1];
+        const pct = Math.round((nextMult / curMult - 1) * 100);
+        subtitle = `Lv${level} → Lv${level + 1} (위력 +${pct}%)`;
+      }
+
+      return { title: move.name, subtitle, body: parts.join(' · ') };
     }
     if (choice.kind === 'item') {
       const item = this.managers.item.getItem(choice.id);

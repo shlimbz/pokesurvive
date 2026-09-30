@@ -5,7 +5,7 @@ window.PS = window.PS || {};
 
 PS.Boss = {
   announce(scene, enemy) {
-    const label = enemy.tier === 'boss' ? 'BOSS APPEARED' : 'MINI BOSS APPEARED';
+    const label = enemy.tier === 'boss' ? '보스 출현!' : '미니보스 출현!';
     const banner = scene.add.text(scene.cameras.main.width / 2, 90, `${label}\n${enemy.species.name}`, {
       fontFamily: 'Arial Black, sans-serif',
       fontSize: '22px',

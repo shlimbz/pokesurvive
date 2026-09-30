@@ -15,7 +15,7 @@ PS.GameOverScene = class GameOverScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#0c1015');
     const r = this.result;
 
-    const headline = r.bossDefeated ? 'VICTORY! 최종 보스 처치!' : (r.survived ? 'SURVIVED 15 MINUTES!' : 'GAME OVER');
+    const headline = r.bossDefeated ? '승리! 최종 보스 처치!' : (r.survived ? '15분 생존 성공!' : '게임 오버');
     const color = r.survived || r.bossDefeated ? '#62ffb0' : '#ff5555';
 
     this.add.text(width / 2, height * 0.22, headline, {
@@ -25,7 +25,7 @@ PS.GameOverScene = class GameOverScene extends Phaser.Scene {
     const mm = Math.floor((r.survivedSec || 0) / 60);
     const ss = (r.survivedSec || 0) % 60;
     const lines = [
-      `Pokémon: ${r.speciesName || '-'}`,
+      `포켓몬: ${r.speciesName || '-'}`,
       `생존 시간: ${mm}:${ss.toString().padStart(2, '0')}`,
       `도달 레벨: ${r.level || 1}`,
       `처치 수: ${r.kills || 0}`,

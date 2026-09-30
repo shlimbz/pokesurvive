@@ -14,10 +14,10 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
   create() {
     const { width, height } = this.cameras.main;
     const balance = PS.Game.data.balance;
-    const { choices, build, levelSystem, onChosen } = this.payload;
+    const { choices, build, levelSystem, onChosen, audio } = this.payload;
 
     this.add.rectangle(0, 0, width, height, 0x000000, 0.65).setOrigin(0).setScrollFactor(0).setDepth(0);
-    this.add.text(width / 2, 60, 'LEVEL UP!', {
+    this.add.text(width / 2, 60, '레벨 업!', {
       fontFamily: 'Arial Black, sans-serif', fontSize: '30px', color: '#ffd400', stroke: '#000', strokeThickness: 5
     }).setOrigin(0.5).setDepth(1);
     this.add.text(width / 2, 96, `Lv.${build.level}`, { fontFamily: 'Arial', fontSize: '15px', color: '#ffffff' }).setOrigin(0.5).setDepth(1);
@@ -95,7 +95,7 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
       }
 
       const zone = this.add.zone(x, y, cardW, cardH).setInteractive({ useHandCursor: true }).setDepth(3);
-      zone.on('pointerover', () => card.setStrokeStyle(flair.borderW + 1, 0xffffff));
+      zone.on('pointerover', () => { card.setStrokeStyle(flair.borderW + 1, 0xffffff); if (audio) audio.playCardHover(); });
       zone.on('pointerout', () => card.setStrokeStyle(flair.borderW, gradeColorHex));
       zone.on('pointerdown', () => onChosen(choice));
 

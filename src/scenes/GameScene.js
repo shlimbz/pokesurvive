@@ -95,8 +95,11 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys();
     this.wasd = this.input.keyboard.addKeys('W,A,S,D');
     this.setupDebugKeys();
+    this.setupPauseAndBuildOverview();
 
     this.buildHud();
+    this.buildLowHpVignette();
+    this.rangeRingGfx = this.add.graphics().setDepth(2);
 
     this.events.on('resume', () => { this.isPaused = false; });
   }
@@ -124,8 +127,50 @@ PS.GameScene = class GameScene extends Phaser.Scene {
 
     this.levelText = this.add.text(20, 52, 'Lv.1', { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffffff' }).setScrollFactor(0).setDepth(51);
     this.timerText = this.add.text(w / 2, 20, '15:00', { fontFamily: 'Arial Black', fontSize: '20px', color: '#ffffff' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(51);
-    this.killText = this.add.text(w - 20, 20, 'Kills: 0', { fontFamily: 'Arial', fontSize: '13px', color: '#cccccc' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+    this.killText = this.add.text(w - 20, 20, '처치: 0', { fontFamily: 'Arial', fontSize: '13px', color: '#cccccc' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
     this.speciesText = this.add.text(w - 20, 40, this.build.species.name, { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffd400' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+    this.muteText = this.add.text(20, this.cameras.main.height - 20, '🔊 M: 음소거', { fontFamily: 'Arial', fontSize: '11px', color: '#666666' }).setOrigin(0, 1).setScrollFactor(0).setDepth(51);
+
+    // Prominent top-of-screen HP bar(s) for miniboss/boss fights (separate from the small
+    // floating bar every enemy already has, which is easy to lose track of against a boss's
+    // huge HP pool or when it scrolls off-camera). Keyed by enemy instance; supports the rare
+    // case of a miniboss still alive when the final boss spawns (both bars stack).
+    this.bossBars = new Map();
+  }
+
+  // ================= Boss/miniboss top-screen HP bar =================
+  addBossHpBar(enemy) {
+    const w = this.cameras.main.width;
+    const barW = 360;
+    const slot = this.bossBars.size;
+    const y = 116 + slot * 34;
+    const nameText = this.add.text(w / 2, y - 13, enemy.species.name, {
+      fontFamily: 'Arial Black', fontSize: '12px', color: '#ffffff', stroke: '#000', strokeThickness: 3
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(51);
+    const bg = this.add.rectangle(w / 2, y, barW, 14, 0x220000, 0.85).setScrollFactor(0).setDepth(50);
+    const fg = this.add.rectangle(w / 2 - barW / 2, y, barW, 10, enemy.tier === 'boss' ? 0xff3b3b : 0xff9d3b, 1)
+      .setOrigin(0, 0.5).setScrollFactor(0).setDepth(51);
+    this.bossBars.set(enemy, { bg, fg, nameText, barW });
+  }
+
+  updateBossHpBars() {
+    for (const [enemy, bar] of this.bossBars) {
+      if (!enemy.active || enemy.hp <= 0) {
+        bar.bg.destroy(); bar.fg.destroy(); bar.nameText.destroy();
+        this.bossBars.delete(enemy);
+        continue;
+      }
+      bar.fg.width = Math.max(0, bar.barW * (enemy.hp / enemy.maxHp));
+    }
+    // re-stack remaining bars so there's never a gap if one was removed
+    let i = 0;
+    for (const [, bar] of this.bossBars) {
+      const y = 116 + i * 34;
+      bar.nameText.setY(y - 13);
+      bar.bg.setY(y);
+      bar.fg.setY(y);
+      i++;
+    }
   }
 
   updateHud() {
@@ -134,13 +179,170 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.expBarFg.width = 216 * PS.MathUtils.clamp(this.build.exp / expNeeded, 0, 1);
     this.levelText.setText(`Lv.${this.build.level}`);
     this.timerText.setText(this.waveSystem.getTimeRemainingLabel(this.runTimeSec));
-    this.killText.setText(`Kills: ${this.build.kills}`);
+    this.killText.setText(`처치: ${this.build.kills}`);
     this.speciesText.setText(this.build.species.name);
+  }
+
+  // ================= Pause + build overview (ESC / TAB) =================
+  setupPauseAndBuildOverview() {
+    this.manualPaused = false;
+    this.buildOverviewOpen = false;
+
+    const kb = this.input.keyboard;
+    kb.on('keydown-ESC', () => {
+      if (this.buildOverviewOpen) { this.hideBuildOverview(); return; }
+      if (this.isPaused || this.matchEnded) return; // a LevelUp/Evolution overlay owns the pause
+      this.manualPaused = !this.manualPaused;
+      this.pauseOverlay.setVisible(this.manualPaused);
+      if (this.manualPaused) this.audio.playPause(); else this.audio.playUnpause();
+    });
+    kb.on('keydown-TAB', (e) => {
+      e.preventDefault?.();
+      // Check "already open" first: showBuildOverview() sets isPaused=true as its pause
+      // mechanism, so a naive guard on isPaused would also block the close on the 2nd press.
+      if (this.buildOverviewOpen) { this.hideBuildOverview(); return; }
+      if (this.manualPaused || this.isPaused || this.matchEnded) return;
+      this.showBuildOverview();
+    });
+    kb.on('keydown-M', () => {
+      const muted = this.audio.toggleMuted();
+      this.muteText.setText(muted ? '🔇 M: 음소거 해제' : '🔊 M: 음소거');
+    });
+
+    const w = this.cameras.main.width, h = this.cameras.main.height;
+    this.pauseOverlay = this.add.container(0, 0).setScrollFactor(0).setDepth(200).setVisible(false);
+    this.pauseOverlay.add(this.add.rectangle(0, 0, w, h, 0x000000, 0.7).setOrigin(0));
+    this.pauseOverlay.add(this.add.text(w / 2, h / 2 - 20, '일시정지', {
+      fontFamily: 'Arial Black', fontSize: '32px', color: '#ffffff'
+    }).setOrigin(0.5));
+    this.pauseOverlay.add(this.add.text(w / 2, h / 2 + 24, 'ESC 키를 눌러 계속하기', {
+      fontFamily: 'Arial', fontSize: '14px', color: '#aaaaaa'
+    }).setOrigin(0.5));
+
+    this.buildOverviewContainer = this.add.container(0, 0).setScrollFactor(0).setDepth(200).setVisible(false);
+  }
+
+  showBuildOverview() {
+    this.buildOverviewOpen = true;
+    const c = this.buildOverviewContainer;
+    c.removeAll(true);
+    const w = this.cameras.main.width, h = this.cameras.main.height;
+    c.add(this.add.rectangle(0, 0, w, h, 0x000000, 0.75).setOrigin(0));
+    c.add(this.add.text(w / 2, 30, `현재 빌드 - ${this.build.species.name} Lv.${this.build.level}`, {
+      fontFamily: 'Arial Black', fontSize: '18px', color: '#ffd400'
+    }).setOrigin(0.5));
+
+    const col1X = 40, col2X = w / 2 + 20;
+    let y1 = 70, y2 = 70;
+
+    c.add(this.add.text(col1X, y1, '보유 기술', { fontFamily: 'Arial Black', fontSize: '14px', color: '#62ffb0' }));
+    y1 += 22;
+    for (const moveId of this.build.getOwnedMoveIds()) {
+      const move = this.managers.move.getMove(moveId);
+      const level = this.build.getMoveLevel(moveId);
+      const stab = this.build.species.types.includes(move.type) ? ' (STAB)' : '';
+      c.add(this.add.text(col1X, y1, `${move.name} Lv${level} - ${PS.typeNameKo(move.type)}${stab} · ${PS.patternNameKo(move.pattern)}`, {
+        fontFamily: 'Arial', fontSize: '12px', color: '#ffffff'
+      }));
+      y1 += 20;
+    }
+
+    y1 += 14;
+    c.add(this.add.text(col1X, y1, '보유 특성', { fontFamily: 'Arial Black', fontSize: '14px', color: '#62ffb0' }));
+    y1 += 22;
+    const abilityIds = Object.keys(this.build.abilities);
+    if (abilityIds.length === 0) c.add(this.add.text(col1X, y1, '(없음)', { fontFamily: 'Arial', fontSize: '12px', color: '#888888' }));
+    for (const id of abilityIds) {
+      const ability = this.managers.ability.getAbility(id);
+      c.add(this.add.text(col1X, y1, `${ability.name} Lv${this.build.getAbilityLevel(id)} - ${ability.description}`, {
+        fontFamily: 'Arial', fontSize: '12px', color: '#ffffff', wordWrap: { width: w / 2 - 60 }
+      }));
+      y1 += 20 * Math.ceil((ability.name.length + ability.description.length) / 45 || 1);
+    }
+
+    c.add(this.add.text(col2X, y2, '보유 아이템', { fontFamily: 'Arial Black', fontSize: '14px', color: '#62ffb0' }));
+    y2 += 22;
+    const itemIds = Object.keys(this.build.items);
+    if (itemIds.length === 0) c.add(this.add.text(col2X, y2, '(없음)', { fontFamily: 'Arial', fontSize: '12px', color: '#888888' }));
+    for (const id of itemIds) {
+      const item = this.managers.item.getItem(id);
+      c.add(this.add.text(col2X, y2, `${item.name} Lv${this.build.getItemLevel(id)}`, {
+        fontFamily: 'Arial', fontSize: '12px', color: '#ffffff'
+      }));
+      y2 += 20;
+    }
+
+    y2 += 14;
+    c.add(this.add.text(col2X, y2, '능력치 강화', { fontFamily: 'Arial Black', fontSize: '14px', color: '#62ffb0' }));
+    y2 += 22;
+    const statLabels = { hp: 'HP', attack: '공격', defense: '방어', spAttack: '특수공격', spDefense: '특수방어', speed: '스피드' };
+    for (const [statId, picks] of Object.entries(this.build.statPicks || {})) {
+      if (picks > 0) {
+        c.add(this.add.text(col2X, y2, `${statLabels[statId] || statId} ${picks}회 강화`, {
+          fontFamily: 'Arial', fontSize: '12px', color: '#ffffff'
+        }));
+        y2 += 20;
+      }
+    }
+
+    c.add(this.add.text(w / 2, h - 30, 'TAB 키를 눌러 닫기', {
+      fontFamily: 'Arial', fontSize: '13px', color: '#aaaaaa'
+    }).setOrigin(0.5));
+
+    c.setVisible(true);
+    this.isPaused = true; // reuse the existing pause gate so combat truly freezes while reading
+  }
+
+  hideBuildOverview() {
+    this.buildOverviewOpen = false;
+    this.buildOverviewContainer.setVisible(false);
+    this.isPaused = false;
+  }
+
+  // ================= Low HP warning vignette =================
+  buildLowHpVignette() {
+    const w = this.cameras.main.width, h = this.cameras.main.height;
+    this.lowHpVignette = this.add.rectangle(0, 0, w, h, 0xff0000, 0).setOrigin(0).setScrollFactor(0).setDepth(90);
+  }
+
+  updateLowHpVignette(time) {
+    const ratio = this.player.getHpRatio();
+    if (ratio <= 0.25) {
+      // Heartbeat-style pulse that quickens as HP gets lower, so it reads as urgency,
+      // not just a static red screen edge.
+      const speed = 4 + (0.25 - ratio) * 40;
+      const pulse = (Math.sin(time * 0.008 * speed) + 1) / 2;
+      this.lowHpVignette.setAlpha(0.12 + pulse * 0.18);
+    } else {
+      this.lowHpVignette.setAlpha(0);
+    }
+  }
+
+  // ================= Attack range indicators =================
+  // Faint, always-on rings around the player showing each owned move's actual reach, so
+  // "how far does this projectile/melee move actually go" is answered visually instead of
+  // by trial and error (playtesting feedback: range was hard to judge from projectiles alone).
+  updateRangeRings() {
+    const g = this.rangeRingGfx;
+    g.clear();
+    const seen = new Set();
+    for (const moveId of this.build.getOwnedMoveIds()) {
+      const move = this.managers.move.getMove(moveId);
+      if (!move) continue;
+      const isAreaPattern = move.pattern === 'circle' || move.pattern === 'orbit';
+      const radius = isAreaPattern ? this.getEffectiveAreaRadius(move, 150) : this.getEffectiveRange(move);
+      const key = Math.round(radius / 4); // dedupe near-identical radii so rings don't overdraw
+      if (!radius || seen.has(key)) continue;
+      seen.add(key);
+      const def = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
+      g.lineStyle(1.5, this.assets.hexToInt(def.color), 0.16);
+      g.strokeCircle(this.player.x, this.player.y, radius);
+    }
   }
 
   // ================= Update loop =================
   update(time, deltaMs) {
-    if (this.isPaused || this.matchEnded) return;
+    if (this.isPaused || this.manualPaused || this.matchEnded) return;
     const dt = Math.min(deltaMs, 50) / 1000;
     this.runTimeSec += dt;
 
@@ -171,6 +373,9 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.checkEvolution();
     this.updateAuraAbilities(dt);
     this.updateHud();
+    this.updateBossHpBars();
+    this.updateLowHpVignette(time);
+    this.updateRangeRings();
 
     if (this.player.isDead()) this.endMatch(false);
     if (this.waveSystem.isMatchOver(this.runTimeSec)) this.endMatch(true);
@@ -369,6 +574,8 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     });
     this.vfx.showFeedbackText(enemy.x, enemy.y, result.label);
     this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), enemy.x, enemy.y);
+    this.audio.playHit(result.isCrit);
+    if (result.label === 'superEffective') this.audio.playSuperEffective();
 
     if (result.lifestealPercent > 0) {
       this.player.hp = Math.min(this.player.maxHp, this.player.hp + result.damage * result.lifestealPercent);
@@ -456,6 +663,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       const applied = this.player.takeDamage(result.damage);
       if (applied) {
         this.damageNumberPool.obtain(this.player.x, this.player.y - 24, result.damage, { color: '#ff6666' });
+        this.audio.playPlayerHurt();
         this.triggerStaticHook();
       }
       if (result.statusId && PS.RandomUtils.chance(result.statusChance)) this.statusFx.tryApply(this.player, result.statusId, result.statusChance);
@@ -507,6 +715,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   onPlayerTouchGem(gem) {
     if (!gem.active) return;
     this.build.addExp(gem.value);
+    this.audio.playPickupGem();
     this.gemPool.release(gem);
   }
 
@@ -542,18 +751,23 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       this.damageNumberPool.obtain(this.player.x, this.player.y - 30, '+HP', { color: '#ff6b8a', scale: 1.2 });
     } else if (kind === 'speed') {
       this.player.applyFieldSpeedBuff(1.6, 8);
-      this.damageNumberPool.obtain(this.player.x, this.player.y - 30, 'SPEED UP!', { color: '#4dd2ff', scale: 1.1 });
+      this.damageNumberPool.obtain(this.player.x, this.player.y - 30, '스피드 업!', { color: '#4dd2ff', scale: 1.1 });
     } else if (kind === 'magnet') {
       this.gemPool.forEachActive(g => { g.magnetized = true; });
-      this.damageNumberPool.obtain(this.player.x, this.player.y - 30, 'MAGNET!', { color: '#ffd400', scale: 1.2 });
+      this.damageNumberPool.obtain(this.player.x, this.player.y - 30, '자석 효과!', { color: '#ffd400', scale: 1.2 });
     }
+    this.audio.playFieldPickup(kind);
     pickup.destroy();
   }
 
   // ================= Enemy lifecycle =================
   spawnEnemy(species, stats, x, y, isBig) {
     const enemy = this.enemyPool.obtain(species, stats, x, y);
-    if (isBig) PS.Boss.announce(this, enemy);
+    if (isBig) {
+      PS.Boss.announce(this, enemy);
+      this.addBossHpBar(enemy);
+      this.audio.playBossAppear();
+    }
     return enemy;
   }
 
@@ -561,6 +775,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.build.recordKill();
     this.vfx.playDeathBurst(enemy.x, enemy.y, this.assets.hexToInt(enemy.species.color));
     this.gemPool.obtain(enemy.x, enemy.y, Math.max(1, Math.round(enemy.expValue)));
+    this.audio.playEnemyDeath();
     if (enemy.tier === 'boss') {
       this.bossKilled = true;
     }
@@ -586,12 +801,15 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     if (!this.pendingLevelUps || this.pendingLevelUps <= 0) return;
     this.pendingLevelUps--;
     this.isPaused = true;
+    this.audio.playLevelUp();
     const choices = this.levelSystem.generateChoices(this.build, this.runTimeSec);
     this.scene.launch('LevelUp', {
       choices,
       build: this.build,
       levelSystem: this.levelSystem,
+      audio: this.audio,
       onChosen: (choice) => {
+        this.audio.playCardSelect(choice.grade);
         this.levelSystem.applyChoice(this.build, choice);
         this.player.refreshFromBuild();
         this.scene.stop('LevelUp');
@@ -615,6 +833,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.player.setSpeciesTexture(this.build.speciesId);
     this.player.refreshFromBuild();
     this.vfx.playEvolutionFlash(this.player.x, this.player.y);
+    this.audio.playEvolution();
 
     this.scene.launch('Evolution', {
       fromName: fromSpecies.name,
@@ -631,6 +850,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   endMatch(survived) {
     if (this.matchEnded) return;
     this.matchEnded = true;
+    this.audio.playGameOver(survived || this.bossKilled);
     const result = {
       survived,
       bossDefeated: this.bossKilled,
