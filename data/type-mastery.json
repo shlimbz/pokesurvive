@@ -1,0 +1,107 @@
+{
+  "comment": "Type Mastery (design spec section 30): passive, automatic per-type progression - no level-up card needed. XP is earned just by playing (hitting with a move of that type, killing with it, landing that type's status effect), and each of the 5 levels unlocks ONE more effect that reinforces that type's own 'combat grammar' (Electric = Chain/Paralysis, Fire = Burn, Water = Slow/knockback-adjacent, Grass/Poison = DoT, Fighting = armor break, Ghost = confusion, Ice = freeze/shatter) rather than being a flat, type-agnostic damage-percent slider. Effects reuse the SAME effect.type vocabulary as data/items.json wherever possible (type_damage, status_chance) plus two new ones consumed only by TypeMasterySystem/CombatSystem/GameScene: chain_range_bonus (multiplies a chain move's hop range) and target_status_damage_bonus (bonus damage when the move's own type hits a target already afflicted by the named status - the 'paralyzed target takes more Electric damage' style payoff). Effects are CUMULATIVE: reaching level N keeps every effect unlocked at levels 1..N-1 active too. Any type with no explicit entry below falls back to `default`.",
+  "xpPerLevel": [0, 30, 80, 160, 300, 500],
+  "xpGain": { "hitOfType": 1, "killWithType": 5, "statusAppliedOfType": 3 },
+  "types": {
+    "electric": {
+      "levels": [
+        null,
+        { "label": "전기 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "마비 확률 +5%", "effects": [{ "type": "status_chance", "status": "paralysis", "value": 0.05 }] },
+        { "label": "연쇄(Chain) 사거리 +15%", "effects": [{ "type": "chain_range_bonus", "value": 0.15 }] },
+        { "label": "마비된 적에게 전기 피해 +20%", "effects": [{ "type": "target_status_damage_bonus", "status": "paralysis", "value": 0.20 }] },
+        { "label": "전기 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "fire": {
+      "levels": [
+        null,
+        { "label": "불꽃 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "화상 확률 +5%", "effects": [{ "type": "status_chance", "status": "burn", "value": 0.05 }] },
+        { "label": "화상 대상에게 불꽃 피해 +15%", "effects": [{ "type": "target_status_damage_bonus", "status": "burn", "value": 0.15 }] },
+        { "label": "불꽃 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "불꽃 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "water": {
+      "levels": [
+        null,
+        { "label": "물 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "둔화 확률 +8%", "effects": [{ "type": "status_chance", "status": "slow", "value": 0.08 }] },
+        { "label": "둔화된 적에게 물 피해 +15%", "effects": [{ "type": "target_status_damage_bonus", "status": "slow", "value": 0.15 }] },
+        { "label": "물 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "물 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "grass": {
+      "levels": [
+        null,
+        { "label": "풀 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "맹독 확률 +5%", "effects": [{ "type": "status_chance", "status": "poison", "value": 0.05 }] },
+        { "label": "중독된 적에게 풀 피해 +15%", "effects": [{ "type": "target_status_damage_bonus", "status": "poison", "value": 0.15 }] },
+        { "label": "풀 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "풀 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "poison": {
+      "levels": [
+        null,
+        { "label": "독 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "맹독 확률 +7%", "effects": [{ "type": "status_chance", "status": "poison", "value": 0.07 }] },
+        { "label": "중독된 적에게 독 피해 +15%", "effects": [{ "type": "target_status_damage_bonus", "status": "poison", "value": 0.15 }] },
+        { "label": "독 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "독 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "normal": {
+      "levels": [
+        null,
+        { "label": "노말 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "노말 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "노말 피해 +8%", "effects": [{ "type": "type_damage", "value": 0.08 }] },
+        { "label": "노말 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "노말 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "fighting": {
+      "levels": [
+        null,
+        { "label": "격투 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "방어 파괴 확률 +8%", "effects": [{ "type": "status_chance", "status": "armorBreak", "value": 0.08 }] },
+        { "label": "방어 파괴된 적에게 격투 피해 +15%", "effects": [{ "type": "target_status_damage_bonus", "status": "armorBreak", "value": 0.15 }] },
+        { "label": "격투 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "격투 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "ghost": {
+      "levels": [
+        null,
+        { "label": "고스트 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "혼란 확률 +8%", "effects": [{ "type": "status_chance", "status": "confusion", "value": 0.08 }] },
+        { "label": "혼란된 적에게 고스트 피해 +15%", "effects": [{ "type": "target_status_damage_bonus", "status": "confusion", "value": 0.15 }] },
+        { "label": "고스트 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "고스트 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    },
+    "ice": {
+      "levels": [
+        null,
+        { "label": "얼음 피해 +5%", "effects": [{ "type": "type_damage", "value": 0.05 }] },
+        { "label": "빙결 확률 +5%", "effects": [{ "type": "status_chance", "status": "freeze", "value": 0.05 }] },
+        { "label": "빙결된 적에게 얼음 피해 +20%", "effects": [{ "type": "target_status_damage_bonus", "status": "freeze", "value": 0.20 }] },
+        { "label": "얼음 피해 +10%", "effects": [{ "type": "type_damage", "value": 0.10 }] },
+        { "label": "얼음 피해 +15%", "effects": [{ "type": "type_damage", "value": 0.15 }] }
+      ]
+    }
+  },
+  "default": {
+    "levels": [
+      null,
+      { "label": "피해 +4%", "effects": [{ "type": "type_damage", "value": 0.04 }] },
+      { "label": "피해 +4%", "effects": [{ "type": "type_damage", "value": 0.04 }] },
+      { "label": "피해 +4%", "effects": [{ "type": "type_damage", "value": 0.04 }] },
+      { "label": "피해 +4%", "effects": [{ "type": "type_damage", "value": 0.04 }] },
+      { "label": "피해 +6%", "effects": [{ "type": "type_damage", "value": 0.06 }] }
+    ]
+  }
+}

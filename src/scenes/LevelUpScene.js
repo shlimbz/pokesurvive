@@ -13,14 +13,58 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.cameras.main;
-    const balance = PS.Game.data.balance;
-    const { choices, build, levelSystem, onChosen, audio } = this.payload;
+    const { build, audio } = this.payload;
 
     this.add.rectangle(0, 0, width, height, 0x000000, 0.65).setOrigin(0).setScrollFactor(0).setDepth(0);
     this.add.text(width / 2, 60, '레벨 업!', {
       fontFamily: 'Arial Black, sans-serif', fontSize: '30px', color: '#ffd400', stroke: '#000', strokeThickness: 5
     }).setOrigin(0.5).setDepth(1);
     this.add.text(width / 2, 96, `Lv.${build.level}`, { fontFamily: 'Arial', fontSize: '15px', color: '#ffffff' }).setOrigin(0.5).setDepth(1);
+
+    // relic_reroll: a limited number of re-draws of the whole card row, replenished each time
+    // this screen opens (not carried over between level-ups).
+    this.rerollsLeft = build.modifiers.extraRerolls || 0;
+    this.cardContainer = this.add.container(0, 0).setDepth(0);
+    if (this.rerollsLeft > 0) {
+      this.rerollText = this.add.text(width / 2, height - 34, '', {
+        fontFamily: 'Arial Black', fontSize: '14px', color: '#8fd3ff'
+      }).setOrigin(0.5).setDepth(5).setInteractive({ useHandCursor: true });
+      this.rerollText.on('pointerover', () => { if (this.rerollsLeft > 0) this.rerollText.setColor('#ffffff'); });
+      this.rerollText.on('pointerout', () => this.rerollText.setColor('#8fd3ff'));
+      this.rerollText.on('pointerdown', () => this.doReroll());
+      this.input.keyboard.on('keydown-R', () => this.doReroll());
+      this.updateRerollLabel();
+    }
+
+    this.renderCards(this.payload.choices);
+  }
+
+  updateRerollLabel() {
+    if (!this.rerollText) return;
+    this.rerollText.setText(this.rerollsLeft > 0 ? `[R] 다시 뽑기 (${this.rerollsLeft}회 남음)` : '');
+  }
+
+  doReroll() {
+    if (this.rerollsLeft <= 0) return;
+    this.rerollsLeft--;
+    this.updateRerollLabel();
+    const { build, levelSystem, audio, runTimeSec } = this.payload;
+    if (audio) audio.playCardHover();
+    const newChoices = levelSystem.generateChoices(build, runTimeSec || 0);
+    this.payload.choices = newChoices;
+    this.renderCards(newChoices);
+  }
+
+  renderCards(choices) {
+    this.cardContainer.removeAll(true);
+    this.input.keyboard.removeAllListeners('keydown-ONE');
+    this.input.keyboard.removeAllListeners('keydown-TWO');
+    this.input.keyboard.removeAllListeners('keydown-THREE');
+    this.input.keyboard.removeAllListeners('keydown-FOUR');
+
+    const { width, height } = this.cameras.main;
+    const balance = PS.Game.data.balance;
+    const { build, levelSystem, onChosen, audio } = this.payload;
 
     const cardW = 220, cardH = 300, gap = 24;
     const totalW = choices.length * cardW + (choices.length - 1) * gap;
@@ -37,6 +81,7 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
       legendary: { glowLayers: 3, pulse: true,  particles: 16, borderW: 5, bgTint: 0x2a2010, bgAlpha: 0.98, fontScale: 1.2 }
     };
 
+    const keyNames = ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'];
     choices.forEach((choice, i) => {
       const x = startX + i * (cardW + gap);
       const y = height / 2 + 10;
@@ -49,25 +94,28 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
       // for higher grades, giving a soft halo without needing any external art.
       for (let g = flair.glowLayers; g >= 1; g--) {
         const pad = g * 7;
-        this.add.rectangle(x, y, cardW + pad * 2, cardH + pad * 2, gradeColorHex, 0.10 / g)
-          .setDepth(0);
+        this.cardContainer.add(
+          this.add.rectangle(x, y, cardW + pad * 2, cardH + pad * 2, gradeColorHex, 0.10 / g).setDepth(0)
+        );
       }
 
       const card = this.add.rectangle(x, y, cardW, cardH, flair.bgTint, flair.bgAlpha).setStrokeStyle(flair.borderW, gradeColorHex).setDepth(1);
-      this.add.text(x, y - cardH / 2 + 22, this.stars(choice.grade), { fontFamily: 'Arial', fontSize: '16px', color: gradeColor }).setOrigin(0.5).setDepth(2);
-      this.add.text(x, y - cardH / 2 + 46, PS.rarityNameKo(choice.grade), {
+      this.cardContainer.add(card);
+      this.cardContainer.add(this.add.text(x, y - cardH / 2 + 22, this.stars(choice.grade), { fontFamily: 'Arial', fontSize: '16px', color: gradeColor }).setOrigin(0.5).setDepth(2));
+      this.cardContainer.add(this.add.text(x, y - cardH / 2 + 46, PS.rarityNameKo(choice.grade), {
         fontFamily: 'Arial Black', fontSize: `${Math.round(13 * flair.fontScale)}px`, color: gradeColor,
         stroke: flair.glowLayers >= 2 ? '#000000' : undefined, strokeThickness: flair.glowLayers >= 2 ? 2 : 0
-      }).setOrigin(0.5).setDepth(2);
-      this.add.text(x, y - 30, this.kindLabel(choice.kind), { fontFamily: 'Arial', fontSize: '11px', color: '#888888' }).setOrigin(0.5).setDepth(2);
-      this.add.text(x, y - 6, desc.title, { fontFamily: 'Arial Black', fontSize: `${Math.round(17 * flair.fontScale)}px`, color: '#ffffff', wordWrap: { width: cardW - 24 }, align: 'center' }).setOrigin(0.5).setDepth(2);
-      this.add.text(x, y + 34, desc.subtitle, { fontFamily: 'Arial', fontSize: '13px', color: '#62ffb0' }).setOrigin(0.5).setDepth(2);
-      this.add.text(x, y + 70, desc.body, { fontFamily: 'Arial', fontSize: '11px', color: '#cccccc', wordWrap: { width: cardW - 30 }, align: 'center' }).setOrigin(0.5).setDepth(2);
+      }).setOrigin(0.5).setDepth(2));
+      this.cardContainer.add(this.add.text(x, y - 30, this.kindLabel(choice.kind), { fontFamily: 'Arial', fontSize: '11px', color: '#888888' }).setOrigin(0.5).setDepth(2));
+      this.cardContainer.add(this.add.text(x, y - 6, desc.title, { fontFamily: 'Arial Black', fontSize: `${Math.round(17 * flair.fontScale)}px`, color: '#ffffff', wordWrap: { width: cardW - 24 }, align: 'center' }).setOrigin(0.5).setDepth(2));
+      this.cardContainer.add(this.add.text(x, y + 34, desc.subtitle, { fontFamily: 'Arial', fontSize: '13px', color: '#62ffb0' }).setOrigin(0.5).setDepth(2));
+      this.cardContainer.add(this.add.text(x, y + 70, desc.body, { fontFamily: 'Arial', fontSize: '11px', color: '#cccccc', wordWrap: { width: cardW - 30 }, align: 'center' }).setOrigin(0.5).setDepth(2));
 
       // Pulsing border glow for Epic/Legendary: the stroke color alternates brightness via
       // a tween-driven overlay rectangle (Phaser can't tween strokeStyle directly).
       if (flair.pulse) {
         const pulseRing = this.add.rectangle(x, y, cardW, cardH).setStrokeStyle(flair.borderW + 2, 0xffffff, 0).setDepth(1);
+        this.cardContainer.add(pulseRing);
         this.tweens.add({
           targets: pulseRing,
           alpha: { from: 0, to: 0.9 },
@@ -92,14 +140,16 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
           frequency: choice.grade === 'legendary' ? 90 : 160
         });
         emitter.setDepth(2);
+        this.cardContainer.add(emitter);
       }
 
       const zone = this.add.zone(x, y, cardW, cardH).setInteractive({ useHandCursor: true }).setDepth(3);
+      this.cardContainer.add(zone);
       zone.on('pointerover', () => { card.setStrokeStyle(flair.borderW + 1, 0xffffff); if (audio) audio.playCardHover(); });
       zone.on('pointerout', () => card.setStrokeStyle(flair.borderW, gradeColorHex));
       zone.on('pointerdown', () => onChosen(choice));
 
-      this.input.keyboard.once(`keydown-${['ONE', 'TWO', 'THREE'][i]}`, () => onChosen(choice));
+      this.input.keyboard.on(`keydown-${keyNames[i]}`, () => onChosen(choice));
     });
   }
 

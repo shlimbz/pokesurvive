@@ -2,34 +2,182 @@
   "forest": {
     "id": "forest",
     "name": "Forest",
-    "background": { "color": "0x1c3a1c", "pattern": "grass" },
-    "enemyPool": ["rattata", "oddish", "weedle", "bellsprout"],
-    "elitePool": ["beedrill"],
-    "miniBossPool": ["scyther"],
+    "background": {
+      "color": "0x1c3a1c",
+      "pattern": "grass"
+    },
+    "enemyPool": [
+      {
+        "id": "rattata",
+        "weight": 20
+      },
+      {
+        "id": "oddish",
+        "weight": 16
+      },
+      {
+        "id": "weedle",
+        "weight": 16
+      },
+      {
+        "id": "bellsprout",
+        "weight": 16
+      },
+      {
+        "id": "psyduck",
+        "weight": 6
+      },
+      {
+        "id": "growlithe",
+        "weight": 6
+      },
+      {
+        "id": "cleffa",
+        "weight": 5
+      }
+    ],
+    "elitePool": [
+      {
+        "id": "beedrill",
+        "weight": 20
+      },
+      {
+        "id": "golduck",
+        "weight": 5
+      }
+    ],
+    "miniBossPool": [
+      "scyther"
+    ],
     "boss": "vileplume",
     "spawnRate": 1.0,
-    "difficulty": 1.0
+    "difficulty": 1.0,
+    "hazard": {
+      "type": "heal_zone",
+      "comment": "포자 구름: 안에 있는 적을 지속적으로 회복시킨다 - 적을 방치하지 말라는 압박.",
+      "intervalMs": 9000,
+      "radius": 110,
+      "durationSec": 6,
+      "tickMs": 800,
+      "value": 0.03
+    }
   },
   "beach": {
     "id": "beach",
     "name": "Beach",
-    "background": { "color": "0x1c3040", "pattern": "sand" },
-    "enemyPool": ["poliwag", "psyduck", "tentacool", "staryu"],
-    "elitePool": ["golduck"],
-    "miniBossPool": ["poliwrath"],
+    "background": {
+      "color": "0x1c3040",
+      "pattern": "sand"
+    },
+    "enemyPool": [
+      {
+        "id": "poliwag",
+        "weight": 20
+      },
+      {
+        "id": "psyduck",
+        "weight": 16
+      },
+      {
+        "id": "tentacool",
+        "weight": 16
+      },
+      {
+        "id": "staryu",
+        "weight": 16
+      },
+      {
+        "id": "weedle",
+        "weight": 6
+      },
+      {
+        "id": "ponyta",
+        "weight": 6
+      }
+    ],
+    "elitePool": [
+      {
+        "id": "golduck",
+        "weight": 20
+      },
+      {
+        "id": "rapidash",
+        "weight": 5
+      }
+    ],
+    "miniBossPool": [
+      "poliwrath"
+    ],
     "boss": "gyarados",
     "spawnRate": 1.05,
-    "difficulty": 1.1
+    "difficulty": 1.1,
+    "hazard": {
+      "type": "slow_zone",
+      "comment": "밀물 웅덩이: 안에 있으면 플레이어 이동속도가 크게 감소한다.",
+      "intervalMs": 8000,
+      "radius": 100,
+      "durationSec": 5,
+      "tickMs": 400,
+      "value": 0.45
+    }
   },
   "volcano": {
     "id": "volcano",
     "name": "Volcano",
-    "background": { "color": "0x3a1c14", "pattern": "ash" },
-    "enemyPool": ["growlithe", "ponyta", "numel", "slugma"],
-    "elitePool": ["rapidash"],
-    "miniBossPool": ["ninetales"],
+    "background": {
+      "color": "0x3a1c14",
+      "pattern": "ash"
+    },
+    "enemyPool": [
+      {
+        "id": "growlithe",
+        "weight": 20
+      },
+      {
+        "id": "ponyta",
+        "weight": 16
+      },
+      {
+        "id": "numel",
+        "weight": 16
+      },
+      {
+        "id": "slugma",
+        "weight": 16
+      },
+      {
+        "id": "oddish",
+        "weight": 6
+      },
+      {
+        "id": "poliwag",
+        "weight": 6
+      }
+    ],
+    "elitePool": [
+      {
+        "id": "rapidash",
+        "weight": 20
+      },
+      {
+        "id": "beedrill",
+        "weight": 5
+      }
+    ],
+    "miniBossPool": [
+      "ninetales"
+    ],
     "boss": "magmar",
     "spawnRate": 1.15,
-    "difficulty": 1.25
+    "difficulty": 1.25,
+    "hazard": {
+      "type": "damage_zone",
+      "comment": "용암 비말: 안에 있으면 최대체력 비례 피해를 지속적으로 입는다.",
+      "intervalMs": 7000,
+      "radius": 90,
+      "durationSec": 4,
+      "tickMs": 600,
+      "value": 0.035
+    }
   }
 }

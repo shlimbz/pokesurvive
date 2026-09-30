@@ -60,6 +60,23 @@ PS.ItemSystem = {
           case 'type_penetration':
             mods.typePenetration += v;
             break;
+          // ---- Pattern-identity synergy items (spec: 아이템 시너지 확장) ----
+          // Boosts ONE pattern's characteristic field (the same field patternGrowth already
+          // scales by move level - see GameScene.getPatternScaledField) by a cumulative percent,
+          // so an item can double down on a build's chosen attack pattern instead of only ever
+          // offering flat type damage.
+          case 'pattern_field_bonus': {
+            const key = `${effect.pattern}:${effect.field}`;
+            mods.patternFieldBonus[key] = (mods.patternFieldBonus[key] || 0) + v;
+            break;
+          }
+          // Bonus damage of a given move type against a target already afflicted by a given
+          // status - reuses the exact same hook shape/consumption Type Mastery's
+          // target_status_damage_bonus already uses in CombatSystem, so an item can grant the
+          // same kind of payoff Type Mastery does (e.g. "포이즌 팽": 중독된 적에게 독 피해 +%).
+          case 'status_target_damage_bonus':
+            mods.masteryTargetStatusHooks.push({ moveType: effect.moveType || item.moveType, status: effect.status, value: v });
+            break;
           default:
             break;
         }

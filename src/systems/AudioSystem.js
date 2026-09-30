@@ -165,6 +165,19 @@ PS.AudioSystem = class AudioSystem {
     this.tone(500, 0.08, 'sine', 0.15, 0.05);
   }
 
+  // ---- relic events ----
+  playRelicPickup() {
+    // Distinct from playCardSelect: a richer 5-note ascending arpeggio so a relic
+    // (guaranteed miniboss/boss drop or rare field pickup) always feels like a bigger
+    // moment than an ordinary level-up card pick.
+    [440, 554, 659, 880, 1108].forEach((f, i) => this.tone(f, 0.16, 'triangle', 0.2, i * 0.07));
+  }
+
+  playPhoenixRevive() {
+    this.sweep(120, 900, 0.5, 'sawtooth', 0.26);
+    this.tone(900, 0.35, 'triangle', 0.22, 0.45);
+  }
+
   playGameOver(victory) {
     if (victory) {
       [523, 659, 784, 1046].forEach((f, i) => this.tone(f, 0.22, 'triangle', 0.22, i * 0.12));

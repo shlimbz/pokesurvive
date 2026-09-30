@@ -1,29 +1,209 @@
 [
-  { "from": "charmander", "to": "charmeleon", "conditions": { "requiredLevel": 5 } },
-  { "from": "charmeleon", "to": "charizard",  "conditions": { "requiredLevel": 10, "requiredMove": "ember", "requiredMoveLevel": 3 } },
-
-  { "from": "squirtle",  "to": "wartortle", "conditions": { "requiredLevel": 5 } },
-  { "from": "wartortle", "to": "blastoise", "conditions": { "requiredLevel": 10, "requiredMove": "water_gun", "requiredMoveLevel": 3 } },
-
-  { "from": "bulbasaur", "to": "ivysaur",  "conditions": { "requiredLevel": 5 } },
-  { "from": "ivysaur",   "to": "venusaur", "conditions": { "requiredLevel": 10, "requiredMove": "vine_whip", "requiredMoveLevel": 3 } },
-
-  { "from": "pikachu", "to": "raichu", "conditions": { "requiredLevel": 8, "requiredMove": "thunder_shock", "requiredMoveLevel": 3, "requiredItem": "magnet", "requiredItemCount": 1 } },
-
-  { "from": "gastly",  "to": "haunter", "conditions": { "requiredLevel": 5 } },
-  { "from": "haunter", "to": "gengar",  "conditions": { "requiredLevel": 10, "requiredMove": "lick", "requiredMoveLevel": 3, "requiredKills": 40 } },
-
-  { "from": "machop",  "to": "machoke", "conditions": { "requiredLevel": 5 } },
-  { "from": "machoke", "to": "machamp", "conditions": { "requiredLevel": 10, "requiredMove": "karate_chop", "requiredMoveLevel": 3 } },
-
-  { "from": "vulpix", "to": "ninetales", "conditions": { "requiredLevel": 8, "requiredItem": "charcoal", "requiredItemCount": 2 } },
-
-  { "from": "piplup",   "to": "prinplup", "conditions": { "requiredLevel": 5 } },
-  { "from": "prinplup", "to": "empoleon", "conditions": { "requiredLevel": 10, "requiredMove": "bubble", "requiredMoveLevel": 3 } },
-
-  { "from": "riolu", "to": "lucario", "conditions": { "requiredLevel": 8, "requiredAbility": "steadfast", "requiredKills": 25 } },
-
-  { "from": "eevee", "to": "flareon",  "conditions": { "requiredLevel": 6, "requiredTypeDamage": { "type": "fire", "amount": 350 } } },
-  { "from": "eevee", "to": "vaporeon", "conditions": { "requiredLevel": 6, "requiredTypeDamage": { "type": "water", "amount": 350 } } },
-  { "from": "eevee", "to": "jolteon",  "conditions": { "requiredLevel": 6, "requiredTypeDamage": { "type": "electric", "amount": 350 } } }
+  {
+    "from": "charmander",
+    "to": "charmeleon",
+    "conditions": {
+      "requiredLevel": 5
+    }
+  },
+  {
+    "from": "charmeleon",
+    "to": "charizard",
+    "conditions": {
+      "requiredLevel": 10,
+      "requiredMove": "ember",
+      "requiredMoveLevel": 3
+    },
+    "movePatternSwap": {
+      "from": "ember",
+      "to": "flamethrower"
+    }
+  },
+  {
+    "from": "squirtle",
+    "to": "wartortle",
+    "conditions": {
+      "requiredLevel": 5
+    }
+  },
+  {
+    "from": "wartortle",
+    "to": "blastoise",
+    "conditions": {
+      "requiredLevel": 10,
+      "requiredMove": "water_gun",
+      "requiredMoveLevel": 3
+    },
+    "movePatternSwap": {
+      "from": "water_gun",
+      "to": "hydro_pump"
+    }
+  },
+  {
+    "from": "bulbasaur",
+    "to": "ivysaur",
+    "conditions": {
+      "requiredLevel": 5
+    }
+  },
+  {
+    "from": "ivysaur",
+    "to": "venusaur",
+    "conditions": {
+      "requiredLevel": 10,
+      "requiredMove": "vine_whip",
+      "requiredMoveLevel": 3
+    },
+    "movePatternSwap": {
+      "from": "vine_whip",
+      "to": "solar_beam"
+    }
+  },
+  {
+    "from": "pikachu",
+    "to": "raichu",
+    "conditions": {
+      "requiredLevel": 8,
+      "requiredMove": "thunder_shock",
+      "requiredMoveLevel": 3,
+      "requiredItem": "magnet",
+      "requiredItemCount": 1
+    },
+    "movePatternSwap": {
+      "from": "thunder_shock",
+      "to": "thunderbolt"
+    }
+  },
+  {
+    "from": "gastly",
+    "to": "haunter",
+    "conditions": {
+      "requiredLevel": 5
+    }
+  },
+  {
+    "from": "haunter",
+    "to": "gengar",
+    "conditions": {
+      "requiredLevel": 10,
+      "requiredMove": "lick",
+      "requiredMoveLevel": 3,
+      "requiredKills": 40
+    },
+    "movePatternSwap": {
+      "from": "lick",
+      "to": "shadow_clone"
+    }
+  },
+  {
+    "from": "machop",
+    "to": "machoke",
+    "conditions": {
+      "requiredLevel": 5
+    }
+  },
+  {
+    "from": "machoke",
+    "to": "machamp",
+    "conditions": {
+      "requiredLevel": 10,
+      "requiredMove": "karate_chop",
+      "requiredMoveLevel": 3
+    },
+    "movePatternSwap": {
+      "from": "karate_chop",
+      "to": "force_palm"
+    }
+  },
+  {
+    "from": "vulpix",
+    "to": "ninetales",
+    "conditions": {
+      "requiredLevel": 8,
+      "requiredItem": "charcoal",
+      "requiredItemCount": 2
+    },
+    "movePatternSwap": {
+      "from": "ember",
+      "to": "flame_burst"
+    }
+  },
+  {
+    "from": "piplup",
+    "to": "prinplup",
+    "conditions": {
+      "requiredLevel": 5
+    }
+  },
+  {
+    "from": "prinplup",
+    "to": "empoleon",
+    "conditions": {
+      "requiredLevel": 10,
+      "requiredMove": "bubble",
+      "requiredMoveLevel": 3
+    },
+    "movePatternSwap": {
+      "from": "bubble",
+      "to": "aqua_jet"
+    }
+  },
+  {
+    "from": "riolu",
+    "to": "lucario",
+    "conditions": {
+      "requiredLevel": 8,
+      "requiredAbility": "steadfast",
+      "requiredKills": 25
+    },
+    "movePatternSwap": {
+      "from": "force_palm",
+      "to": "aura_sphere"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "flareon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "fire",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "ember",
+      "to": "fire_blast"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "vaporeon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "water",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "water_gun",
+      "to": "aqua_jet"
+    }
+  },
+  {
+    "from": "eevee",
+    "to": "jolteon",
+    "conditions": {
+      "requiredLevel": 6,
+      "requiredTypeDamage": {
+        "type": "electric",
+        "amount": 350
+      }
+    },
+    "movePatternSwap": {
+      "from": "quick_attack",
+      "to": "thunder"
+    }
+  }
 ]

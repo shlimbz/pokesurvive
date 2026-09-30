@@ -213,4 +213,38 @@ PS.AssetManager = class AssetManager {
   generateBarTexture(key, color, w = 100, h = 10) {
     this.generateSolidTexture(key, color, w, h);
   }
+
+  // ---- Relic pickup icon: a glowing diamond/gem, visually distinct from the round field
+  // pickups (heal/speed/magnet) so a relic reads as rarer/more important on sight. ----
+  generateRelicTexture(key, color, radius = 16) {
+    if (this.scene.textures.exists(key)) return key;
+    const g = this.scene.add.graphics();
+    const c = this.hexToInt(color);
+    const size = radius * 2 + 10;
+    const cx = size / 2, cy = size / 2;
+
+    // Soft outer glow ring.
+    g.lineStyle(3, c, 0.35);
+    g.strokeCircle(cx, cy, radius + 3);
+
+    // Faceted diamond body.
+    g.fillStyle(c, 1);
+    g.fillPoints([
+      { x: cx, y: cy - radius }, { x: cx + radius * 0.72, y: cy },
+      { x: cx, y: cy + radius }, { x: cx - radius * 0.72, y: cy }
+    ], true);
+    g.lineStyle(2, 0xffffff, 0.85);
+    g.strokePoints([
+      { x: cx, y: cy - radius }, { x: cx + radius * 0.72, y: cy },
+      { x: cx, y: cy + radius }, { x: cx - radius * 0.72, y: cy }
+    ], true);
+    // Inner facet lines for a "cut gem" look.
+    g.lineStyle(1, 0xffffff, 0.6);
+    g.lineBetween(cx, cy - radius, cx, cy + radius);
+    g.lineBetween(cx - radius * 0.72, cy, cx + radius * 0.72, cy);
+
+    g.generateTexture(key, size, size);
+    g.destroy();
+    return key;
+  }
 };

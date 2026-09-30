@@ -68,6 +68,20 @@ PS.CombatSystem = class CombatSystem {
     const defenderDefenseStatusMult = this.statusFx.getDefenseMult(defender);
     const defenseModifier = 1 / (1 + defenderReduction * defenderDefenseStatusMult * 0.01);
 
+    // relic_giant_hunter: bonus damage specifically against non-normal tiers (elite/miniboss/boss).
+    const bossTierMult = defender.tier && defender.tier !== 'normal' ? mods.bossTierDamageMult : 1;
+    // relic_phoenix: temporary damage buff right after a phoenix save.
+    const phoenixMult = (attackerEntity && attackerEntity.phoenixDamageBuffMult) || 1;
+
+    // Type Mastery: "target already has X status -> bonus Y-type damage" (e.g. paralyzed target
+    // takes more Electric damage). Data-driven via data/type-mastery.json, not hardcoded per type.
+    let masteryTargetStatusMult = 1;
+    for (const hook of (mods.masteryTargetStatusHooks || [])) {
+      if (hook.moveType === move.type && this.statusFx.has(defender, hook.status)) {
+        masteryTargetStatusMult *= (1 + hook.value);
+      }
+    }
+
     let damage = move.baseDamage
       * this.moveLevelDamageMult[Math.min(moveLevel, 5) - 1]
       * (attackPower / 50)
@@ -77,6 +91,9 @@ PS.CombatSystem = class CombatSystem {
       * itemDamageBonus
       * abilityMult
       * globalMult
+      * bossTierMult
+      * phoenixMult
+      * masteryTargetStatusMult
       * defenseModifier;
 
     damage = Math.max(1, Math.round(damage));

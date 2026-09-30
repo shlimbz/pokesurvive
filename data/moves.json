@@ -17,7 +17,13 @@
       "id": "paralysis",
       "chance": 0.2
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "evolution": {
+      "evolvesTo": "thunder_shock_plus",
+      "requiresMoveLevel": 5,
+      "requiresItem": "magnet",
+      "requiresItemLevel": 3
+    }
   },
   "thunderbolt": {
     "id": "thunderbolt",
@@ -123,7 +129,13 @@
       "id": "burn",
       "chance": 0.25
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "evolution": {
+      "evolvesTo": "ember_plus",
+      "requiresMoveLevel": 5,
+      "requiresItem": "charcoal",
+      "requiresItemLevel": 3
+    }
   },
   "flamethrower": {
     "id": "flamethrower",
@@ -181,7 +193,13 @@
     "projectileSpeed": 540,
     "splashRadius": 60,
     "count": 1,
-    "maxLevel": 5
+    "maxLevel": 5,
+    "evolution": {
+      "evolvesTo": "water_gun_plus",
+      "requiresMoveLevel": 5,
+      "requiresItem": "mystic_water",
+      "requiresItemLevel": 3
+    }
   },
   "bubble": {
     "id": "bubble",
@@ -231,7 +249,13 @@
       "id": "poison",
       "chance": 0.2
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "evolution": {
+      "evolvesTo": "vine_whip_plus",
+      "requiresMoveLevel": 5,
+      "requiresItem": "miracle_seed",
+      "requiresItemLevel": 3
+    }
   },
   "razor_leaf": {
     "id": "razor_leaf",
@@ -665,6 +689,224 @@
       "id": "burn",
       "chance": 0.6
     },
+    "maxLevel": 5
+  },
+  "thunder_shock_plus": {
+    "id": "thunder_shock_plus",
+    "name": "Thunder Shock+",
+    "evolvedFrom": "thunder_shock",
+    "type": "electric",
+    "category": "special",
+    "pattern": "chain",
+    "baseDamage": 27,
+    "cooldownMs": 560,
+    "range": 420,
+    "projectileSpeed": 680,
+    "pierce": 0,
+    "chainCount": 4,
+    "chainRange": 230,
+    "count": 1,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.32
+    },
+    "maxLevel": 5
+  },
+  "ember_plus": {
+    "id": "ember_plus",
+    "name": "Ember+",
+    "evolvedFrom": "ember",
+    "type": "fire",
+    "category": "special",
+    "pattern": "projectile",
+    "baseDamage": 24,
+    "cooldownMs": 480,
+    "range": 400,
+    "projectileSpeed": 580,
+    "pierce": 0,
+    "count": 1,
+    "splashRadius": 70,
+    "statusEffect": {
+      "id": "burn",
+      "chance": 0.4
+    },
+    "maxLevel": 5
+  },
+  "water_gun_plus": {
+    "id": "water_gun_plus",
+    "name": "Water Gun+",
+    "evolvedFrom": "water_gun",
+    "type": "water",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 13,
+    "cooldownMs": 130,
+    "range": 400,
+    "beamWidth": 60,
+    "splashRadius": 100,
+    "knockback": 260,
+    "tickMs": 130,
+    "maxLevel": 5
+  },
+  "vine_whip_plus": {
+    "id": "vine_whip_plus",
+    "name": "Vine Whip+",
+    "evolvedFrom": "vine_whip",
+    "type": "grass",
+    "category": "physical",
+    "pattern": "spread",
+    "baseDamage": 22,
+    "cooldownMs": 560,
+    "range": 220,
+    "count": 5,
+    "spreadAngle": 90,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.35
+    },
+    "maxLevel": 5
+  },
+  "leech_seed": {
+    "id": "leech_seed",
+    "name": "Leech Seed",
+    "type": "grass",
+    "category": "special",
+    "pattern": "homing",
+    "baseDamage": 6,
+    "cooldownMs": 2200,
+    "range": 340,
+    "projectileSpeed": 260,
+    "statusEffect": {
+      "id": "seed",
+      "chance": 0.85
+    },
+    "maxLevel": 5
+  },
+  "flame_burst": {
+    "id": "flame_burst",
+    "name": "Flame Burst",
+    "type": "fire",
+    "category": "special",
+    "pattern": "cone",
+    "baseDamage": 14,
+    "cooldownMs": 900,
+    "range": 220,
+    "coneAngle": 80,
+    "statusEffect": {
+      "id": "burn",
+      "chance": 0.2
+    },
+    "maxLevel": 5
+  },
+  "mach_punch": {
+    "id": "mach_punch",
+    "name": "Mach Punch",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "dash",
+    "baseDamage": 22,
+    "cooldownMs": 1300,
+    "range": 240,
+    "beamWidth": 70,
+    "knockback": 260,
+    "maxLevel": 5
+  },
+  "moonlight_orb": {
+    "id": "moonlight_orb",
+    "name": "Moonlight Orb",
+    "type": "fairy",
+    "category": "special",
+    "pattern": "orbit",
+    "baseDamage": 9,
+    "cooldownMs": 260,
+    "areaRadius": 110,
+    "count": 2,
+    "orbitSpeed": 2.4,
+    "hitRadius": 30,
+    "maxLevel": 5
+  },
+  "disarming_voice": {
+    "id": "disarming_voice",
+    "name": "Disarming Voice",
+    "type": "fairy",
+    "category": "special",
+    "pattern": "homing",
+    "baseDamage": 15,
+    "cooldownMs": 780,
+    "range": 340,
+    "projectileSpeed": 380,
+    "statusEffect": {
+      "id": "attackDown",
+      "chance": 0.25
+    },
+    "maxLevel": 5
+  },
+  "fairy_aura": {
+    "id": "fairy_aura",
+    "name": "Fairy Aura",
+    "type": "fairy",
+    "category": "special",
+    "pattern": "aura",
+    "baseDamage": 6,
+    "cooldownMs": 420,
+    "areaRadius": 130,
+    "maxLevel": 5
+  },
+  "toxic_spikes": {
+    "id": "toxic_spikes",
+    "name": "Toxic Spikes",
+    "type": "poison",
+    "category": "special",
+    "pattern": "ground_zone",
+    "baseDamage": 10,
+    "cooldownMs": 1800,
+    "range": 300,
+    "areaRadius": 95,
+    "telegraphMs": 550,
+    "durationSec": 3,
+    "tickMs": 600,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.4
+    },
+    "maxLevel": 5
+  },
+  "shadow_clone": {
+    "id": "shadow_clone",
+    "name": "Shadow Clone",
+    "type": "ghost",
+    "category": "special",
+    "pattern": "summon",
+    "baseDamage": 10,
+    "cooldownMs": 4500,
+    "range": 260,
+    "durationSec": 6,
+    "summonRadius": 170,
+    "tickMs": 700,
+    "maxLevel": 5
+  },
+  "counter": {
+    "id": "counter",
+    "name": "Counter",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "counter",
+    "baseDamage": 26,
+    "cooldownMs": 900,
+    "range": 130,
+    "maxLevel": 5
+  },
+  "aqua_jet": {
+    "id": "aqua_jet",
+    "name": "Aqua Jet",
+    "type": "water",
+    "category": "physical",
+    "pattern": "dash",
+    "baseDamage": 20,
+    "cooldownMs": 1400,
+    "range": 260,
+    "beamWidth": 70,
+    "knockback": 220,
     "maxLevel": 5
   }
 }

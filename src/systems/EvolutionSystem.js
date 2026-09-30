@@ -51,5 +51,15 @@ PS.EvolutionSystem = class EvolutionSystem {
 
   apply(build, entry) {
     build.setSpecies(entry.to);
+
+    // Species evolution pattern change (spec: "Pokémon Evolution 시 공격 패턴 자체 변경") -
+    // evolving doesn't just raise stats, it can swap the signature move for one with a
+    // genuinely different attack pattern (e.g. Ember's single projectile becomes
+    // Flamethrower's beam on Charizard). Reuses the exact same evolveMove() the item-gated
+    // Move Evolution system uses, so it is safe even if the player already move-evolved this
+    // move independently (evolveMove degrades gracefully when `from` is no longer owned).
+    if (entry.movePatternSwap) {
+      build.evolveMove(entry.movePatternSwap.from, entry.movePatternSwap.to);
+    }
   }
 };

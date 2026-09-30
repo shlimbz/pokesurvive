@@ -22,11 +22,13 @@ PS.BuildSystem = class BuildSystem {
     this.items = {};
     this.abilities = {};
     this.abilities[this.species.ability] = 1;
+    this.relics = {};
 
     this.statPicks = { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
     this.statPercent = { hp: 0, attack: 0, defense: 0, spAttack: 0, spDefense: 0, speed: 0 };
 
     this.typeDamageDealt = {};
+    this.typeMasteryXp = {};
     this.kills = 0;
     this.runTimeSec = 0;
 
@@ -54,11 +56,34 @@ PS.BuildSystem = class BuildSystem {
     this.refreshModifiers();
   }
 
+  /** Relics are picked up in the field or dropped by minibosses/bosses - see GameScene. */
+  addRelic(relicId) {
+    const relic = this.managers.relic.getRelic(relicId);
+    const max = relic ? relic.maxLevel : 2;
+    const wasAt = this.relics[relicId] || 0;
+    this.relics[relicId] = Math.min(wasAt + 1, max);
+    this.refreshModifiers();
+    return this.relics[relicId] > wasAt; // false if already at max level (relic "wasted")
+  }
+
+  getRelicLevel(relicId) {
+    return this.relics[relicId] || 0;
+  }
+
   upgradeStat(statKey, grade) {
     const cfg = this.balance.statUpgrade[grade];
     if (this.statPicks[statKey] >= this.balance.maxLevels.stat) return;
     this.statPicks[statKey]++;
     this.statPercent[statKey] += cfg.percent;
+    this.refreshModifiers();
+  }
+
+  /** Move Evolution (spec section 33): replaces an owned move with its evolved variant,
+   * keeping it at max level (evolved moves are meant to already be a payoff, not a fresh grind). */
+  evolveMove(fromMoveId, toMoveId) {
+    const level = this.moves[fromMoveId] || this.balance.maxLevels.move;
+    delete this.moves[fromMoveId];
+    this.moves[toMoveId] = level;
     this.refreshModifiers();
   }
 
@@ -90,6 +115,26 @@ PS.BuildSystem = class BuildSystem {
 
   recordKill() {
     this.kills++;
+  }
+
+  /** Type Mastery XP gain (spec section 30) - automatic, not a level-up choice. See GameScene
+   * for the three call sites: on-hit, on-kill, on-status-applied. Only recomputes modifiers
+   * (and returns the new level, for a UI callout) when a level actually changes, so per-hit XP
+   * gain doesn't force a full modifier recompute every single frame. */
+  addTypeMasteryXp(typeId, amount) {
+    if (!typeId) return null;
+    const before = this.getTypeMasteryLevel(typeId);
+    this.typeMasteryXp[typeId] = (this.typeMasteryXp[typeId] || 0) + amount;
+    const after = this.getTypeMasteryLevel(typeId);
+    if (after !== before) {
+      this.refreshModifiers();
+      return after;
+    }
+    return null;
+  }
+
+  getTypeMasteryLevel(typeId) {
+    return this.managers.typeMastery.levelForXp(this.typeMasteryXp[typeId] || 0);
   }
 
   getDominantType() {
@@ -130,17 +175,31 @@ PS.BuildSystem = class BuildSystem {
       selfDamageOnAttackPercent: 0,
       survivalCharges: 0,
       survivalRechargeSec: 0,
-      abilityHooks: []
+      abilityHooks: [],
+      // Shared "hook" collections that more than one system contributes to (items AND Type
+      // Mastery can both grant bonus damage vs a status, or a per-pattern field bonus) - declared
+      // once here, up front, so accumulate order below never matters and no contributor can
+      // accidentally wipe another's entries by re-assigning instead of pushing/merging.
+      typeChainRangeBonus: {},
+      masteryTargetStatusHooks: [], // [{ moveType, status, value }]
+      patternFieldBonus: {} // { "pattern:field": cumulativePercent }
     };
 
     PS.ItemSystem.accumulate(this, this.managers.item, mods);
     PS.AbilitySystem.accumulate(this, this.managers.ability, mods);
+    PS.RelicSystem.accumulate(this, this.managers.relic, mods);
+    PS.TypeMasterySystem.accumulate(this, this.managers.typeMastery, mods);
 
     this.modifiers = mods;
   }
 
   getStatMultiplier(statKey) {
-    return 1 + (this.statPercent[statKey] || 0);
+    let mult = 1 + (this.statPercent[statKey] || 0);
+    // relic_blessing bonuses are separate from the per-pick stat-upgrade percentages above,
+    // folded in here so every consumer (getMaxHp, CombatSystem's player-defense calc) sees them.
+    if (statKey === 'hp') mult += this.modifiers.relicHpPercent || 0;
+    if (statKey === 'defense') mult += this.modifiers.relicDefensePercent || 0;
+    return mult;
   }
 
   getMoveLevel(moveId) {

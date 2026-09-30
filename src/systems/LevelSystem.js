@@ -42,8 +42,10 @@ PS.LevelSystem = class LevelSystem {
     const kinds = ['move', 'item', 'ability', 'stat'];
     const choices = [];
     let attempts = 0;
+    // relic_opportunity: +1 card per relic level (default is 3 cards).
+    const targetCount = 3 + (build.modifiers.extraLevelUpChoices || 0);
 
-    while (choices.length < 3 && attempts < 40) {
+    while (choices.length < targetCount && attempts < 60) {
       attempts++;
       const grade = PS.RandomUtils.weightedPick(weights);
       const kind = PS.RandomUtils.pick(kinds);
@@ -55,7 +57,7 @@ PS.LevelSystem = class LevelSystem {
     }
 
     // Guaranteed fallback: stat upgrades are (almost) always available.
-    while (choices.length < 3) {
+    while (choices.length < targetCount) {
       const statKeys = Object.keys(build.statPicks).filter(k => build.statPicks[k] < this.balance.maxLevels.stat);
       if (statKeys.length === 0) break;
       const id = PS.RandomUtils.pick(statKeys);

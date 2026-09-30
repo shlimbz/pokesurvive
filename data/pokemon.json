@@ -1,179 +1,699 @@
 {
   "pikachu": {
-    "id": "pikachu", "name": "Pikachu", "types": ["electric"], "isStarter": true,
-    "baseStats": { "hp": 35, "attack": 55, "defense": 40, "spAttack": 50, "spDefense": 40, "speed": 90 },
-    "ability": "static", "moves": ["thunder_shock", "quick_attack"], "color": "0xFFD400",
+    "id": "pikachu",
+    "name": "Pikachu",
+    "types": [
+      "electric"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 35,
+      "attack": 55,
+      "defense": 40,
+      "spAttack": 50,
+      "spDefense": 40,
+      "speed": 90
+    },
+    "ability": "static",
+    "moves": [
+      "thunder_shock",
+      "quick_attack"
+    ],
+    "color": "0xFFD400",
     "description": "빠르고 마비를 유발하는 Electric Chain 빌드에 특화."
   },
   "raichu": {
-    "id": "raichu", "name": "Raichu", "types": ["electric"], "isStarter": false,
-    "baseStats": { "hp": 60, "attack": 90, "defense": 55, "spAttack": 90, "spDefense": 80, "speed": 110 },
-    "ability": "static", "moves": ["thunder_shock", "quick_attack", "thunderbolt"], "color": "0xF5A800",
+    "id": "raichu",
+    "name": "Raichu",
+    "types": [
+      "electric"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 60,
+      "attack": 90,
+      "defense": 55,
+      "spAttack": 90,
+      "spDefense": 80,
+      "speed": 110
+    },
+    "ability": "static",
+    "moves": [
+      "thunder_shock",
+      "quick_attack",
+      "thunderbolt"
+    ],
+    "color": "0xF5A800",
     "description": "Pikachu의 진화형. 압도적인 전기 화력."
   },
-
   "charmander": {
-    "id": "charmander", "name": "Charmander", "types": ["fire"], "isStarter": true,
-    "baseStats": { "hp": 39, "attack": 52, "defense": 43, "spAttack": 60, "spDefense": 50, "speed": 65 },
-    "ability": "blaze", "moves": ["ember", "scratch"], "color": "0xFF8040",
+    "id": "charmander",
+    "name": "Charmander",
+    "types": [
+      "fire"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 39,
+      "attack": 52,
+      "defense": 43,
+      "spAttack": 60,
+      "spDefense": 50,
+      "speed": 65
+    },
+    "ability": "blaze",
+    "moves": [
+      "ember",
+      "scratch"
+    ],
+    "color": "0xFF8040",
     "description": "Burn과 폭발 위주의 Fire 빌드."
   },
   "charmeleon": {
-    "id": "charmeleon", "name": "Charmeleon", "types": ["fire"], "isStarter": false,
-    "baseStats": { "hp": 58, "attack": 64, "defense": 58, "spAttack": 80, "spDefense": 65, "speed": 80 },
-    "ability": "blaze", "moves": ["ember", "scratch", "flamethrower"], "color": "0xFF5A1F",
+    "id": "charmeleon",
+    "name": "Charmeleon",
+    "types": [
+      "fire"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 58,
+      "attack": 64,
+      "defense": 58,
+      "spAttack": 80,
+      "spDefense": 65,
+      "speed": 80
+    },
+    "ability": "blaze",
+    "moves": [
+      "ember",
+      "scratch",
+      "flamethrower"
+    ],
+    "color": "0xFF5A1F",
     "description": "Charmander의 1차 진화형."
   },
   "charizard": {
-    "id": "charizard", "name": "Charizard", "types": ["fire", "flying"], "isStarter": false,
-    "baseStats": { "hp": 78, "attack": 84, "defense": 78, "spAttack": 109, "spDefense": 85, "speed": 100 },
-    "ability": "blaze", "moves": ["flamethrower", "ember", "fire_blast", "wing_attack"], "color": "0xE8531A",
+    "id": "charizard",
+    "name": "Charizard",
+    "types": [
+      "fire",
+      "flying"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 78,
+      "attack": 84,
+      "defense": 78,
+      "spAttack": 109,
+      "spDefense": 85,
+      "speed": 100
+    },
+    "ability": "blaze",
+    "moves": [
+      "flamethrower",
+      "ember",
+      "fire_blast",
+      "wing_attack"
+    ],
+    "color": "0xE8531A",
     "description": "Fire/Flying 최종 진화형. 광역 화상 폭발."
   },
-
   "squirtle": {
-    "id": "squirtle", "name": "Squirtle", "types": ["water"], "isStarter": true,
-    "baseStats": { "hp": 44, "attack": 48, "defense": 65, "spAttack": 50, "spDefense": 64, "speed": 43 },
-    "ability": "torrent", "moves": ["water_gun", "tackle"], "color": "0x4FA8FF",
+    "id": "squirtle",
+    "name": "Squirtle",
+    "types": [
+      "water"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 44,
+      "attack": 48,
+      "defense": 65,
+      "spAttack": 50,
+      "spDefense": 64,
+      "speed": 43
+    },
+    "ability": "torrent",
+    "moves": [
+      "water_gun",
+      "tackle"
+    ],
+    "color": "0x4FA8FF",
     "description": "튼튼한 Water/Defense 빌드."
   },
   "wartortle": {
-    "id": "wartortle", "name": "Wartortle", "types": ["water"], "isStarter": false,
-    "baseStats": { "hp": 59, "attack": 63, "defense": 80, "spAttack": 65, "spDefense": 80, "speed": 58 },
-    "ability": "torrent", "moves": ["water_gun", "tackle", "hydro_pump"], "color": "0x3A8FE0",
+    "id": "wartortle",
+    "name": "Wartortle",
+    "types": [
+      "water"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 59,
+      "attack": 63,
+      "defense": 80,
+      "spAttack": 65,
+      "spDefense": 80,
+      "speed": 58
+    },
+    "ability": "torrent",
+    "moves": [
+      "water_gun",
+      "tackle",
+      "hydro_pump"
+    ],
+    "color": "0x3A8FE0",
     "description": "Squirtle의 1차 진화형."
   },
   "blastoise": {
-    "id": "blastoise", "name": "Blastoise", "types": ["water"], "isStarter": false,
-    "baseStats": { "hp": 79, "attack": 83, "defense": 100, "spAttack": 85, "spDefense": 105, "speed": 78 },
-    "ability": "torrent", "moves": ["hydro_pump", "water_gun", "bubble"], "color": "0x2560B8",
+    "id": "blastoise",
+    "name": "Blastoise",
+    "types": [
+      "water"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 79,
+      "attack": 83,
+      "defense": 100,
+      "spAttack": 85,
+      "spDefense": 105,
+      "speed": 78
+    },
+    "ability": "torrent",
+    "moves": [
+      "hydro_pump",
+      "water_gun",
+      "bubble"
+    ],
+    "color": "0x2560B8",
     "description": "Water 최종 진화형. 강력한 범위 제어."
   },
-
   "bulbasaur": {
-    "id": "bulbasaur", "name": "Bulbasaur", "types": ["grass", "poison"], "isStarter": true,
-    "baseStats": { "hp": 45, "attack": 49, "defense": 49, "spAttack": 65, "spDefense": 65, "speed": 45 },
-    "ability": "overgrow", "moves": ["vine_whip", "growl"], "color": "0x4CBB3A",
+    "id": "bulbasaur",
+    "name": "Bulbasaur",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 45,
+      "attack": 49,
+      "defense": 49,
+      "spAttack": 65,
+      "spDefense": 65,
+      "speed": 45
+    },
+    "ability": "overgrow",
+    "moves": [
+      "vine_whip",
+      "leech_seed"
+    ],
+    "color": "0x4CBB3A",
     "description": "Poison / Sustain 빌드."
   },
   "ivysaur": {
-    "id": "ivysaur", "name": "Ivysaur", "types": ["grass", "poison"], "isStarter": false,
-    "baseStats": { "hp": 60, "attack": 62, "defense": 63, "spAttack": 80, "spDefense": 80, "speed": 60 },
-    "ability": "overgrow", "moves": ["vine_whip", "growl", "razor_leaf"], "color": "0x3C9E2E",
+    "id": "ivysaur",
+    "name": "Ivysaur",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 60,
+      "attack": 62,
+      "defense": 63,
+      "spAttack": 80,
+      "spDefense": 80,
+      "speed": 60
+    },
+    "ability": "overgrow",
+    "moves": [
+      "vine_whip",
+      "growl",
+      "razor_leaf"
+    ],
+    "color": "0x3C9E2E",
     "description": "Bulbasaur의 1차 진화형."
   },
   "venusaur": {
-    "id": "venusaur", "name": "Venusaur", "types": ["grass", "poison"], "isStarter": false,
-    "baseStats": { "hp": 80, "attack": 82, "defense": 83, "spAttack": 100, "spDefense": 100, "speed": 80 },
-    "ability": "overgrow", "moves": ["razor_leaf", "solar_beam", "sludge_bomb"], "color": "0x2C7A20",
+    "id": "venusaur",
+    "name": "Venusaur",
+    "types": [
+      "grass",
+      "poison"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 80,
+      "attack": 82,
+      "defense": 83,
+      "spAttack": 100,
+      "spDefense": 100,
+      "speed": 80
+    },
+    "ability": "overgrow",
+    "moves": [
+      "razor_leaf",
+      "solar_beam",
+      "sludge_bomb"
+    ],
+    "color": "0x2C7A20",
     "description": "Grass/Poison 최종 진화형."
   },
-
   "eevee": {
-    "id": "eevee", "name": "Eevee", "types": ["normal"], "isStarter": true,
-    "baseStats": { "hp": 55, "attack": 55, "defense": 50, "spAttack": 45, "spDefense": 65, "speed": 55 },
-    "ability": "run_away", "moves": ["quick_attack", "tackle"], "color": "0xC9A165",
+    "id": "eevee",
+    "name": "Eevee",
+    "types": [
+      "normal"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 55,
+      "attack": 55,
+      "defense": 50,
+      "spAttack": 45,
+      "spDefense": 65,
+      "speed": 55
+    },
+    "ability": "run_away",
+    "moves": [
+      "quick_attack",
+      "tackle"
+    ],
+    "color": "0xC9A165",
     "description": "빌드에 따라 Flareon/Vaporeon/Jolteon으로 진화."
   },
   "flareon": {
-    "id": "flareon", "name": "Flareon", "types": ["fire"], "isStarter": false,
-    "baseStats": { "hp": 65, "attack": 130, "defense": 60, "spAttack": 95, "spDefense": 110, "speed": 65 },
-    "ability": "flash_fire", "moves": ["ember", "fire_blast", "quick_attack"], "color": "0xE0602A",
+    "id": "flareon",
+    "name": "Flareon",
+    "types": [
+      "fire"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 65,
+      "attack": 130,
+      "defense": 60,
+      "spAttack": 95,
+      "spDefense": 110,
+      "speed": 65
+    },
+    "ability": "flash_fire",
+    "moves": [
+      "ember",
+      "fire_blast",
+      "quick_attack"
+    ],
+    "color": "0xE0602A",
     "description": "Eevee의 Fire 진화형."
   },
   "vaporeon": {
-    "id": "vaporeon", "name": "Vaporeon", "types": ["water"], "isStarter": false,
-    "baseStats": { "hp": 130, "attack": 65, "defense": 60, "spAttack": 110, "spDefense": 95, "speed": 65 },
-    "ability": "water_absorb", "moves": ["water_gun", "hydro_pump", "quick_attack"], "color": "0x3FB6D6",
+    "id": "vaporeon",
+    "name": "Vaporeon",
+    "types": [
+      "water"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 130,
+      "attack": 65,
+      "defense": 60,
+      "spAttack": 110,
+      "spDefense": 95,
+      "speed": 65
+    },
+    "ability": "water_absorb",
+    "moves": [
+      "water_gun",
+      "hydro_pump",
+      "quick_attack"
+    ],
+    "color": "0x3FB6D6",
     "description": "Eevee의 Water 진화형."
   },
   "jolteon": {
-    "id": "jolteon", "name": "Jolteon", "types": ["electric"], "isStarter": false,
-    "baseStats": { "hp": 65, "attack": 65, "defense": 60, "spAttack": 110, "spDefense": 95, "speed": 130 },
-    "ability": "volt_absorb", "moves": ["thunder_shock", "thunder", "quick_attack"], "color": "0xF2E44A",
+    "id": "jolteon",
+    "name": "Jolteon",
+    "types": [
+      "electric"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 65,
+      "attack": 65,
+      "defense": 60,
+      "spAttack": 110,
+      "spDefense": 95,
+      "speed": 130
+    },
+    "ability": "volt_absorb",
+    "moves": [
+      "thunder_shock",
+      "thunder",
+      "quick_attack"
+    ],
+    "color": "0xF2E44A",
     "description": "Eevee의 Electric 진화형."
   },
-
   "gastly": {
-    "id": "gastly", "name": "Gastly", "types": ["ghost", "poison"], "isStarter": true,
-    "baseStats": { "hp": 30, "attack": 35, "defense": 30, "spAttack": 100, "spDefense": 35, "speed": 80 },
-    "ability": "levitate", "moves": ["lick", "confuse_ray"], "color": "0x6C5B9E",
+    "id": "gastly",
+    "name": "Gastly",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 30,
+      "attack": 35,
+      "defense": 30,
+      "spAttack": 100,
+      "spDefense": 35,
+      "speed": 80
+    },
+    "ability": "levitate",
+    "moves": [
+      "lick",
+      "confuse_ray"
+    ],
+    "color": "0x6C5B9E",
     "description": "관통과 흡혈에 특화한 Ghost 빌드."
   },
   "haunter": {
-    "id": "haunter", "name": "Haunter", "types": ["ghost", "poison"], "isStarter": false,
-    "baseStats": { "hp": 45, "attack": 50, "defense": 45, "spAttack": 115, "spDefense": 55, "speed": 95 },
-    "ability": "levitate", "moves": ["lick", "confuse_ray", "shadow_ball"], "color": "0x5A4A8A",
+    "id": "haunter",
+    "name": "Haunter",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 45,
+      "attack": 50,
+      "defense": 45,
+      "spAttack": 115,
+      "spDefense": 55,
+      "speed": 95
+    },
+    "ability": "levitate",
+    "moves": [
+      "lick",
+      "confuse_ray",
+      "shadow_ball"
+    ],
+    "color": "0x5A4A8A",
     "description": "Gastly의 1차 진화형."
   },
   "gengar": {
-    "id": "gengar", "name": "Gengar", "types": ["ghost", "poison"], "isStarter": false,
-    "baseStats": { "hp": 60, "attack": 65, "defense": 60, "spAttack": 130, "spDefense": 75, "speed": 110 },
-    "ability": "levitate", "moves": ["shadow_ball", "confuse_ray", "sludge_bomb"], "color": "0x483A70",
-    "description": "Ghost/Poison 최종 진화형."
+    "id": "gengar",
+    "name": "Gengar",
+    "types": [
+      "ghost",
+      "poison"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 60,
+      "attack": 65,
+      "defense": 60,
+      "spAttack": 130,
+      "spDefense": 75,
+      "speed": 110
+    },
+    "ability": "levitate",
+    "moves": [
+      "shadow_ball",
+      "confuse_ray",
+      "sludge_bomb",
+      "shadow_clone"
+    ],
+    "color": "0x483A70",
+    "description": "Shadow Clone 소환으로 지속 딜을 분산시키는 Ghost 최종 진화형."
   },
-
   "machop": {
-    "id": "machop", "name": "Machop", "types": ["fighting"], "isStarter": true,
-    "baseStats": { "hp": 70, "attack": 80, "defense": 50, "spAttack": 35, "spDefense": 35, "speed": 35 },
-    "ability": "guts", "moves": ["karate_chop", "low_kick"], "color": "0xB5442E",
-    "description": "넉백과 근접전에 특화한 Fighting 빌드."
+    "id": "machop",
+    "name": "Machop",
+    "types": [
+      "fighting"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 70,
+      "attack": 80,
+      "defense": 50,
+      "spAttack": 35,
+      "spDefense": 35,
+      "speed": 35
+    },
+    "ability": "guts",
+    "moves": [
+      "karate_chop",
+      "low_kick",
+      "counter"
+    ],
+    "color": "0xB5442E",
+    "description": "근접전 + Counter 반격 정체성의 Fighting 빌드 (진화 시 Force Palm 강타로 전환)."
   },
   "machoke": {
-    "id": "machoke", "name": "Machoke", "types": ["fighting"], "isStarter": false,
-    "baseStats": { "hp": 80, "attack": 100, "defense": 70, "spAttack": 50, "spDefense": 60, "speed": 45 },
-    "ability": "guts", "moves": ["karate_chop", "low_kick", "cross_chop"], "color": "0x9E3A28",
+    "id": "machoke",
+    "name": "Machoke",
+    "types": [
+      "fighting"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 80,
+      "attack": 100,
+      "defense": 70,
+      "spAttack": 50,
+      "spDefense": 60,
+      "speed": 45
+    },
+    "ability": "guts",
+    "moves": [
+      "karate_chop",
+      "low_kick",
+      "cross_chop"
+    ],
+    "color": "0x9E3A28",
     "description": "Machop의 1차 진화형."
   },
   "machamp": {
-    "id": "machamp", "name": "Machamp", "types": ["fighting"], "isStarter": false,
-    "baseStats": { "hp": 90, "attack": 130, "defense": 80, "spAttack": 65, "spDefense": 85, "speed": 55 },
-    "ability": "guts", "moves": ["cross_chop", "focus_punch", "low_kick"], "color": "0x832F20",
+    "id": "machamp",
+    "name": "Machamp",
+    "types": [
+      "fighting"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 90,
+      "attack": 130,
+      "defense": 80,
+      "spAttack": 65,
+      "spDefense": 85,
+      "speed": 55
+    },
+    "ability": "guts",
+    "moves": [
+      "cross_chop",
+      "focus_punch",
+      "low_kick"
+    ],
+    "color": "0x832F20",
     "description": "Fighting 최종 진화형. 압도적인 물리 화력."
   },
-
   "vulpix": {
-    "id": "vulpix", "name": "Vulpix", "types": ["fire"], "isStarter": true,
-    "baseStats": { "hp": 38, "attack": 41, "defense": 40, "spAttack": 50, "spDefense": 65, "speed": 65 },
-    "ability": "flash_fire", "moves": ["ember", "quick_attack"], "color": "0xF06A45",
+    "id": "vulpix",
+    "name": "Vulpix",
+    "types": [
+      "fire"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 38,
+      "attack": 41,
+      "defense": 40,
+      "spAttack": 50,
+      "spDefense": 65,
+      "speed": 65
+    },
+    "ability": "flash_fire",
+    "moves": [
+      "ember",
+      "quick_attack"
+    ],
+    "color": "0xF06A45",
     "description": "Fire 흡수 후 강화되는 빌드."
   },
   "ninetales": {
-    "id": "ninetales", "name": "Ninetales", "types": ["fire"], "isStarter": false,
-    "baseStats": { "hp": 73, "attack": 76, "defense": 75, "spAttack": 81, "spDefense": 100, "speed": 100 },
-    "ability": "flash_fire", "moves": ["ember", "fire_spin", "fire_blast"], "color": "0xE8CC7A",
-    "description": "Vulpix의 최종 진화형."
+    "id": "ninetales",
+    "name": "Ninetales",
+    "types": [
+      "fire"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 73,
+      "attack": 76,
+      "defense": 75,
+      "spAttack": 81,
+      "spDefense": 100,
+      "speed": 100
+    },
+    "ability": "flash_fire",
+    "moves": [
+      "ember",
+      "fire_spin",
+      "fire_blast"
+    ],
+    "color": "0xE8CC7A",
+    "description": "부채꼴(Cone) 화염 브레스로 광역을 태우는 Fire 진화형."
   },
-
   "piplup": {
-    "id": "piplup", "name": "Piplup", "types": ["water"], "isStarter": true,
-    "baseStats": { "hp": 53, "attack": 51, "defense": 53, "spAttack": 61, "spDefense": 56, "speed": 40 },
-    "ability": "torrent", "moves": ["bubble", "water_gun"], "color": "0x3E8FD0",
+    "id": "piplup",
+    "name": "Piplup",
+    "types": [
+      "water"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 53,
+      "attack": 51,
+      "defense": 53,
+      "spAttack": 61,
+      "spDefense": 56,
+      "speed": 40
+    },
+    "ability": "torrent",
+    "moves": [
+      "bubble",
+      "water_gun"
+    ],
+    "color": "0x3E8FD0",
     "description": "다수의 물방울로 범위를 장악하는 빌드."
   },
   "prinplup": {
-    "id": "prinplup", "name": "Prinplup", "types": ["water"], "isStarter": false,
-    "baseStats": { "hp": 64, "attack": 66, "defense": 68, "spAttack": 81, "spDefense": 76, "speed": 50 },
-    "ability": "torrent", "moves": ["bubble", "water_gun", "hydro_pump"], "color": "0x2E70B0",
+    "id": "prinplup",
+    "name": "Prinplup",
+    "types": [
+      "water"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 64,
+      "attack": 66,
+      "defense": 68,
+      "spAttack": 81,
+      "spDefense": 76,
+      "speed": 50
+    },
+    "ability": "torrent",
+    "moves": [
+      "bubble",
+      "water_gun",
+      "hydro_pump"
+    ],
+    "color": "0x2E70B0",
     "description": "Piplup의 1차 진화형."
   },
   "empoleon": {
-    "id": "empoleon", "name": "Empoleon", "types": ["water", "steel"], "isStarter": false,
-    "baseStats": { "hp": 84, "attack": 86, "defense": 88, "spAttack": 111, "spDefense": 101, "speed": 60 },
-    "ability": "torrent", "moves": ["hydro_pump", "water_gun", "bubble"], "color": "0x1F4E80",
-    "description": "Water/Steel 최종 진화형."
+    "id": "empoleon",
+    "name": "Empoleon",
+    "types": [
+      "water",
+      "steel"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 84,
+      "attack": 86,
+      "defense": 88,
+      "spAttack": 111,
+      "spDefense": 101,
+      "speed": 60
+    },
+    "ability": "torrent",
+    "moves": [
+      "hydro_pump",
+      "water_gun",
+      "bubble"
+    ],
+    "color": "0x1F4E80",
+    "description": "Aqua Jet 돌진 마무리를 갖춘 Water 최종 진화형."
   },
-
   "riolu": {
-    "id": "riolu", "name": "Riolu", "types": ["fighting"], "isStarter": true,
-    "baseStats": { "hp": 40, "attack": 70, "defense": 40, "spAttack": 35, "spDefense": 40, "speed": 60 },
-    "ability": "steadfast", "moves": ["force_palm", "quick_attack"], "color": "0x2E3A66",
+    "id": "riolu",
+    "name": "Riolu",
+    "types": [
+      "fighting"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 40,
+      "attack": 70,
+      "defense": 40,
+      "spAttack": 35,
+      "spDefense": 40,
+      "speed": 60
+    },
+    "ability": "steadfast",
+    "moves": [
+      "force_palm",
+      "quick_attack"
+    ],
+    "color": "0x2E3A66",
     "description": "상태이상 반격에 특화한 Fighting 빌드."
   },
   "lucario": {
-    "id": "lucario", "name": "Lucario", "types": ["fighting", "steel"], "isStarter": false,
-    "baseStats": { "hp": 70, "attack": 110, "defense": 70, "spAttack": 115, "spDefense": 70, "speed": 90 },
-    "ability": "steadfast", "moves": ["aura_sphere", "drain_punch", "force_palm"], "color": "0x1F2A50",
+    "id": "lucario",
+    "name": "Lucario",
+    "types": [
+      "fighting",
+      "steel"
+    ],
+    "isStarter": false,
+    "baseStats": {
+      "hp": 70,
+      "attack": 110,
+      "defense": 70,
+      "spAttack": 115,
+      "spDefense": 70,
+      "speed": 90
+    },
+    "ability": "steadfast",
+    "moves": [
+      "aura_sphere",
+      "drain_punch",
+      "force_palm"
+    ],
+    "color": "0x1F2A50",
     "description": "Riolu의 최종 진화형."
+  },
+  "clefairy": {
+    "id": "clefairy",
+    "name": "Clefairy",
+    "types": [
+      "fairy"
+    ],
+    "isStarter": true,
+    "baseStats": {
+      "hp": 45,
+      "attack": 35,
+      "defense": 40,
+      "spAttack": 60,
+      "spDefense": 65,
+      "speed": 40
+    },
+    "ability": "magic_shield",
+    "moves": [
+      "moonlight_orb",
+      "disarming_voice"
+    ],
+    "color": "0xFFB3EC",
+    "description": "체력 소모 없는 Orbit+Homing 견제와 매직 가드(보호막)로 버티는 지속형 빌드."
   }
 }

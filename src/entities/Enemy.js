@@ -31,6 +31,7 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.physicalReduction = stats.defense;
     this.specialReduction = stats.defense;
     this.speed = stats.speed;
+    this.baseSpeed = stats.speed; // pre-phase-multiplier baseline, see applyBossPhase()
     this.expValue = stats.exp;
     this.statusEffects = {};
     this.contactCooldown = 0;
@@ -38,6 +39,29 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     this.move = species.moveId ? moveManager.getMove(species.moveId) : null;
     this.moveTimer = species.moveCooldownMs ? species.moveCooldownMs * 0.5 : 0;
+
+    // Boss-specific multi-pattern behavior (spec section 58): a boss with a `movePool` rotates
+    // between several differently-patterned moves, each on its OWN cooldown (from the move's
+    // own cooldownMs), instead of the flat "one move forever" every other tier uses via
+    // `moveId`/`moveCooldownMs` above. Staggered start timers so the moves don't all sync up.
+    this.movePool = (species.movePool && species.movePool.length > 0)
+      ? species.movePool.map((entry, i) => ({
+          move: moveManager.getMove(entry.id),
+          timer: 250 + i * 350
+        })).filter(e => e.move)
+      : null;
+
+    // Boss multi-phase transitions (spec: 3페이즈 이상) - data-driven via balance.json's
+    // bossPhases array (each entry: {threshold, speedMult, cooldownMult, damageMult, label}),
+    // applied in ascending-danger order as HP crosses each threshold. See
+    // GameScene.updateBossHpBars (the trigger check) and applyBossPhase() below (the effect).
+    this.phaseIndex = 0;
+    this.phaseCooldownMult = 1;
+    this.phaseDamageMult = 1;
+
+    // Elite modifier (spec section 57) - see EnemyManager.computeSpawnStats. Tinted so it reads
+    // as a visibly different enemy, not just a bigger health bar.
+    this.eliteModifier = stats.eliteModifier || null;
 
     const scale = species.scale || 1;
     if (this.texture.key !== species.id) this.setTexture(species.id);
@@ -48,6 +72,7 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setVisible(true);
     this.body.enable = true;
     PS.MathUtils.fitCircularBody(this, 14 * scale);
+    this.setTint(this.eliteModifier ? parseInt(this.eliteModifier.tint.replace('0x', ''), 16) : 0xffffff);
 
     this.hpBarBg.setVisible(true);
     this.hpBarFg.setVisible(true);
@@ -66,6 +91,9 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (!this.active) return;
 
     statusFx.update(this, dtSec, dotDamageCallback);
+    if (this.eliteModifier && this.eliteModifier.regenPercent) {
+      this.hp = Math.min(this.maxHp, this.hp + this.maxHp * this.eliteModifier.regenPercent * dtSec);
+    }
     this.contactCooldown = Math.max(0, this.contactCooldown - dtSec);
     this.stunTimer = Math.max(0, this.stunTimer - dtSec);
     if (this.moveTimer > 0) this.moveTimer -= dtSec * 1000;
@@ -73,8 +101,16 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     const dist = PS.MathUtils.distance(this.x, this.y, playerX, playerY);
     const frozenOrStunned = statusFx.isFrozen(this) || this.stunTimer > 0;
 
-    if (this.move && this.moveTimer <= 0 && dist <= this.move.range * 1.2 && !frozenOrStunned) {
-      this.moveTimer = this.species.moveCooldownMs;
+    if (this.movePool) {
+      for (const entry of this.movePool) {
+        entry.timer -= dtSec * 1000;
+        if (entry.timer <= 0 && dist <= (entry.move.range || 300) * 1.2 && !frozenOrStunned) {
+          entry.timer = (entry.move.cooldownMs || 2000) * this.phaseCooldownMult;
+          onWantsToAttack(this, entry.move);
+        }
+      }
+    } else if (this.move && this.moveTimer <= 0 && dist <= this.move.range * 1.2 && !frozenOrStunned) {
+      this.moveTimer = this.species.moveCooldownMs * this.phaseCooldownMult;
       onWantsToAttack(this, this.move);
     }
 
@@ -93,6 +129,22 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
   takeDamage(amount) {
     this.hp -= amount;
     return this.hp <= 0;
+  }
+
+  /** Used by the 'vampiric' elite modifier to heal off damage it deals to the player. */
+  heal(amount) {
+    this.hp = Math.min(this.maxHp, this.hp + amount);
+  }
+
+  /** Boss multi-phase transition (spec: 3페이즈 이상), triggered from GameScene as HP crosses
+   * each descending threshold in balance.json's bossPhases. Each phase's multipliers are
+   * absolute (computed from baseSpeed), not stacked on top of the previous phase's, so tuning
+   * stays predictable regardless of how many phases a boss has. */
+  applyBossPhase(phaseDef, phaseIndex) {
+    this.phaseIndex = phaseIndex;
+    this.speed = this.baseSpeed * (phaseDef.speedMult || 1);
+    this.phaseCooldownMult = phaseDef.cooldownMult || 1;
+    this.phaseDamageMult = phaseDef.damageMult || 1;
   }
 
   despawn() {

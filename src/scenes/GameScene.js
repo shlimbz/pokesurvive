@@ -17,6 +17,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.combat = PS.Game.combat;
     this.levelSystem = PS.Game.levelSystem;
     this.evolutionSystem = PS.Game.evolutionSystem;
+    this.moveEvolutionSystem = PS.Game.moveEvolutionSystem;
     this.assets = PS.Game.assets;
     this.vfx = new PS.VFXSystem(this, data.vfx, this.assets);
     this.audio = new PS.AudioSystem(this);
@@ -80,6 +81,10 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.pickupGroup = this.physics.add.group();
     this.nextPickupTimerMs = PS.RandomUtils.range(8000, 13000);
 
+    // ---- Relic field pickups (far rarer - see data/relics.json) ----
+    this.relicPickupGroup = this.physics.add.group();
+    this.nextRelicPickupTimerMs = PS.RandomUtils.range(180000, 240000); // ~3-4 min
+
     // ---- Spawn system ----
     this.spawnSystem = new PS.SpawnSystem(managers.enemy, this.waveSystem, data.balance, this.mapId,
       (species, stats, x, y, isBig) => this.spawnEnemy(species, stats, x, y, isBig));
@@ -90,6 +95,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.enemyGroup, (player, enemy) => this.onPlayerTouchEnemy(enemy));
     this.physics.add.overlap(this.player, this.expGemGroup, (player, gem) => this.onPlayerTouchGem(gem));
     this.physics.add.overlap(this.player, this.pickupGroup, (player, pickup) => this.onPickupCollected(pickup));
+    this.physics.add.overlap(this.player, this.relicPickupGroup, (player, pickup) => this.onRelicPickupCollected(pickup));
 
     // ---- Input ----
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -100,6 +106,17 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.buildHud();
     this.buildLowHpVignette();
     this.rangeRingGfx = this.add.graphics().setDepth(2);
+
+    // New attack-pattern state (Orbit satellites, Counter's own reactive cooldown, active
+    // Summon turrets) - see performPlayerAttack's 'orbit'/'counter'/'summon' cases below.
+    this.orbitVisuals = {};
+    this.counterCooldowns = {};
+    this.activeSummons = [];
+
+    // Map-specific environmental hazard (spec: 맵별 고유 기믹) - see updateMapHazard/
+    // spawnMapHazardZone below. Starts a little delayed so the very first seconds of a run
+    // aren't immediately eaten by it.
+    this.mapHazardTimer = 3000;
 
     this.events.on('resume', () => { this.isPaused = false; });
   }
@@ -129,6 +146,9 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.timerText = this.add.text(w / 2, 20, '15:00', { fontFamily: 'Arial Black', fontSize: '20px', color: '#ffffff' }).setOrigin(0.5, 0).setScrollFactor(0).setDepth(51);
     this.killText = this.add.text(w - 20, 20, '처치: 0', { fontFamily: 'Arial', fontSize: '13px', color: '#cccccc' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
     this.speciesText = this.add.text(w - 20, 40, this.build.species.name, { fontFamily: 'Arial Black', fontSize: '13px', color: '#ffd400' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
+    // Build Summary (spec section 54): a compact, always-visible readout of the build's current
+    // "identity" (top mastered type(s) + level) - not the whole TAB overview, just the headline.
+    this.buildSummaryText = this.add.text(w - 20, 58, '', { fontFamily: 'Arial', fontSize: '11px', color: '#8fd3ff' }).setOrigin(1, 0).setScrollFactor(0).setDepth(51);
     this.muteText = this.add.text(20, this.cameras.main.height - 20, '🔊 M: 음소거', { fontFamily: 'Arial', fontSize: '11px', color: '#666666' }).setOrigin(0, 1).setScrollFactor(0).setDepth(51);
 
     // Prominent top-of-screen HP bar(s) for miniboss/boss fights (separate from the small
@@ -160,6 +180,19 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         this.bossBars.delete(enemy);
         continue;
       }
+      // Boss multi-phase transitions (spec: 3페이즈 이상) - data-driven via balance.json's
+      // bossPhases array, applied in order as HP crosses each descending threshold. A boss can
+      // have as many phases as the data defines; nothing here is hardcoded to exactly one.
+      if (enemy.tier === 'boss') {
+        const phases = this.data_.balance.bossPhases || [];
+        const hpRatio = enemy.hp / enemy.maxHp;
+        for (let i = 0; i < phases.length; i++) {
+          if (enemy.phaseIndex <= i && hpRatio <= phases[i].threshold) {
+            enemy.applyBossPhase(phases[i], i + 1);
+            this.triggerBossPhaseFeedback(enemy, phases[i].label || `${i + 2}페이즈`);
+          }
+        }
+      }
       bar.fg.width = Math.max(0, bar.barW * (enemy.hp / enemy.maxHp));
     }
     // re-stack remaining bars so there's never a gap if one was removed
@@ -181,6 +214,19 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.timerText.setText(this.waveSystem.getTimeRemainingLabel(this.runTimeSec));
     this.killText.setText(`처치: ${this.build.kills}`);
     this.speciesText.setText(this.build.species.name);
+    this.buildSummaryText.setText(this.getBuildSummaryLabel());
+  }
+
+  /** Top 1-2 mastered types + their levels, e.g. "⚡전기 Lv.3 · 🔥불꽃 Lv.1" - see buildHud(). */
+  getBuildSummaryLabel() {
+    const typeIcons = { electric: '⚡', fire: '🔥', water: '💧', grass: '🌿', poison: '☠️', normal: '⚪', fighting: '🥊', ghost: '👻', ice: '❄️' };
+    const entries = Object.keys(this.build.typeMasteryXp || {})
+      .map(t => ({ type: t, level: this.build.getTypeMasteryLevel(t) }))
+      .filter(e => e.level > 0)
+      .sort((a, b) => b.level - a.level)
+      .slice(0, 2);
+    if (entries.length === 0) return '';
+    return entries.map(e => `${typeIcons[e.type] || ''}${PS.typeNameKo(e.type)} Lv.${e.level}`).join(' · ');
   }
 
   // ================= Pause + build overview (ESC / TAB) =================
@@ -254,10 +300,11 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     if (abilityIds.length === 0) c.add(this.add.text(col1X, y1, '(없음)', { fontFamily: 'Arial', fontSize: '12px', color: '#888888' }));
     for (const id of abilityIds) {
       const ability = this.managers.ability.getAbility(id);
-      c.add(this.add.text(col1X, y1, `${ability.name} Lv${this.build.getAbilityLevel(id)} - ${ability.description}`, {
+      const abilityText = this.add.text(col1X, y1, `${ability.name} Lv${this.build.getAbilityLevel(id)} - ${ability.description}`, {
         fontFamily: 'Arial', fontSize: '12px', color: '#ffffff', wordWrap: { width: w / 2 - 60 }
-      }));
-      y1 += 20 * Math.ceil((ability.name.length + ability.description.length) / 45 || 1);
+      });
+      c.add(abilityText);
+      y1 += abilityText.height + 6; // measured height, not an estimate - avoids overlap on wrapped lines
     }
 
     c.add(this.add.text(col2X, y2, '보유 아이템', { fontFamily: 'Arial Black', fontSize: '14px', color: '#62ffb0' }));
@@ -283,6 +330,42 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         }));
         y2 += 20;
       }
+    }
+
+    y2 += 14;
+    c.add(this.add.text(col2X, y2, '타입 숙련도', { fontFamily: 'Arial Black', fontSize: '14px', color: '#8fd3ff' }));
+    y2 += 22;
+    const masteredTypes = Object.keys(this.build.typeMasteryXp || {})
+      .filter(t => (this.build.typeMasteryXp[t] || 0) > 0)
+      .sort((a, b) => this.build.getTypeMasteryLevel(b) - this.build.getTypeMasteryLevel(a));
+    if (masteredTypes.length === 0) c.add(this.add.text(col2X, y2, '(아직 없음 - 기술로 적을 맞히면 자동으로 쌓입니다)', { fontFamily: 'Arial', fontSize: '11px', color: '#888888', wordWrap: { width: w / 2 - 60 } }));
+    for (const typeId of masteredTypes) {
+      const level = this.build.getTypeMasteryLevel(typeId);
+      const xp = this.build.typeMasteryXp[typeId];
+      const next = this.managers.typeMastery.xpForNextLevel(level);
+      const progress = next ? ` (${xp}/${next})` : ' (MAX)';
+      const cfg = this.managers.typeMastery.getTypeConfig(typeId);
+      const unlocked = [];
+      for (let l = 1; l <= level; l++) if (cfg.levels[l]) unlocked.push(cfg.levels[l].label);
+      const masteryText = this.add.text(col2X, y2, `${PS.typeNameKo(typeId)} Lv${level}${progress}\n${unlocked.join(' · ')}`, {
+        fontFamily: 'Arial', fontSize: '12px', color: '#c8e8ff', wordWrap: { width: w / 2 - 60 }
+      });
+      c.add(masteryText);
+      y2 += masteryText.height + 6;
+    }
+
+    y1 += 14;
+    c.add(this.add.text(col1X, y1, '보유 유물', { fontFamily: 'Arial Black', fontSize: '14px', color: '#ffb300' }));
+    y1 += 22;
+    const relicIds = Object.keys(this.build.relics || {});
+    if (relicIds.length === 0) c.add(this.add.text(col1X, y1, '(없음)', { fontFamily: 'Arial', fontSize: '12px', color: '#888888' }));
+    for (const id of relicIds) {
+      const relic = this.managers.relic.getRelic(id);
+      const relicText = this.add.text(col1X, y1, `${relic.name} Lv${this.build.getRelicLevel(id)} - ${relic.description}`, {
+        fontFamily: 'Arial', fontSize: '12px', color: '#ffd98a', wordWrap: { width: w / 2 - 60 }
+      });
+      c.add(relicText);
+      y1 += relicText.height + 6; // measured height, not an estimate - avoids overlap on wrapped lines
     }
 
     c.add(this.add.text(w / 2, h - 30, 'TAB 키를 눌러 닫기', {
@@ -329,7 +412,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     for (const moveId of this.build.getOwnedMoveIds()) {
       const move = this.managers.move.getMove(moveId);
       if (!move) continue;
-      const isAreaPattern = move.pattern === 'circle' || move.pattern === 'orbit';
+      const isAreaPattern = move.pattern === 'circle' || move.pattern === 'orbit' || move.pattern === 'aura';
       const radius = isAreaPattern ? this.getEffectiveAreaRadius(move, 150) : this.getEffectiveRange(move);
       const key = Math.round(radius / 4); // dedupe near-identical radii so rings don't overdraw
       if (!radius || seen.has(key)) continue;
@@ -364,14 +447,20 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.playerProjectilePool.forEachActive(p => p.update(dt, (x, y, excludeSet) => this.findNearestEnemy(x, y, excludeSet)));
     this.enemyProjectilePool.forEachActive(p => p.update(dt, () => null));
 
-    this.gemPool.forEachActive(g => g.update(dt, this.player.x, this.player.y, this.data_.balance.player.pickupRadius));
+    const pickupRadius = this.data_.balance.player.pickupRadius * this.build.modifiers.pickupRadiusMult;
+    this.gemPool.forEachActive(g => g.update(dt, this.player.x, this.player.y, pickupRadius));
 
     this.spawnSystem.update(deltaMs, this.runTimeSec, this.player.x, this.player.y, this.enemyPool.activeCount);
     this.updatePickups(deltaMs);
+    this.updateRelicPickups(deltaMs);
 
     this.checkLevelUps();
     this.checkEvolution();
+    this.checkMoveEvolutions();
     this.updateAuraAbilities(dt);
+    this.updateOrbitVisuals(dt);
+    this.updateSummons(dt);
+    this.updateMapHazard(dt);
     this.updateHud();
     this.updateBossHpBars();
     this.updateLowHpVignette(time);
@@ -398,7 +487,12 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   }
 
   applyEnemyDot(enemy, amount) {
-    if (enemy.takeDamage(amount)) this.killEnemy(enemy);
+    // Leech Seed (Bulbasaur vertical slice, spec section 7 "Sustain"): while an enemy is
+    // seeded, its DOT tick also heals the player - "지속 피해 → HP 회복" in one line.
+    if (this.statusFx.has(enemy, 'seed')) {
+      this.player.hp = Math.min(this.player.maxHp, this.player.hp + amount * 0.6);
+    }
+    if (enemy.takeDamage(amount)) this.killEnemy(enemy, 'grass');
   }
 
   // ================= Targeting =================
@@ -429,8 +523,27 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     return (move.range || 300) * this.build.modifiers.rangeMult;
   }
 
+  // Pattern-specific growth (spec: 패턴마다 다른 핵심 스탯이 성장) - data/balance.json's
+  // patternGrowth table adds a small per-move-level bonus to ONE characteristic field per
+  // pattern (chain gets more hops, beam gets wider, orbit gets more satellites, etc), on top
+  // of CombatSystem's shared moveLevelDamageMult curve. A move/pattern with no matching entry
+  // (or an old save/mod without this data) just keeps its flat base value - fully backward
+  // compatible.
+  getPatternScaledField(move, moveLevel, fieldKey, baseValue) {
+    const growth = this.data_.balance.patternGrowth && this.data_.balance.patternGrowth[move.pattern];
+    let value = baseValue;
+    if (growth && growth.field === fieldKey) value += growth.perLevel * (moveLevel - 1);
+    // Pattern-identity synergy items (data/items.json's pattern_field_bonus effect).
+    const bonusKey = `${move.pattern}:${fieldKey}`;
+    const bonus = this.build.modifiers.patternFieldBonus && this.build.modifiers.patternFieldBonus[bonusKey];
+    if (bonus) value *= (1 + bonus);
+    return value;
+  }
+
   getEffectiveAreaRadius(move, fallback) {
-    return (move.areaRadius || fallback) * this.build.modifiers.rangeMult;
+    const moveLevel = this.build.getMoveLevel(move.id) || 1;
+    const base = this.getPatternScaledField(move, moveLevel, 'areaRadius', move.areaRadius || fallback);
+    return base * this.build.modifiers.rangeMult;
   }
 
   performPlayerAttack(player, move) {
@@ -438,6 +551,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     const aimAngle = nearest ? PS.MathUtils.angleBetween(player.x, player.y, nearest.x, nearest.y) : (player.lastFacingAngle || -Math.PI / 2);
     const hpRatio = player.getHpRatio();
     const range = this.getEffectiveRange(move);
+    const moveLevel = this.build.getMoveLevel(move.id) || 1;
 
     switch (move.pattern) {
       case 'melee': {
@@ -451,7 +565,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         this.firePlayerProjectile(move, player.x, player.y, aimAngle, 'straight', range);
         return true;
       case 'spread': {
-        const count = move.count || 3;
+        const count = Math.round(this.getPatternScaledField(move, moveLevel, 'count', move.count || 3));
         const spread = Phaser.Math.DegToRad(move.spreadAngle || 45);
         for (let i = 0; i < count; i++) {
           const t = count === 1 ? 0 : (i / (count - 1)) - 0.5;
@@ -476,10 +590,20 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         return true;
       }
       case 'orbit': {
-        const radius = this.getEffectiveAreaRadius(move, 140);
-        const targets = this.findEnemiesInRadius(player.x, player.y, radius, radius * 0.6);
-        this.resolveAoe(move, targets, hpRatio, player);
-        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), player.x, player.y, radius);
+        // Persistent rotating satellites (Fairy vertical slice, spec: Orbit+Aura+Shield+Homing).
+        // Visual position/rotation is refreshed every frame by updateOrbitVisuals() below; this
+        // cooldown-driven call is the DAMAGE TICK - it recomputes the same satellite positions
+        // and hits anything currently overlapping one, so cooldownMs effectively sets the
+        // pattern's hit-tick rate rather than a one-shot cast.
+        const count = Math.max(1, Math.round(this.getPatternScaledField(move, moveLevel, 'count', move.count || 2)));
+        const positions = this.computeOrbitPositions(move, player, count);
+        const hitRadius = move.hitRadius || 30;
+        const hitSet = new Set();
+        for (const pos of positions) {
+          for (const e of this.findEnemiesInRadius(pos.x, pos.y, hitRadius)) hitSet.add(e);
+        }
+        this.resolveAoe(move, Array.from(hitSet), hpRatio, player);
+        this.ensureOrbitVisual(move, player, count);
         return true;
       }
       case 'strike': {
@@ -510,7 +634,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         return true;
       }
       case 'beam': {
-        const width = move.beamWidth || 40;
+        const width = this.getPatternScaledField(move, moveLevel, 'beamWidth', move.beamWidth || 40);
         const ex = player.x + Math.cos(aimAngle) * range;
         const ey = player.y + Math.sin(aimAngle) * range;
         const targets = this.findEnemiesNearSegment(player.x, player.y, ex, ey, width / 2);
@@ -518,9 +642,219 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x + Math.cos(aimAngle) * (range * 0.5), player.y + Math.sin(aimAngle) * (range * 0.5), aimAngle);
         return true;
       }
+      case 'cone': {
+        // Instant wide-arc hit in front of the player (design spec section 4: Flamethrower/
+        // Water Pulse-style attacks). Unlike 'spread' (discrete projectiles), this resolves in
+        // one frame against everything within range AND inside the facing angle.
+        const coneRadius = range;
+        const coneAngleDeg = this.getPatternScaledField(move, moveLevel, 'coneAngle', move.coneAngle || 70);
+        const halfAngle = Phaser.Math.DegToRad(coneAngleDeg / 2);
+        const targets = this.findEnemiesInRadius(player.x, player.y, coneRadius).filter(e => {
+          const angToTarget = PS.MathUtils.angleBetween(player.x, player.y, e.x, e.y);
+          let diff = angToTarget - aimAngle;
+          diff = Math.atan2(Math.sin(diff), Math.cos(diff)); // wrap to [-PI, PI]
+          return Math.abs(diff) <= halfAngle;
+        });
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x + Math.cos(aimAngle) * (coneRadius * 0.5), player.y + Math.sin(aimAngle) * (coneRadius * 0.5), aimAngle);
+        return true;
+      }
+      case 'dash': {
+        // Player physically dashes toward the aim direction, hitting everything in a corridor
+        // along the path (design spec section 4: Fighting/Flying/Dark "Dash" pattern).
+        const dashDistance = range;
+        const targetX = player.x + Math.cos(aimAngle) * dashDistance;
+        const targetY = player.y + Math.sin(aimAngle) * dashDistance;
+        const corridorWidth = this.getPatternScaledField(move, moveLevel, 'beamWidth', move.beamWidth || 60);
+        const targets = this.findEnemiesNearSegment(player.x, player.y, targetX, targetY, corridorWidth / 2);
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.tweens.add({ targets: player, x: targetX, y: targetY, duration: 160, ease: 'Cubic.easeOut' });
+        this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x, player.y, aimAngle);
+        return true;
+      }
+      case 'aura': {
+        // Continuous damage pulse centered on the player (Fairy vertical slice). Like 'circle'
+        // but meant to be owned alongside Orbit/Homing as a short-cooldown "always ticking"
+        // layer rather than a single burst - cooldownMs is deliberately short in moves.json.
+        const radius = this.getEffectiveAreaRadius(move, 130);
+        const targets = this.findEnemiesInRadius(player.x, player.y, radius);
+        this.resolveAoe(move, targets, hpRatio, player);
+        this.vfx.playCircleVfx(move.type, moveLevel, player.x, player.y, radius);
+        return true;
+      }
+      case 'ground_zone': {
+        // Telegraphed AoE that lands after a short delay and then lingers, ticking damage for
+        // a few seconds (spec: Ground/Poison "장판" pattern) - distinct from 'rain' (single
+        // delayed burst, no lingering zone).
+        const radius = this.getEffectiveAreaRadius(move, 95);
+        const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
+        const telegraphMs = move.telegraphMs || 550;
+        const tickMs = move.tickMs || 600;
+        const durationSec = move.durationSec || 3;
+        this.vfx.playCircleVfx(move.type, 1, point.x, point.y, radius * 0.5);
+        this.time.delayedCall(telegraphMs, () => {
+          if (this.matchEnded) return;
+          this.vfx.playCircleVfx(move.type, moveLevel, point.x, point.y, radius);
+          const ticks = Math.max(1, Math.round((durationSec * 1000) / tickMs));
+          for (let i = 0; i < ticks; i++) {
+            this.time.delayedCall(i * tickMs, () => {
+              if (this.matchEnded) return;
+              const targets = this.findEnemiesInRadius(point.x, point.y, radius);
+              this.resolveAoe(move, targets, hpRatio, player);
+            });
+          }
+        });
+        return true;
+      }
+      case 'summon': {
+        // Temporary ally "turret" (spec: Summon pattern) - stays at the cast point and
+        // periodically damages the nearest enemy within its own radius, then despawns. A
+        // lightweight simplification of a full summoned-minion AI, consistent with this
+        // prototype's other simplifications (see README section 12).
+        const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
+        const radius = this.getPatternScaledField(move, moveLevel, 'summonRadius', move.summonRadius || 170);
+        const sprite = this.add.sprite(point.x, point.y, this.vfx.getTexture(move.type)).setDisplaySize(26, 26).setDepth(8);
+        const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
+        sprite.setTint(this.assets.hexToInt(vfxDef.color));
+        this.activeSummons.push({
+          sprite, move, radius, hpRatio, attackerEntity: player,
+          tickMs: move.tickMs || 700, timer: 0,
+          remainingMs: (move.durationSec || 6) * 1000
+        });
+        this.vfx.playCircleVfx(move.type, moveLevel, point.x, point.y, radius * 0.3);
+        return true;
+      }
+      case 'counter':
+        // Purely reactive - see Player.js (excluded from the proactive auto-fire loop) and
+        // applyEnemyHitToPlayer (actually triggers the counter-hit). Nothing to do on its own
+        // "cooldown" tick.
+        return true;
       default:
         return true;
     }
+  }
+
+  // ================= Orbit pattern (persistent rotating satellites) =================
+  computeOrbitPositions(move, player, count) {
+    const radius = this.getEffectiveAreaRadius(move, 140);
+    const speed = move.orbitSpeed || 2.2;
+    const baseAngle = (this.time.now / 1000) * speed;
+    const positions = [];
+    for (let i = 0; i < count; i++) {
+      const angle = baseAngle + (i / count) * Math.PI * 2;
+      positions.push({ x: player.x + Math.cos(angle) * radius, y: player.y + Math.sin(angle) * radius });
+    }
+    return positions;
+  }
+
+  ensureOrbitVisual(move, player, count) {
+    let state = this.orbitVisuals[move.id];
+    if (state && state.sprites.length === count) return;
+    if (state) for (const s of state.sprites) s.destroy();
+    const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
+    const sprites = [];
+    for (let i = 0; i < count; i++) {
+      const s = this.add.sprite(player.x, player.y, this.vfx.getTexture(move.type)).setDisplaySize(16, 16).setDepth(9);
+      s.setTint(this.assets.hexToInt(vfxDef.color));
+      sprites.push(s);
+    }
+    this.orbitVisuals[move.id] = { sprites };
+  }
+
+  updateOrbitVisuals() {
+    for (const moveId of Object.keys(this.orbitVisuals)) {
+      const state = this.orbitVisuals[moveId];
+      const stillOwned = this.build.getOwnedMoveIds().includes(moveId);
+      if (!stillOwned) {
+        for (const s of state.sprites) s.destroy();
+        delete this.orbitVisuals[moveId];
+        continue;
+      }
+      const move = this.managers.move.getMove(moveId);
+      if (!move) continue;
+      const positions = this.computeOrbitPositions(move, this.player, state.sprites.length);
+      state.sprites.forEach((sprite, i) => {
+        if (positions[i]) sprite.setPosition(positions[i].x, positions[i].y);
+      });
+    }
+  }
+
+  // ================= Summon pattern (temporary turret) =================
+  updateSummons(dt) {
+    for (let i = this.activeSummons.length - 1; i >= 0; i--) {
+      const s = this.activeSummons[i];
+      s.remainingMs -= dt * 1000;
+      s.timer -= dt * 1000;
+      if (s.remainingMs <= 0) {
+        s.sprite.destroy();
+        this.activeSummons.splice(i, 1);
+        continue;
+      }
+      if (s.timer <= 0) {
+        s.timer = s.tickMs;
+        const targets = this.findEnemiesInRadius(s.sprite.x, s.sprite.y, s.radius);
+        if (targets.length > 0) {
+          this.resolveAoe(s.move, [targets[0]], s.hpRatio, s.attackerEntity);
+          this.vfx.playTypeVfx(s.move.type, 1, targets[0].x, targets[0].y);
+        }
+      }
+    }
+  }
+
+  // ================= Map-specific environmental hazard (spec: 맵별 고유 기믹) =================
+  // Generic, data-driven via data/maps.json's `hazard` field - the SAME code handles every map,
+  // only the type/numbers differ. Currently 3 generic effect types: heal_zone (heals enemies
+  // standing in it - punishes camping), slow_zone (slows the player - forces repositioning),
+  // damage_zone (damages the player - a classic environmental hazard). A map with no `hazard`
+  // field (or an old save/mod) simply never spawns one - fully backward compatible.
+  updateMapHazard(dt) {
+    const hazard = this.map.hazard;
+    if (!hazard) return;
+    this.mapHazardTimer -= dt * 1000;
+    if (this.mapHazardTimer <= 0) {
+      this.mapHazardTimer = hazard.intervalMs || 8000;
+      this.spawnMapHazardZone(hazard);
+    }
+  }
+
+  spawnMapHazardZone(hazard) {
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 160 + Math.random() * 220;
+    const x = this.player.x + Math.cos(angle) * dist;
+    const y = this.player.y + Math.sin(angle) * dist;
+    const radius = hazard.radius || 100;
+    const tickMs = hazard.tickMs || 700;
+    const durationSec = hazard.durationSec || 5;
+    const colorByType = { heal_zone: 0x55ff88, slow_zone: 0x55aaff, damage_zone: 0xff5533 };
+    const color = colorByType[hazard.type] || 0xaaaaaa;
+
+    const zone = this.add.circle(x, y, radius, color, 0.16).setDepth(3);
+    zone.setStrokeStyle(2, color, 0.55);
+    this.tweens.add({ targets: zone, alpha: { from: 0.5, to: 0.16 }, duration: 400, yoyo: true, repeat: -1 });
+
+    const ticks = Math.max(1, Math.round((durationSec * 1000) / tickMs));
+    for (let i = 0; i < ticks; i++) {
+      this.time.delayedCall(300 + i * tickMs, () => {
+        if (this.matchEnded) return;
+        if (hazard.type === 'heal_zone') {
+          for (const e of this.findEnemiesInRadius(x, y, radius)) e.heal(e.maxHp * (hazard.value || 0.03));
+        } else if (hazard.type === 'slow_zone') {
+          if (PS.MathUtils.distance(this.player.x, this.player.y, x, y) <= radius) {
+            this.player.applyHazardSlow(1 - (hazard.value || 0.4), (tickMs / 1000) + 0.15);
+          }
+        } else if (hazard.type === 'damage_zone') {
+          if (PS.MathUtils.distance(this.player.x, this.player.y, x, y) <= radius) {
+            const dmg = Math.round(this.player.maxHp * (hazard.value || 0.035));
+            const applied = this.player.takeDamage(dmg);
+            if (applied) {
+              this.damageNumberPool.obtain(this.player.x, this.player.y - 24, dmg, { color: '#ff8844' });
+              this.audio.playPlayerHurt();
+            }
+          }
+        }
+      });
+    }
+    this.time.delayedCall(durationSec * 1000 + 50, () => zone.destroy());
   }
 
   findEnemiesNearSegment(x1, y1, x2, y2, halfWidth) {
@@ -545,7 +879,8 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       speed: move.projectileSpeed || 420,
       pierce: move.pierce || 0,
       chainCount: move.chainCount || 0,
-      chainRange: move.chainRange || 160,
+      // Type Mastery (Electric Lv3 in the base data): widens a chain move's hop range.
+      chainRange: (move.chainRange || 160) * (1 + (this.build.modifiers.typeChainRangeBonus[move.type] || 0)),
       splashRadius: move.splashRadius || 0,
       range: range || move.range || 350
     });
@@ -568,6 +903,12 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     const result = this.combat.resolvePlayerHit(this.build, move, enemy, hpRatio, attackerEntity);
     const died = enemy.takeDamage(result.damage);
 
+    // Type Mastery XP: automatic, earned just by playing (spec section 30) - no card needed.
+    const gain = this.managers.typeMastery.xpGain;
+    const newLevel = this.build.addTypeMasteryXp(move.type, gain.hitOfType);
+    if (newLevel) this.announceTypeMasteryLevelUp(move.type, newLevel);
+    if (result.statusApplied) this.build.addTypeMasteryXp(move.type, gain.statusAppliedOfType);
+
     this.damageNumberPool.obtain(enemy.x, enemy.y - 20, result.damage, {
       color: result.isCrit ? '#fff176' : '#ffffff',
       scale: result.isCrit ? 1.3 : 1
@@ -586,7 +927,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       enemy.y += dir.y * (move.knockback / 10);
     }
 
-    if (died) this.killEnemy(enemy);
+    if (died) this.killEnemy(enemy, move.type);
   }
 
   // ================= Enemy attack resolution =================
@@ -654,17 +995,45 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     proj.deactivate();
   }
 
+  triggerBossPhaseFeedback(enemy, label) {
+    this.cameras.main.shake(220, 0.006);
+    enemy.setTint(0xff5555);
+    this.time.delayedCall(260, () => {
+      if (enemy.active) enemy.setTint(enemy.eliteModifier ? this.assets.hexToInt(enemy.eliteModifier.tint.replace('0x', '')) : 0xffffff);
+    });
+    const banner = this.add.text(this.cameras.main.width / 2, 150, `${enemy.species.name} - ${label} 돌입!`, {
+      fontFamily: 'Arial Black, sans-serif', fontSize: '20px', color: '#ff5555',
+      align: 'center', stroke: '#000000', strokeThickness: 5
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+    this.tweens.add({ targets: banner, alpha: 1, duration: 250, yoyo: true, hold: 1200, onComplete: () => banner.destroy() });
+  }
+
   applyEnemyHitToPlayer(enemySource, move) {
-    const enemyStats = { attack: enemySource.attack };
+    const enemyStats = { attack: enemySource.attack * (enemySource.phaseDamageMult || 1) };
     const enemyTypes = enemySource.types;
     const result = this.combat.resolveEnemyHitOnPlayer(enemyStats, enemyTypes, move, this.build, this.player);
 
     if (!result.absorbed) {
       const applied = this.player.takeDamage(result.damage);
+      if (!applied && this.player.lastSaveType === 'shield') this.triggerShieldBlockFeedback();
       if (applied) {
         this.damageNumberPool.obtain(this.player.x, this.player.y - 24, result.damage, { color: '#ff6666' });
         this.audio.playPlayerHurt();
         this.triggerStaticHook();
+        this.triggerCounterAttack(enemySource);
+        if (this.player.lastSaveType === 'phoenix') this.triggerPhoenixSaveFeedback();
+        else if (this.player.lastSaveType === 'survival') this.triggerSurvivalSaveFeedback();
+
+        // Elite modifiers (spec section 57). Only meaningful when enemySource is the real,
+        // still-alive Enemy instance (contact hits, and the direct circle/beam/default branches
+        // of performEnemyAttack) - never a reconstructed { attack, types } object from a
+        // projectile hit, since that source may have already despawned/been pooled elsewhere.
+        if (enemySource.eliteModifier) {
+          if (enemySource.eliteModifier.toxicOnHit) this.statusFx.tryApply(this.player, 'poison', 0.5);
+          if (enemySource.eliteModifier.vampiricPercent && enemySource.heal) {
+            enemySource.heal(result.damage * enemySource.eliteModifier.vampiricPercent);
+          }
+        }
       }
       if (result.statusId && PS.RandomUtils.chance(result.statusChance)) this.statusFx.tryApply(this.player, result.statusId, result.statusChance);
     } else {
@@ -676,6 +1045,51 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const maxStacks = result.flashFireStacks[0].effect.maxStacks;
         this.player.flashFireStacks = Math.min(maxStacks, (this.player.flashFireStacks || 0) + 1);
       }
+    }
+  }
+
+  // relic_phoenix: full heal + temp invuln + damage buff, so it needs a much bigger, distinct
+  // callout than the plain 1-HP survival-charge save below.
+  triggerPhoenixSaveFeedback() {
+    this.vfx.playEvolutionFlash(this.player.x, this.player.y);
+    this.audio.playPhoenixRevive();
+    const banner = this.add.text(this.cameras.main.width / 2, 150, '불사조의 힘으로 부활!', {
+      fontFamily: 'Arial Black, sans-serif', fontSize: '22px', color: '#ff8a3d',
+      align: 'center', stroke: '#000000', strokeThickness: 5
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+    this.tweens.add({
+      targets: banner, alpha: 1, duration: 300, yoyo: true, hold: 1400,
+      onComplete: () => banner.destroy()
+    });
+  }
+
+  triggerSurvivalSaveFeedback() {
+    this.damageNumberPool.obtain(this.player.x, this.player.y - 44, '기사회생!', { color: '#62ffb0', scale: 1.2 });
+  }
+
+  triggerShieldBlockFeedback() {
+    this.damageNumberPool.obtain(this.player.x, this.player.y - 44, '보호막!', { color: '#e2b6ff', scale: 1.15 });
+  }
+
+  // 'counter' pattern (spec: Counter): reactive rather than cooldown-driven from Player.js's
+  // normal auto-fire loop - see performPlayerAttack's 'counter' case, which is intentionally a
+  // no-op. Instead, every time the player actually takes damage, any owned counter move that
+  // is off its OWN cooldown fires back at the real attacking Enemy instance, if it's still in
+  // range. Deliberately scoped to only enemySource objects that are a real, still-alive Enemy
+  // (duck-typed via `takeDamage`), same caution as the elite-modifier vampiric/toxic hooks -
+  // a projectile-hit's reconstructed { attack, types } object never reaches this.
+  triggerCounterAttack(enemySource) {
+    if (!enemySource || typeof enemySource.takeDamage !== 'function' || !enemySource.active) return;
+    for (const moveId of this.build.getOwnedMoveIds()) {
+      const move = this.managers.move.getMove(moveId);
+      if (!move || move.pattern !== 'counter') continue;
+      const readyAt = this.counterCooldowns[moveId] || 0;
+      if (this.time.now < readyAt) continue;
+      const dist = PS.MathUtils.distance(this.player.x, this.player.y, enemySource.x, enemySource.y);
+      if (dist > (move.range || 130)) continue;
+      this.counterCooldowns[moveId] = this.time.now + (move.cooldownMs || 900);
+      this.applyPlayerHitToEnemy(move, enemySource, this.player.getHpRatio(), this.player);
+      this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(moveId), enemySource.x, enemySource.y);
     }
   }
 
@@ -760,6 +1174,42 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     pickup.destroy();
   }
 
+  // ================= Relic field pickups (rare, separate from heal/speed/magnet) =================
+  updateRelicPickups(dtMs) {
+    this.nextRelicPickupTimerMs -= dtMs;
+    if (this.nextRelicPickupTimerMs <= 0) {
+      this.nextRelicPickupTimerMs = PS.RandomUtils.range(180000, 240000);
+      this.spawnRelicFieldPickup();
+    }
+  }
+
+  spawnRelicFieldPickup() {
+    const relicId = this.pickRelicIdForDrop();
+    const angle = Math.random() * Math.PI * 2;
+    const dist = PS.RandomUtils.range(300, 650);
+    const x = this.player.x + Math.cos(angle) * dist;
+    const y = this.player.y + Math.sin(angle) * dist;
+
+    const pickup = this.physics.add.sprite(x, y, `relic_${relicId}`);
+    pickup.relicId = relicId;
+    pickup.setDepth(3);
+    this.relicPickupGroup.add(pickup);
+    // More eye-catching than the common pickups (slow spin + bigger bob) since it's rare.
+    this.tweens.add({ targets: pickup, y: y - 14, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: pickup, angle: 360, duration: 3000, repeat: -1, ease: 'Linear' });
+    this.time.delayedCall(30000, () => { if (pickup.active) pickup.destroy(); });
+  }
+
+  onRelicPickupCollected(pickup) {
+    if (!pickup.active) return;
+    const relic = this.managers.relic.getRelic(pickup.relicId);
+    const gained = this.build.addRelic(pickup.relicId);
+    this.player.refreshFromBuild();
+    this.announceRelic(relic, gained);
+    this.audio.playRelicPickup();
+    pickup.destroy();
+  }
+
   // ================= Enemy lifecycle =================
   spawnEnemy(species, stats, x, y, isBig) {
     const enemy = this.enemyPool.obtain(species, stats, x, y);
@@ -767,20 +1217,140 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       PS.Boss.announce(this, enemy);
       this.addBossHpBar(enemy);
       this.audio.playBossAppear();
+    } else if (stats.eliteModifier) {
+      this.showEliteTag(enemy, stats.eliteModifier);
     }
     return enemy;
   }
 
-  killEnemy(enemy) {
+  // Small floating name tag over a freshly-spawned elite so its modifier (spec section 57) is
+  // legible at a glance, not just a color tint.
+  showEliteTag(enemy, modifier) {
+    const cssColor = '#' + modifier.tint.replace('0x', '').padStart(6, '0');
+    const tag = this.add.text(enemy.x, enemy.y - 34, `★ ${modifier.nameKo}`, {
+      fontFamily: 'Arial Black', fontSize: '11px', color: cssColor,
+      stroke: '#000000', strokeThickness: 3
+    }).setOrigin(0.5).setDepth(8);
+    this.tweens.add({
+      targets: tag, y: tag.y - 20, alpha: 0, duration: 1400, ease: 'Cubic.easeOut',
+      onComplete: () => tag.destroy()
+    });
+  }
+
+  killEnemy(enemy, killTypeId) {
     this.build.recordKill();
+    this.player.registerKillMomentum();
+    if (killTypeId) {
+      const newLevel = this.build.addTypeMasteryXp(killTypeId, this.managers.typeMastery.xpGain.killWithType);
+      if (newLevel) this.announceTypeMasteryLevelUp(killTypeId, newLevel);
+    }
+    // burn_explosion ability (Charmander vertical slice, spec section 31): killing a burning
+    // enemy sets off a small explosion on nearby enemies too.
+    if (this.statusFx.has(enemy, 'burn')) {
+      for (const hook of PS.AbilitySystem.find(this.build.modifiers, 'on_status_kill_explosion')) {
+        if (hook.effect.status !== 'burn') continue;
+        const radius = PS.AbilitySystem.scale(hook.effect, hook.level, 'radius', 'radiusPerLevel');
+        const percent = PS.AbilitySystem.scale(hook.effect, hook.level, 'damagePercentOfMaxHp', 'damagePercentPerLevel');
+        const explosionDamage = Math.max(1, Math.round(enemy.maxHp * percent));
+        const nearby = this.findEnemiesInRadius(enemy.x, enemy.y, radius).filter(e => e !== enemy);
+        this.vfx.playCircleVfx('fire', 3, enemy.x, enemy.y, radius);
+        this.audio.playSuperEffective();
+        for (const target of nearby) {
+          const targetDied = target.takeDamage(explosionDamage);
+          this.damageNumberPool.obtain(target.x, target.y - 20, explosionDamage, { color: '#ff8a3d' });
+          if (targetDied) this.killEnemy(target, 'fire');
+        }
+      }
+    }
+
     this.vfx.playDeathBurst(enemy.x, enemy.y, this.assets.hexToInt(enemy.species.color));
-    this.gemPool.obtain(enemy.x, enemy.y, Math.max(1, Math.round(enemy.expValue)));
+    const expValue = Math.max(1, Math.round(enemy.expValue * (this.build.modifiers.expGainMult || 1)));
+    this.gemPool.obtain(enemy.x, enemy.y, expValue);
     this.audio.playEnemyDeath();
     if (enemy.tier === 'boss') {
       this.bossKilled = true;
     }
+    if (enemy.tier === 'boss' || enemy.tier === 'miniboss') {
+      this.grantGuaranteedRelic(enemy);
+    }
     enemy.despawn();
     this.enemyPool.release(enemy);
+  }
+
+  // ================= Relics =================
+  // Picks a relic id for a guaranteed drop, weighted away from ones the player already has
+  // maxed (so a miniboss/boss kill late-game doesn't "waste" a drop on a relic that can't
+  // improve further, unless every relic is already maxed).
+  pickRelicIdForDrop() {
+    const allIds = this.managers.relic.getAllIds();
+    const notMaxed = allIds.filter(id => {
+      const relic = this.managers.relic.getRelic(id);
+      return this.build.getRelicLevel(id) < relic.maxLevel;
+    });
+    const pool = notMaxed.length > 0 ? notMaxed : allIds;
+    return PS.RandomUtils.pick(pool);
+  }
+
+  grantGuaranteedRelic(enemy) {
+    const relicId = this.pickRelicIdForDrop();
+    const relic = this.managers.relic.getRelic(relicId);
+    const gained = this.build.addRelic(relicId);
+    this.player.refreshFromBuild();
+    this.announceRelic(relic, gained);
+    this.audio.playRelicPickup();
+  }
+
+  announceRelic(relic, isNew) {
+    const label = isNew ? `유물 획득: ${relic.name}` : `유물 강화: ${relic.name} Lv${this.build.getRelicLevel(relic.id)}`;
+    const banner = this.add.text(this.cameras.main.width / 2, 150, label, {
+      fontFamily: 'Arial Black, sans-serif', fontSize: '18px', color: '#ffd400',
+      align: 'center', stroke: '#000000', strokeThickness: 4
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+
+    this.tweens.add({
+      targets: banner, alpha: 1, duration: 300, yoyo: true, hold: 1600,
+      onComplete: () => banner.destroy()
+    });
+  }
+
+  // ================= Type Mastery =================
+  announceTypeMasteryLevelUp(typeId, level) {
+    const label = `${PS.typeNameKo(typeId)} 숙련도 Lv.${level}!`;
+    const cfg = this.managers.typeMastery.getTypeConfig(typeId);
+    const detail = cfg.levels[level] ? cfg.levels[level].label : '';
+    const banner = this.add.text(this.cameras.main.width / 2, 116, `${label}\n${detail}`, {
+      fontFamily: 'Arial Black, sans-serif', fontSize: '15px', color: '#8fd3ff',
+      align: 'center', stroke: '#000000', strokeThickness: 3
+    }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+    this.tweens.add({
+      targets: banner, alpha: 1, duration: 250, yoyo: true, hold: 1300,
+      onComplete: () => banner.destroy()
+    });
+    this.audio.playCardHover();
+  }
+
+  // ================= Move Evolution (spec section 33) =================
+  checkMoveEvolutions() {
+    this._moveEvoTimer = (this._moveEvoTimer || 0) + 1;
+    if (this._moveEvoTimer % 20 !== 0) return; // throttle: check ~3x/sec, same cadence as species evolution
+    const entry = this.moveEvolutionSystem.checkEvolutions(this.build);
+    if (entry) this.triggerMoveEvolution(entry);
+  }
+
+  triggerMoveEvolution(entry) {
+    this.moveEvolutionSystem.apply(this.build, entry);
+    this.player.refreshFromBuild();
+    this.vfx.playEvolutionFlash(this.player.x, this.player.y);
+    this.audio.playEvolution();
+    const banner = this.add.text(this.cameras.main.width / 2, 150,
+      `기술 진화!\n${entry.fromMove.name} → ${entry.toMove.name}`, {
+        fontFamily: 'Arial Black, sans-serif', fontSize: '20px', color: '#ffd400',
+        align: 'center', stroke: '#000000', strokeThickness: 5
+      }).setOrigin(0.5).setScrollFactor(0).setDepth(100).setAlpha(0);
+    this.tweens.add({
+      targets: banner, alpha: 1, duration: 300, yoyo: true, hold: 1800,
+      onComplete: () => banner.destroy()
+    });
   }
 
   // ================= Level up / evolution =================
@@ -808,6 +1378,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       build: this.build,
       levelSystem: this.levelSystem,
       audio: this.audio,
+      runTimeSec: this.runTimeSec,
       onChosen: (choice) => {
         this.audio.playCardSelect(choice.grade);
         this.levelSystem.applyChoice(this.build, choice);

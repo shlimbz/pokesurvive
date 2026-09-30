@@ -437,5 +437,43 @@
       }
     ],
     "maxLevel": 3
+  },
+  "orb_lens": {
+    "id": "orb_lens",
+    "name": "Orb Lens",
+    "grade": "rare",
+    "category": "pattern_synergy",
+    "effects": [
+      {
+        "type": "pattern_field_bonus",
+        "pattern": "orbit",
+        "field": "count",
+        "value": 0.12
+      },
+      {
+        "type": "pattern_field_bonus",
+        "pattern": "orbit",
+        "field": "areaRadius",
+        "value": 0.1
+      }
+    ],
+    "maxLevel": 5,
+    "description": "Orbit 패턴 기술의 위성 개수와 회전 반경이 함께 증가합니다."
+  },
+  "poison_fang": {
+    "id": "poison_fang",
+    "name": "Poison Fang",
+    "grade": "rare",
+    "category": "status_synergy",
+    "moveType": "poison",
+    "effects": [
+      {
+        "type": "status_target_damage_bonus",
+        "status": "poison",
+        "value": 0.18
+      }
+    ],
+    "maxLevel": 5,
+    "description": "이미 중독 상태인 적에게 주는 독 타입 피해가 증가합니다."
   }
 }

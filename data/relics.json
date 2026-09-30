@@ -1,0 +1,72 @@
+{
+  "comment": "Relics (유물): rarer, build-defining permanent bonuses, deliberately NOT overlapping any effect type in data/items.json. Acquired two ways (see GameScene): a GUARANTEED relic drop every time a miniboss or boss is killed, and a rare stand-alone field pickup that spawns on the map roughly every 3-4 minutes (far rarer than the heal/speed/magnet pickups). Each relic's effect.type is consumed by PS.RelicSystem.accumulate into BuildSystem.modifiers, mirroring how PS.ItemSystem turns data/items.json into modifiers.",
+  "relics": {
+    "relic_collector": {
+      "id": "relic_collector",
+      "name": "수집가의 유물",
+      "description": "아이템/경험치 구슬을 끌어당기는 범위가 영구적으로 크게 증가합니다.",
+      "icon": "0x62ffb0",
+      "maxLevel": 2,
+      "effects": [{ "type": "pickup_radius_mult", "value": 1.0 }]
+    },
+    "relic_opportunity": {
+      "id": "relic_opportunity",
+      "name": "기회의 유물",
+      "description": "레벨업 시 선택할 수 있는 카드가 1장 늘어납니다.",
+      "icon": "0xffd400",
+      "maxLevel": 2,
+      "effects": [{ "type": "extra_levelup_choices", "value": 1 }]
+    },
+    "relic_giant_hunter": {
+      "id": "relic_giant_hunter",
+      "name": "거인 사냥꾼의 유물",
+      "description": "엘리트/미니보스/보스를 상대로 주는 피해가 영구적으로 증가합니다.",
+      "icon": "0xff5555",
+      "maxLevel": 2,
+      "effects": [{ "type": "boss_tier_damage_mult", "value": 0.3 }]
+    },
+    "relic_growth": {
+      "id": "relic_growth",
+      "name": "성장의 유물",
+      "description": "처치한 적이 주는 경험치량이 영구적으로 증가합니다.",
+      "icon": "0x9c6bff",
+      "maxLevel": 3,
+      "effects": [{ "type": "exp_gain_mult", "value": 0.4 }]
+    },
+    "relic_reroll": {
+      "id": "relic_reroll",
+      "name": "재구성의 유물",
+      "description": "레벨업 화면에서 카드를 다시 뽑을 수 있는 횟수가 늘어납니다 (매 레벨업마다 충전).",
+      "icon": "0x8fd3ff",
+      "maxLevel": 2,
+      "effects": [{ "type": "extra_rerolls", "value": 1 }]
+    },
+    "relic_blessing": {
+      "id": "relic_blessing",
+      "name": "가호의 유물",
+      "description": "최대 체력과 방어력이 동시에 영구적으로 증가합니다.",
+      "icon": "0xffb300",
+      "maxLevel": 2,
+      "effects": [
+        { "type": "relic_hp_percent", "value": 0.2 },
+        { "type": "relic_defense_percent", "value": 0.15 }
+      ]
+    },
+    "relic_phoenix": {
+      "id": "relic_phoenix",
+      "name": "불사조의 유물",
+      "description": "치명적인 피해를 받으면 체력을 완전히 회복하고 3초간 무적 + 공격력 증가 상태가 됩니다.",
+      "icon": "0xff8a3d",
+      "maxLevel": 2,
+      "effects": [{ "type": "phoenix_charge", "value": 1, "rechargeSec": 90, "invulnSec": 3, "damageMult": 1.5 }]
+    },
+    "relic_momentum": {
+      "id": "relic_momentum",
+      "name": "가속의 유물",
+      "description": "적을 처치할 때마다 짧은 시간 이동속도와 공격속도가 중첩 증가합니다 (콤보가 끊기면 초기화).",
+      "icon": "0x4dd2ff",
+      "maxLevel": 3,
+      "effects": [{ "type": "kill_momentum_level", "value": 1 }]
+    }
+  }
+}

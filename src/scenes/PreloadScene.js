@@ -44,6 +44,8 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
     this.load.json('mapsData', 'maps.json');
     this.load.json('vfxData', 'vfx.json');
     this.load.json('itemsData', 'items.json');
+    this.load.json('relicsData', 'relics.json');
+    this.load.json('typeMasteryData', 'type-mastery.json');
     this.load.json('abilitiesData', 'abilities.json');
     this.load.json('typeChartData', 'type-chart.json');
     this.load.json('balanceData', 'balance.json');
@@ -70,6 +72,8 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
       maps: this.cache.json.get('mapsData'),
       vfx: this.cache.json.get('vfxData'),
       items: this.cache.json.get('itemsData'),
+      relics: this.cache.json.get('relicsData'),
+      typeMastery: this.cache.json.get('typeMasteryData'),
       abilities: this.cache.json.get('abilitiesData'),
       typeChart: this.cache.json.get('typeChartData'),
       balance: this.cache.json.get('balanceData')
@@ -80,6 +84,8 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
       pokemon: new PS.PokemonManager(data.pokemon, data.balance),
       move: new PS.MoveManager(data.moves),
       item: new PS.ItemManager(data.items),
+      relic: new PS.RelicManager(data.relics),
+      typeMastery: new PS.TypeMasteryManager(data.typeMastery),
       ability: new PS.AbilityManager(data.abilities),
       enemy: new PS.EnemyManager(data.enemies, data.maps, data.balance)
     };
@@ -89,6 +95,7 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
     PS.Game.combat = new PS.CombatSystem(PS.Game.typeFx, PS.Game.statusFx, data.balance);
     PS.Game.levelSystem = new PS.LevelSystem(data.balance, managers);
     PS.Game.evolutionSystem = new PS.EvolutionSystem(data.evolution);
+    PS.Game.moveEvolutionSystem = new PS.MoveEvolutionSystem(managers.move);
 
     // ---- Generate placeholder textures for anything without a real downloaded sprite ----
     const assets = new PS.AssetManager(this);
@@ -113,6 +120,12 @@ PS.PreloadScene = class PreloadScene extends Phaser.Scene {
     assets.generateCreatureTexture('pickup_heal', '0xff4d6d', 18, 'H');
     assets.generateCreatureTexture('pickup_speed', '0x4dd2ff', 18, 'S');
     assets.generateCreatureTexture('pickup_magnet', '0xffd400', 18, 'M');
+
+    // Relics (rarer, build-defining pickups - see data/relics.json). One glowing gem texture
+    // per relic id, colored per its own `icon` field.
+    for (const [id, relic] of Object.entries(data.relics.relics)) {
+      assets.generateRelicTexture(`relic_${id}`, relic.icon, 17);
+    }
 
     this.scene.start('Menu');
   }

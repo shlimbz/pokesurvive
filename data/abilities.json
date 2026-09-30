@@ -227,6 +227,22 @@
       }
     ]
   },
+  "burn_explosion": {
+    "id": "burn_explosion",
+    "name": "불꽃 폭발",
+    "grade": "rare",
+    "description": "화상 상태인 적을 처치하면 주변에 작은 폭발이 일어난다.",
+    "effects": [
+      {
+        "type": "on_status_kill_explosion",
+        "status": "burn",
+        "radius": 110,
+        "radiusPerLevel": 12,
+        "damagePercentOfMaxHp": 0.18,
+        "damagePercentPerLevel": 0.04
+      }
+    ]
+  },
   "steadfast": {
     "id": "steadfast",
     "name": "Steadfast",
@@ -239,6 +255,21 @@
         "mult": 1.25,
         "durationSec": 3,
         "multPerLevel": 0.1
+      }
+    ]
+  },
+  "magic_shield": {
+    "id": "magic_shield",
+    "name": "매직 가드",
+    "grade": "rare",
+    "description": "일정 시간마다 보호막을 얻어 다음 피격 1회를 완전히 무효화한다.",
+    "effects": [
+      {
+        "type": "on_equip_shield",
+        "maxCharges": 1,
+        "maxChargesPerLevel": 0,
+        "rechargeSec": 9,
+        "rechargeSecReductionPerLevel": 1.3
       }
     ]
   }
