@@ -24,8 +24,8 @@
         "type": "low_hp_type_damage",
         "moveType": "fire",
         "threshold": 0.34,
-        "damageMult": 1.5,
-        "damageMultPerLevel": 0.25
+        "damageMult": 1.4,
+        "damageMultPerLevel": 0.15
       }
     ]
   },
@@ -39,8 +39,8 @@
         "type": "low_hp_type_damage",
         "moveType": "water",
         "threshold": 0.34,
-        "damageMult": 1.5,
-        "damageMultPerLevel": 0.25
+        "damageMult": 1.4,
+        "damageMultPerLevel": 0.15
       }
     ]
   },
@@ -54,8 +54,8 @@
         "type": "low_hp_type_damage",
         "moveType": "grass",
         "threshold": 0.34,
-        "damageMult": 1.5,
-        "damageMultPerLevel": 0.25
+        "damageMult": 1.4,
+        "damageMultPerLevel": 0.15
       }
     ]
   },
@@ -168,8 +168,8 @@
     "effects": [
       {
         "type": "status_active_damage_boost",
-        "damageMult": 1.3,
-        "damageMultPerLevel": 0.15
+        "damageMult": 1.2,
+        "damageMultPerLevel": 0.1
       }
     ]
   },
@@ -182,8 +182,8 @@
       {
         "type": "low_base_power_damage_boost",
         "threshold": 60,
-        "damageMult": 1.3,
-        "damageMultPerLevel": 0.1
+        "damageMult": 1.15,
+        "damageMultPerLevel": 0.075
       }
     ]
   },
@@ -196,8 +196,8 @@
       {
         "type": "category_damage_boost",
         "category": "physical",
-        "damageMult": 1.5,
-        "damageMultPerLevel": 0.2
+        "damageMult": 1.3,
+        "damageMultPerLevel": 0.1
       }
     ]
   },

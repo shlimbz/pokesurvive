@@ -52,27 +52,27 @@
       "legendary"
     ],
     "baseWeights": {
-      "common": 60,
-      "uncommon": 25,
-      "rare": 10,
-      "epic": 4,
-      "legendary": 1
+      "common": 72,
+      "uncommon": 20,
+      "rare": 6,
+      "epic": 1.7,
+      "legendary": 0.3
     },
     "timeScaling": {
-      "comment": "every full minute elapsed shifts weight from common/uncommon toward rare/epic/legendary, clamped",
+      "comment": "Retuned 2026-10-02 (user feedback: too many rare+ cards too early). every full minute elapsed shifts weight from common/uncommon toward rare/epic/legendary, clamped. Old curve reached ~15% rare-or-better at t=0 and ramped fast; new curve starts at ~8% and ramps slower so a run has to actually earn its way into strong cards instead of getting them handed out from minute 1.",
       "perMinute": {
-        "common": -1.2,
-        "uncommon": -0.4,
-        "rare": 0.8,
-        "epic": 0.6,
-        "legendary": 0.2
+        "common": -1.0,
+        "uncommon": -0.3,
+        "rare": 0.5,
+        "epic": 0.35,
+        "legendary": 0.08
       },
       "minWeights": {
-        "common": 20,
-        "uncommon": 15,
-        "rare": 8,
-        "epic": 3,
-        "legendary": 1
+        "common": 30,
+        "uncommon": 18,
+        "rare": 6,
+        "epic": 2,
+        "legendary": 0.5
       }
     },
     "colors": {
@@ -263,14 +263,14 @@
     },
     "miniboss": {
       "hpMult": 14,
-      "attackMult": 2.2,
+      "attackMult": 2.0,
       "defenseMult": 1.8,
       "speedMult": 1,
       "expMult": 12
     },
     "boss": {
       "hpMult": 60,
-      "attackMult": 3,
+      "attackMult": 2.6,
       "defenseMult": 2.2,
       "speedMult": 0.9,
       "expMult": 50
@@ -298,9 +298,9 @@
       "startSec": 180,
       "endSec": 360,
       "label": "성장",
-      "spawnRateMult": 1.3,
-      "enemyHpMult": 1.15,
-      "enemyDmgMult": 1.1,
+      "spawnRateMult": 1.4,
+      "enemyHpMult": 1.2,
+      "enemyDmgMult": 1.2,
       "eliteChanceMult": 0.4,
       "rarityBoostMinutes": 3
     },
@@ -309,9 +309,9 @@
       "startSec": 360,
       "endSec": 540,
       "label": "Elite 등장",
-      "spawnRateMult": 1.8,
-      "enemyHpMult": 1.35,
-      "enemyDmgMult": 1.2,
+      "spawnRateMult": 2.0,
+      "enemyHpMult": 1.4,
+      "enemyDmgMult": 1.3,
       "eliteChanceMult": 1,
       "rarityBoostMinutes": 6
     },
@@ -320,9 +320,9 @@
       "startSec": 540,
       "endSec": 720,
       "label": "고밀도 전투",
-      "spawnRateMult": 3.0,
-      "enemyHpMult": 1.6,
-      "enemyDmgMult": 1.35,
+      "spawnRateMult": 3.3,
+      "enemyHpMult": 1.7,
+      "enemyDmgMult": 1.45,
       "eliteChanceMult": 1.3,
       "rarityBoostMinutes": 9
     },

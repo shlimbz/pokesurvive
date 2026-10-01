@@ -8,7 +8,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.12
+        "value": 0.08
       }
     ],
     "maxLevel": 5,
@@ -23,7 +23,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -38,7 +38,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -53,7 +53,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -68,7 +68,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -83,7 +83,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -98,7 +98,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -113,7 +113,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.12
+        "value": 0.08
       },
       {
         "type": "status_chance",
@@ -133,7 +133,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -148,7 +148,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -163,7 +163,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -178,7 +178,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -193,7 +193,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -208,7 +208,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -223,7 +223,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.18
+        "value": 0.12
       }
     ],
     "maxLevel": 5,
@@ -238,7 +238,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -253,7 +253,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -268,7 +268,7 @@
     "effects": [
       {
         "type": "type_damage",
-        "value": 0.15
+        "value": 0.1
       }
     ],
     "maxLevel": 5,
@@ -311,7 +311,7 @@
     "effects": [
       {
         "type": "global_damage",
-        "value": 0.3
+        "value": 0.12
       },
       {
         "type": "self_damage_on_attack_percent",

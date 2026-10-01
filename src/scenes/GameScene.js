@@ -103,7 +103,16 @@ PS.GameScene = class GameScene extends Phaser.Scene {
 
     // ---- Collisions ----
     this.physics.add.overlap(this.playerProjectileGroup, this.enemyGroup, (proj, enemy) => this.onPlayerProjectileHit(proj, enemy));
-    this.physics.add.overlap(this.enemyProjectileGroup, this.player, (proj, player) => this.onEnemyProjectileHit(proj));
+    // Bugfix (found via headless balance simulation, 2026-10-01): this was registered as
+    // overlap(enemyProjectileGroup, player, ...) - the only one of these 6 overlaps with the
+    // GROUP listed first and the single sprite second (every other one here is
+    // overlap(singleObject, group, ...)). Under sustained high projectile counts, Arcade
+    // Physics' internal group-vs-sprite broadphase can take a different internal code path for
+    // that ordering and hand the callback (player, projectile) instead of (projectile, player) -
+    // reproducibly crashed with "proj.deactivate is not a function" once enough enemy
+    // projectiles were in flight. Reordered to match the rest of the file's convention, and
+    // onEnemyProjectileHit below no longer trusts argument order either (belt-and-suspenders).
+    this.physics.add.overlap(this.player, this.enemyProjectileGroup, (player, proj) => this.onEnemyProjectileHit(proj));
     this.physics.add.overlap(this.player, this.enemyGroup, (player, enemy) => this.onPlayerTouchEnemy(enemy));
     this.physics.add.overlap(this.player, this.expGemGroup, (player, gem) => this.onPlayerTouchGem(gem));
     this.physics.add.overlap(this.player, this.pickupGroup, (player, pickup) => this.onPickupCollected(pickup));
@@ -1371,7 +1380,15 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   }
 
   onEnemyProjectileHit(proj) {
-    if (!proj.active) return;
+    // Defensive guard (found via a headless balance-simulation stress test 2026-10-01, root
+    // cause fixed at the overlap-registration call site above): never trust that `proj` is
+    // actually the Projectile just because Arcade Physics called this back - under sustained
+    // high projectile counts the old group-first overlap registration could hand this the wrong
+    // object, and a pooled object can in principle be active with incomplete fields. Letting an
+    // exception escape a collision callback is far worse than silently dropping one hit, since it
+    // can kill the entire physics step for the rest of that frame.
+    if (!proj || !proj.active || typeof proj.deactivate !== 'function') return;
+    if (!proj.ownerContext || !proj.ownerContext.enemyStats) { proj.deactivate(); return; }
     const move = proj.move;
     const stats = proj.ownerContext.enemyStats;
     const types = proj.ownerContext.enemyTypes;
@@ -1496,6 +1513,8 @@ PS.GameScene = class GameScene extends Phaser.Scene {
 
   onPlayerProjectileHit(proj, enemyObj) {
     if (!proj.active || !enemyObj.active) return;
+    // Same defensive guard as onEnemyProjectileHit, mirrored here for symmetry - see its comment.
+    if (!proj.move) { proj.deactivate(); return; }
     if (proj.hitSet.has(enemyObj)) return;
     this.applyPlayerHitToEnemy(proj.move, enemyObj, this.player.getHpRatio(), this.player);
 
