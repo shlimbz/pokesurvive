@@ -264,7 +264,7 @@ PS.VFXSystem = class VFXSystem {
   playAttack(opts) {
     const group = PS.VFXPatternMap.resolve(opts.pattern);
     switch (group) {
-      case 'Beam': return this.playBeam(opts.type, opts.level, opts.x, opts.y, opts.x2 ?? opts.x, opts.y2 ?? opts.y);
+      case 'Beam': return this.playBeam(opts.type, opts.level, opts.x, opts.y, opts.x2 ?? opts.x, opts.y2 ?? opts.y, opts.followEntity);
       case 'Chain': return this.playChain(opts.type, opts.level, opts.points || [{ x: opts.x, y: opts.y }, { x: opts.x2, y: opts.y2 }]);
       case 'GroundZone': return this.playGroundZoneFx(opts.type, opts.level, opts.x, opts.y, opts.radius || 100, opts.durationMs || 2500);
       case 'Dash': return this.playDashFx(opts.type, opts.level, opts.x, opts.y, opts.x2 ?? opts.x, opts.y2 ?? opts.y);
@@ -279,7 +279,15 @@ PS.VFXSystem = class VFXSystem {
   }
 
   // ============================== Beam ==============================
-  playBeam(typeId, level, x1, y1, x2, y2) {
+  // `followEntity` (optional, e.g. the Player) fixes a visible desync reported 2026-10-01: the
+  // player keeps moving every frame (continuous WASD movement) while this beam's fade plays out
+  // over ~300-550ms, so a beam drawn once at the cast-moment position visibly "detaches" from the
+  // caster - after ~165-300px/s of movement that's 90-165px of drift, nearly 2-3 player-widths,
+  // by the time it fades. When provided, the beam's origin is re-pinned to followEntity's CURRENT
+  // position every frame for its whole lifetime (same rotation/length/width, just translated), so
+  // it always visibly emits from wherever the caster actually is "right now" instead of "where it
+  // was when the attack fired". Purely additive - omitting followEntity keeps the old static look.
+  playBeam(typeId, level, x1, y1, x2, y2, followEntity) {
     const def = this.getEffectDef(typeId, 'Beam');
     const colors = this.resolveColors(def, typeId);
     const scale = (def && def.scale) || 1.3;
@@ -304,6 +312,7 @@ PS.VFXSystem = class VFXSystem {
       targets: g,
       alpha: 0,
       duration: activeMs + fadeMs,
+      onUpdate: followEntity ? () => { if (followEntity.active !== false) g.setPosition(followEntity.x, followEntity.y); } : undefined,
       onComplete: () => this.graphicsPool.release(g)
     });
 

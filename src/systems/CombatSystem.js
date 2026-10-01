@@ -166,6 +166,19 @@ PS.CombatSystem = class CombatSystem {
       }
     }
 
+    // Contact-only damage reduction (move === null, see baseDamage comment above - a normal
+    // enemy just bumping into the player, not a ranged/special move). Added 2026-10-01 so
+    // "도주" (run_away)'s flat move-speed bonus isn't just a strictly-smaller version of the
+    // Speed stat's own move-speed multiplier - this gives it a niche the Speed stat doesn't
+    // touch at all (nimbly shrugging off incidental bumps while darting through a crowd),
+    // rather than the two reading as "the same choice, one just weaker."
+    if (!move) {
+      for (const hook of PS.AbilitySystem.find(mods, 'contact_damage_reduction_percent')) {
+        const pct = PS.AbilitySystem.scale(hook.effect, hook.level, 'value', 'valuePerLevel');
+        damage *= Math.max(0, 1 - pct);
+      }
+    }
+
     damage = Math.max(absorbed ? 0 : 1, Math.round(damage));
 
     return {

@@ -92,19 +92,35 @@ PS.LevelSystem = class LevelSystem {
   }
 
   candidateItem(grade, build) {
-    // Bugfix: items already owned no longer reappear as level-up choices (effectively Lv.1 is
-    // now the max for any single item) - previously an already-owned item stayed eligible up to
-    // its maxLevel, so late-game choice cards were flooded with "level up an item you already
-    // have" options instead of new ones. Only never-picked items (getItemLevel === 0) qualify now.
-    let pool = this.managers.item.getAllByGrade(grade).filter(i => build.getItemLevel(i.id) === 0);
+    // Bugfix (2026-10-01): a prior pass restricted this pool to never-picked items only, to stop
+    // late-game cards being flooded with "level up something you already have" options. That
+    // fixed the flooding but went too far the other way - items.json's effects scale by level
+    // (ItemSystem: effect.value * level, up to item.maxLevel, usually 5), so an owned item was
+    // actually getting PERMANENTLY stuck at its Lv1 (20%-of-max) value for the rest of the run,
+    // with no way to ever re-pick it. That's the opposite of "선택이 유기적으로 작용" - a build
+    // leaning into one type/pattern synergy item could never double down on it, no matter how
+    // many level-ups passed. Brought back in line with how candidateMove/candidateAbility both
+    // already work (new OR owned-but-not-maxed both qualify) - owned items just aren't filtered
+    // out anymore - while still weighting toward NEW items 2:1 so the pool doesn't overwhelmingly
+    // turn into "re-level your first few items" once a build has picked a handful.
+    const maxLv = this.balance.maxLevels.item;
+    const eligible = (list) => list.filter(i => build.getItemLevel(i.id) < (i.maxLevel || maxLv));
+    const buildPool = (list) => {
+      const pool = [];
+      for (const i of eligible(list)) {
+        const isNew = build.getItemLevel(i.id) === 0;
+        pool.push({ item: i, isNew });
+        if (isNew) pool.push({ item: i, isNew }); // 2:1 weighting toward discovery over re-leveling
+      }
+      return pool;
+    };
+    let pool = buildPool(this.managers.item.getAllByGrade(grade));
     if (pool.length === 0) {
-      pool = this.managers.item.getAllIds()
-        .map(id => this.managers.item.getItem(id))
-        .filter(i => build.getItemLevel(i.id) === 0);
+      pool = buildPool(this.managers.item.getAllIds().map(id => this.managers.item.getItem(id)));
     }
     if (pool.length === 0) return null;
-    const item = PS.RandomUtils.pick(pool);
-    return { kind: 'item', grade, id: item.id, isNew: true };
+    const pick = PS.RandomUtils.pick(pool);
+    return { kind: 'item', grade, id: pick.item.id, isNew: pick.isNew };
   }
 
   candidateAbility(grade, build) {

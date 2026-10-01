@@ -885,7 +885,10 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const ey = player.y + Math.sin(aimAngle) * range;
         const targets = this.findEnemiesNearSegment(player.x, player.y, ex, ey, width / 2);
         this.resolveAoe(move, targets, hpRatio, player);
-        this.vfx.playBeam(move.type, moveLevel, player.x, player.y, ex, ey);
+        // followEntity=player: keeps the beam's visible origin pinned to wherever the player
+        // actually is while it fades, instead of the cast-moment position (2026-10-01 fix - see
+        // VFXSystem.playBeam's comment for why this was visibly desyncing).
+        this.vfx.playBeam(move.type, moveLevel, player.x, player.y, ex, ey, player);
         return true;
       }
       case 'cone': {
@@ -1020,7 +1023,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         // prototype's other simplifications (see README section 12).
         const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
         const radius = this.getPatternScaledField(move, moveLevel, 'summonRadius', move.summonRadius || 170);
-        const sprite = this.add.sprite(point.x, point.y, this.vfx.getTexture(move.type)).setDisplaySize(26, 26).setDepth(8);
+        const sprite = this.add.sprite(point.x, point.y, this.vfx.getTexture(move.type)).setDisplaySize(34, 34).setDepth(8);
         const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
         sprite.setTint(this.assets.hexToInt(vfxDef.color));
         this.activeSummons.push({
@@ -1068,7 +1071,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     const isMoonOrb = move.id === 'moonlight_orb';
     const sprites = [];
     for (let i = 0; i < count; i++) {
-      const size = isMoonOrb ? 24 : 16;
+      const size = isMoonOrb ? 31 : 21;
       const s = this.add.sprite(player.x, player.y, this.vfx.getTexture(move.type)).setDisplaySize(size, size).setDepth(9);
       if (isMoonOrb) {
         s.setTint(0xf5f3ff);
@@ -1262,7 +1265,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     });
     const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
     proj.setTexture(this.vfx.getTexture(move.type));
-    proj.setDisplaySize(20, 20);
+    proj.setDisplaySize(26, 26); // bumped 20->26 alongside player/enemy (2026-10-01 size request)
     proj.setTint(this.assets.hexToInt(vfxDef.color));
     proj.onDone = (p) => this.playerProjectilePool.release(p);
   }
@@ -1329,7 +1332,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         });
         const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
         proj.setTexture(this.vfx.getTexture(move.type));
-        proj.setDisplaySize(18, 18);
+        proj.setDisplaySize(23, 23); // bumped 18->23 alongside player/enemy (2026-10-01 size request)
         proj.setTint(this.assets.hexToInt(vfxDef.color));
         proj.onDone = (p) => this.enemyProjectilePool.release(p);
         break;

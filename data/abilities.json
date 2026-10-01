@@ -218,12 +218,17 @@
     "id": "run_away",
     "name": "도주",
     "grade": "common",
-    "description": "이동 속도가 소폭 증가한다.",
+    "description": "이동 속도가 소폭 증가하고, 적과 부딪혔을 때(접촉 피해) 받는 피해가 감소한다.",
     "effects": [
       {
         "type": "flat_move_speed",
         "speedBonus": 10,
         "speedBonusPerLevel": 6
+      },
+      {
+        "type": "contact_damage_reduction_percent",
+        "value": 0.12,
+        "valuePerLevel": 0.08
       }
     ]
   },

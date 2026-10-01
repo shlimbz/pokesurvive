@@ -6,7 +6,9 @@ window.PS = window.PS || {};
 
 // Fixed base on-screen diameter (px) for a normal-tier enemy at species.scale === 1,
 // independent of the source texture's native resolution (see PS.PLAYER_DISPLAY_SIZE).
-PS.ENEMY_BASE_DISPLAY_SIZE = 42;
+// Bumped 42 -> 54 alongside the player (2026-10-01 "캐릭터가 좀더 컸으면 좋겠어") to keep the
+// same relative player/enemy size ratio.
+PS.ENEMY_BASE_DISPLAY_SIZE = 54;
 
 PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, textureKey) {
@@ -77,7 +79,7 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setActive(true);
     this.setVisible(true);
     this.body.enable = true;
-    PS.MathUtils.fitCircularBody(this, 14 * scale);
+    PS.MathUtils.fitCircularBody(this, 18 * scale); // scaled with ENEMY_BASE_DISPLAY_SIZE 42->54
     this.setTint(this.eliteModifier ? parseInt(this.eliteModifier.tint.replace('0x', ''), 16) : 0xffffff);
 
     this.hpBarBg.setVisible(true);
@@ -86,9 +88,9 @@ PS.Enemy = class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   updateHpBar() {
-    const w = 34 * (this.species.scale || 1);
-    this.hpBarBg.setPosition(this.x, this.y - 22 * (this.species.scale || 1));
-    this.hpBarFg.setPosition(this.x, this.y - 22 * (this.species.scale || 1));
+    const w = 44 * (this.species.scale || 1); // scaled with ENEMY_BASE_DISPLAY_SIZE 42->54
+    this.hpBarBg.setPosition(this.x, this.y - 28 * (this.species.scale || 1));
+    this.hpBarFg.setPosition(this.x, this.y - 28 * (this.species.scale || 1));
     this.hpBarBg.width = w;
     this.hpBarFg.width = Math.max(0, w * (this.hp / this.maxHp));
   }

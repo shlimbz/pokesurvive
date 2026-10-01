@@ -6,7 +6,9 @@ window.PS = window.PS || {};
 // Fixed on-screen size (px) for the player, independent of the source texture's native
 // resolution - a real PokeAPI artwork PNG (~475x475) and a generated 64x64 placeholder both
 // end up the same visible size via setDisplaySize().
-PS.PLAYER_DISPLAY_SIZE = 56;
+// Bumped 56 -> 72 (2026-10-01 request: "캐릭터가 좀더 컸으면 좋겠어") - everything that derives
+// a world-space hitbox radius from this via fitCircularBody scales with it automatically.
+PS.PLAYER_DISPLAY_SIZE = 72;
 
 PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, textureKey, build) {
@@ -62,7 +64,7 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
 
     for (const moveId of build.getOwnedMoveIds()) this.moveCooldowns[moveId] = 0;
 
-    PS.MathUtils.fitCircularBody(this, 16);
+    PS.MathUtils.fitCircularBody(this, 20); // scaled with PLAYER_DISPLAY_SIZE 56->72
   }
 
   /** Called by StatusEffectSystem.apply() whenever a status lands on the player (Steadfast). */
@@ -103,7 +105,7 @@ PS.Player = class Player extends Phaser.Physics.Arcade.Sprite {
   setSpeciesTexture(textureKey) {
     this.setTexture(textureKey);
     this.setDisplaySize(PS.PLAYER_DISPLAY_SIZE, PS.PLAYER_DISPLAY_SIZE);
-    PS.MathUtils.fitCircularBody(this, 16);
+    PS.MathUtils.fitCircularBody(this, 20); // scaled with PLAYER_DISPLAY_SIZE 56->72
   }
 
   getHpRatio() {

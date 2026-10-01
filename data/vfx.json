@@ -1,168 +1,168 @@
 {
-  "comment": "Procedural VFX definitions. shape is drawn at runtime by VFXSystem onto a generated texture (no external art needed). Each type has 3 escalating tiers; tiers 4-5 (move level 4-5) reuse tier 3 visuals scaled up per scaleStep/particleStep in growth.",
-  "types": {
-    "normal": {
-      "color": "0xC8C4A8",
-      "shape": "circle",
-      "trail": false
+    "comment": "Procedural VFX definitions. shape is drawn at runtime by VFXSystem onto a generated texture (no external art needed). Each type has 3 escalating tiers; tiers 4-5 (move level 4-5) reuse tier 3 visuals scaled up per scaleStep/particleStep in growth.",
+    "types": {
+        "normal": {
+            "color": "0xC8C4A8",
+            "shape": "circle",
+            "trail": false
+        },
+        "fire": {
+            "color": "0xFF6B1A",
+            "shape": "flame",
+            "trail": true
+        },
+        "water": {
+            "color": "0x2E9BF0",
+            "shape": "drop",
+            "trail": false
+        },
+        "electric": {
+            "color": "0xFFD400",
+            "shape": "bolt",
+            "trail": true
+        },
+        "grass": {
+            "color": "0x4CBB3A",
+            "shape": "leaf",
+            "trail": false
+        },
+        "ice": {
+            "color": "0x8FE8F5",
+            "shape": "shard",
+            "trail": false
+        },
+        "fighting": {
+            "color": "0xE8542A",
+            "shape": "fist",
+            "trail": false
+        },
+        "poison": {
+            "color": "0x9B4FCB",
+            "shape": "bubble",
+            "trail": true
+        },
+        "ground": {
+            "color": "0xD4A017",
+            "shape": "quake",
+            "trail": false
+        },
+        "flying": {
+            "color": "0xA8D8FF",
+            "shape": "wing",
+            "trail": true
+        },
+        "psychic": {
+            "color": "0xFF5FA0",
+            "shape": "swirl",
+            "trail": true
+        },
+        "bug": {
+            "color": "0xA8C93C",
+            "shape": "sting",
+            "trail": false
+        },
+        "rock": {
+            "color": "0x8B7355",
+            "shape": "chunk",
+            "trail": false
+        },
+        "ghost": {
+            "color": "0x8A6FD6",
+            "shape": "wisp",
+            "trail": true
+        },
+        "dragon": {
+            "color": "0x5A5AE0",
+            "shape": "orb",
+            "trail": true
+        },
+        "dark": {
+            "color": "0x8A76B0",
+            "shape": "spike",
+            "trail": false
+        },
+        "steel": {
+            "color": "0xB8C0CC",
+            "shape": "gear",
+            "trail": false
+        },
+        "fairy": {
+            "color": "0xFF9FE0",
+            "shape": "sparkle",
+            "trail": true
+        }
     },
-    "fire": {
-      "color": "0xFF6B1A",
-      "shape": "flame",
-      "trail": true
+    "tiers": {
+        "1": {
+            "particleCount": 5,
+            "scale": 1.1,
+            "speed": 260,
+            "lifespanMs": 350
+        },
+        "2": {
+            "particleCount": 9,
+            "scale": 1.4,
+            "speed": 300,
+            "lifespanMs": 420
+        },
+        "3": {
+            "particleCount": 13,
+            "scale": 1.75,
+            "speed": 340,
+            "lifespanMs": 500
+        }
     },
-    "water": {
-      "color": "0x2E9BF0",
-      "shape": "drop",
-      "trail": false
+    "growth": {
+        "scaleStepPerLevelAbove3": 0.18,
+        "particleStepPerLevelAbove3": 3,
+        "shockwaveFromLevel": 4,
+        "afterimageFromLevel": 5
     },
-    "electric": {
-      "color": "0xFFD400",
-      "shape": "bolt",
-      "trail": true
-    },
-    "grass": {
-      "color": "0x4CBB3A",
-      "shape": "leaf",
-      "trail": false
-    },
-    "ice": {
-      "color": "0x8FE8F5",
-      "shape": "shard",
-      "trail": false
-    },
-    "fighting": {
-      "color": "0xE8542A",
-      "shape": "fist",
-      "trail": false
-    },
-    "poison": {
-      "color": "0x9B4FCB",
-      "shape": "bubble",
-      "trail": true
-    },
-    "ground": {
-      "color": "0xD4A017",
-      "shape": "quake",
-      "trail": false
-    },
-    "flying": {
-      "color": "0xA8D8FF",
-      "shape": "wing",
-      "trail": true
-    },
-    "psychic": {
-      "color": "0xFF5FA0",
-      "shape": "swirl",
-      "trail": true
-    },
-    "bug": {
-      "color": "0xA8C93C",
-      "shape": "sting",
-      "trail": false
-    },
-    "rock": {
-      "color": "0x8B7355",
-      "shape": "chunk",
-      "trail": false
-    },
-    "ghost": {
-      "color": "0x8A6FD6",
-      "shape": "wisp",
-      "trail": true
-    },
-    "dragon": {
-      "color": "0x5A5AE0",
-      "shape": "orb",
-      "trail": true
-    },
-    "dark": {
-      "color": "0x8A76B0",
-      "shape": "spike",
-      "trail": false
-    },
-    "steel": {
-      "color": "0xB8C0CC",
-      "shape": "gear",
-      "trail": false
-    },
-    "fairy": {
-      "color": "0xFF9FE0",
-      "shape": "sparkle",
-      "trail": true
+    "hitFeedback": {
+        "superEffective": {
+            "text": "효과가 굉장했다!",
+            "color": "#ff5252",
+            "scale": 1.35
+        },
+        "effective": {
+            "text": "효과가 있었다",
+            "color": "#ffb142",
+            "scale": 1.1
+        },
+        "neutral": {
+            "text": "",
+            "color": "#ffffff",
+            "scale": 1.0
+        },
+        "notVeryEffective": {
+            "text": "효과가 별로였다",
+            "color": "#8fd3ff",
+            "scale": 0.9
+        },
+        "resisted": {
+            "text": "저항했다",
+            "color": "#7a7a7a",
+            "scale": 0.85
+        },
+        "critical": {
+            "text": "급소에 맞았다!",
+            "color": "#fff176",
+            "scale": 1.5
+        },
+        "hazardSlow": {
+            "text": "이동속도 감소!",
+            "color": "#55aaff",
+            "scale": 1.05
+        },
+        "hazardDamage": {
+            "text": "지형 피해!",
+            "color": "#ff5533",
+            "scale": 1.1
+        },
+        "hazardHeal": {
+            "text": "적 회복 지대!",
+            "color": "#55ff88",
+            "scale": 1.0
+        }
     }
-  },
-  "tiers": {
-    "1": {
-      "particleCount": 4,
-      "scale": 1.0,
-      "speed": 260,
-      "lifespanMs": 350
-    },
-    "2": {
-      "particleCount": 7,
-      "scale": 1.25,
-      "speed": 300,
-      "lifespanMs": 420
-    },
-    "3": {
-      "particleCount": 11,
-      "scale": 1.55,
-      "speed": 340,
-      "lifespanMs": 500
-    }
-  },
-  "growth": {
-    "scaleStepPerLevelAbove3": 0.18,
-    "particleStepPerLevelAbove3": 3,
-    "shockwaveFromLevel": 4,
-    "afterimageFromLevel": 5
-  },
-  "hitFeedback": {
-    "superEffective": {
-      "text": "효과가 굉장했다!",
-      "color": "#ff5252",
-      "scale": 1.35
-    },
-    "effective": {
-      "text": "효과가 있었다",
-      "color": "#ffb142",
-      "scale": 1.1
-    },
-    "neutral": {
-      "text": "",
-      "color": "#ffffff",
-      "scale": 1.0
-    },
-    "notVeryEffective": {
-      "text": "효과가 별로였다",
-      "color": "#8fd3ff",
-      "scale": 0.9
-    },
-    "resisted": {
-      "text": "저항했다",
-      "color": "#7a7a7a",
-      "scale": 0.85
-    },
-    "critical": {
-      "text": "급소에 맞았다!",
-      "color": "#fff176",
-      "scale": 1.5
-    },
-    "hazardSlow": {
-      "text": "이동속도 감소!",
-      "color": "#55aaff",
-      "scale": 1.05
-    },
-    "hazardDamage": {
-      "text": "지형 피해!",
-      "color": "#ff5533",
-      "scale": 1.1
-    },
-    "hazardHeal": {
-      "text": "적 회복 지대!",
-      "color": "#55ff88",
-      "scale": 1.0
-    }
-  }
 }
