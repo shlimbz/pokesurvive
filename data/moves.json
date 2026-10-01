@@ -7,7 +7,7 @@
     "pattern": "chain",
     "baseDamage": 18,
     "cooldownMs": 680,
-    "range": 380,
+    "range": 300,
     "projectileSpeed": 620,
     "pierce": 0,
     "chainCount": 2,
@@ -27,13 +27,13 @@
   },
   "thunderbolt": {
     "id": "thunderbolt",
-    "name": "10만볼트",
+    "name": "백만볼트",
     "type": "electric",
     "category": "special",
     "pattern": "strike",
     "baseDamage": 30,
-    "cooldownMs": 1500,
-    "range": 420,
+    "cooldownMs": 1800,
+    "range": 340,
     "areaRadius": 70,
     "count": 1,
     "statusEffect": {
@@ -133,7 +133,7 @@
     "pattern": "projectile",
     "baseDamage": 17,
     "cooldownMs": 560,
-    "range": 360,
+    "range": 300,
     "projectileSpeed": 520,
     "pierce": 0,
     "count": 1,
@@ -173,8 +173,8 @@
     "category": "special",
     "pattern": "explosion",
     "baseDamage": 34,
-    "cooldownMs": 1700,
-    "range": 300,
+    "cooldownMs": 2200,
+    "range": 320,
     "areaRadius": 110,
     "statusEffect": {
       "id": "burn",
@@ -201,7 +201,7 @@
     "pattern": "projectile",
     "baseDamage": 17,
     "cooldownMs": 560,
-    "range": 360,
+    "range": 300,
     "projectileSpeed": 540,
     "splashRadius": 60,
     "count": 1,
@@ -254,7 +254,7 @@
     "pattern": "spread",
     "baseDamage": 16,
     "cooldownMs": 640,
-    "range": 190,
+    "range": 220,
     "count": 3,
     "spreadAngle": 70,
     "statusEffect": {
@@ -322,7 +322,7 @@
     "pattern": "projectile",
     "baseDamage": 14,
     "cooldownMs": 600,
-    "range": 280,
+    "range": 260,
     "pierce": 0,
     "lifestealPercent": 0.15,
     "statusEffect": {
@@ -454,7 +454,7 @@
     "pattern": "homing",
     "baseDamage": 20,
     "cooldownMs": 1000,
-    "range": 420,
+    "range": 300,
     "projectileSpeed": 380,
     "maxLevel": 5
   },
@@ -493,7 +493,7 @@
     "pattern": "projectile",
     "baseDamage": 10,
     "cooldownMs": 900,
-    "range": 280,
+    "range": 260,
     "projectileSpeed": 420,
     "statusEffect": {
       "id": "poison",
@@ -531,7 +531,7 @@
     "pattern": "projectile",
     "baseDamage": 20,
     "cooldownMs": 1000,
-    "range": 280,
+    "range": 260,
     "areaRadius": 70,
     "maxLevel": 5,
     "statusEffect": {
@@ -556,7 +556,7 @@
     "pattern": "projectile",
     "baseDamage": 16,
     "cooldownMs": 1100,
-    "range": 320,
+    "range": 300,
     "projectileSpeed": 380,
     "knockback": 150,
     "maxLevel": 5,
@@ -579,7 +579,7 @@
     "pattern": "homing",
     "baseDamage": 15,
     "cooldownMs": 900,
-    "range": 300,
+    "range": 280,
     "projectileSpeed": 400,
     "maxLevel": 5
   },
@@ -591,7 +591,7 @@
     "pattern": "beam",
     "baseDamage": 10,
     "cooldownMs": 130,
-    "range": 300,
+    "range": 280,
     "beamWidth": 40,
     "statusEffect": {
       "id": "paralysis",
@@ -614,7 +614,7 @@
     "pattern": "projectile",
     "baseDamage": 18,
     "cooldownMs": 900,
-    "range": 280,
+    "range": 260,
     "statusEffect": {
       "id": "defenseDown",
       "chance": 0.3
@@ -638,7 +638,7 @@
     "pattern": "projectile",
     "baseDamage": 20,
     "cooldownMs": 1000,
-    "range": 340,
+    "range": 300,
     "projectileSpeed": 420,
     "statusEffect": {
       "id": "attackDown",
@@ -660,7 +660,7 @@
     "pattern": "spread",
     "baseDamage": 9,
     "cooldownMs": 800,
-    "range": 300,
+    "range": 260,
     "projectileSpeed": 460,
     "count": 3,
     "spreadAngle": 50,
@@ -684,7 +684,7 @@
     "pattern": "melee",
     "baseDamage": 14,
     "cooldownMs": 650,
-    "range": 171,
+    "range": 140,
     "maxLevel": 5
   },
   "psybeam": {
@@ -695,7 +695,7 @@
     "pattern": "beam",
     "baseDamage": 8,
     "cooldownMs": 120,
-    "range": 300,
+    "range": 280,
     "beamWidth": 36,
     "statusEffect": {
       "id": "confusion",
@@ -718,7 +718,7 @@
     "pattern": "spread",
     "baseDamage": 10,
     "cooldownMs": 900,
-    "range": 280,
+    "range": 260,
     "projectileSpeed": 380,
     "count": 3,
     "spreadAngle": 60,
@@ -748,7 +748,7 @@
       "chance": 0.3
     },
     "maxLevel": 5,
-    "range": 280,
+    "range": 260,
     "projectileSpeed": 440,
     "count": 1,
     "pierce": 0,
@@ -761,16 +761,17 @@
   },
   "hyper_beam": {
     "id": "hyper_beam",
-    "name": "하이퍼빔",
+    "name": "파괴광선",
     "type": "normal",
     "category": "special",
     "pattern": "beam",
-    "baseDamage": 26,
-    "cooldownMs": 140,
-    "range": 500,
-    "beamWidth": 70,
+    "baseDamage": 70,
+    "cooldownMs": 3400,
+    "range": 480,
+    "beamWidth": 26,
     "maxLevel": 5,
-    "tickMs": 140
+    "tickMs": 140,
+    "pierce": 99
   },
   "eruption": {
     "id": "eruption",
@@ -797,7 +798,7 @@
     "pattern": "chain",
     "baseDamage": 27,
     "cooldownMs": 560,
-    "range": 420,
+    "range": 345,
     "projectileSpeed": 680,
     "pierce": 0,
     "chainCount": 4,
@@ -818,7 +819,7 @@
     "pattern": "projectile",
     "baseDamage": 24,
     "cooldownMs": 480,
-    "range": 400,
+    "range": 345,
     "projectileSpeed": 580,
     "pierce": 0,
     "count": 1,
@@ -838,7 +839,7 @@
     "pattern": "beam",
     "baseDamage": 13,
     "cooldownMs": 130,
-    "range": 400,
+    "range": 345,
     "beamWidth": 60,
     "splashRadius": 100,
     "knockback": 260,
@@ -854,7 +855,7 @@
     "pattern": "spread",
     "baseDamage": 22,
     "cooldownMs": 560,
-    "range": 220,
+    "range": 253,
     "count": 5,
     "spreadAngle": 90,
     "statusEffect": {
@@ -870,8 +871,8 @@
     "category": "special",
     "pattern": "homing",
     "baseDamage": 6,
-    "cooldownMs": 2200,
-    "range": 340,
+    "cooldownMs": 2400,
+    "range": 320,
     "projectileSpeed": 260,
     "statusEffect": {
       "id": "seed",
@@ -910,7 +911,7 @@
   },
   "moonlight_orb": {
     "id": "moonlight_orb",
-    "name": "달빛구슬",
+    "name": "달빛의구슬",
     "type": "fairy",
     "category": "special",
     "pattern": "orbit",
@@ -951,20 +952,20 @@
   },
   "toxic_spikes": {
     "id": "toxic_spikes",
-    "name": "독압정",
+    "name": "맹독압정",
     "type": "poison",
     "category": "special",
-    "pattern": "ground_zone",
+    "pattern": "caltrop",
     "baseDamage": 10,
     "cooldownMs": 1800,
     "range": 300,
-    "areaRadius": 95,
+    "areaRadius": 90,
     "telegraphMs": 550,
-    "durationSec": 3,
-    "tickMs": 600,
+    "durationSec": 5,
+    "tickMs": 700,
     "statusEffect": {
-      "id": "poison",
-      "chance": 0.4
+      "id": "toxic",
+      "chance": 0.9
     },
     "maxLevel": 5
   },
@@ -1000,8 +1001,8 @@
     "category": "physical",
     "pattern": "dash",
     "baseDamage": 20,
-    "cooldownMs": 1400,
-    "range": 260,
+    "cooldownMs": 1200,
+    "range": 200,
     "beamWidth": 70,
     "knockback": 220,
     "maxLevel": 5
@@ -1014,7 +1015,7 @@
     "pattern": "projectile",
     "baseDamage": 16,
     "cooldownMs": 850,
-    "range": 280,
+    "range": 260,
     "projectileSpeed": 500,
     "pierce": 0,
     "count": 1,
@@ -1053,7 +1054,7 @@
     "pattern": "spread",
     "baseDamage": 14,
     "cooldownMs": 738,
-    "range": 322,
+    "range": 299,
     "projectileSpeed": 437,
     "count": 4,
     "spreadAngle": 80,
@@ -1086,7 +1087,7 @@
     "pattern": "projectile",
     "baseDamage": 14,
     "cooldownMs": 738,
-    "range": 322,
+    "range": 299,
     "projectileSpeed": 483,
     "statusEffect": {
       "id": "poison",
@@ -1109,7 +1110,7 @@
       "chance": 0.45
     },
     "maxLevel": 5,
-    "range": 322,
+    "range": 299,
     "projectileSpeed": 506,
     "count": 2,
     "pierce": 1,
@@ -1123,7 +1124,7 @@
     "pattern": "spread",
     "baseDamage": 13,
     "cooldownMs": 656,
-    "range": 345,
+    "range": 299,
     "projectileSpeed": 529,
     "count": 4,
     "spreadAngle": 70,
@@ -1142,7 +1143,7 @@
     "pattern": "beam",
     "baseDamage": 11,
     "cooldownMs": 98,
-    "range": 345,
+    "range": 322,
     "beamWidth": 45,
     "statusEffect": {
       "id": "confusion",
@@ -1160,7 +1161,7 @@
     "pattern": "projectile",
     "baseDamage": 28,
     "cooldownMs": 820,
-    "range": 322,
+    "range": 299,
     "areaRadius": 84,
     "maxLevel": 5,
     "statusEffect": {
@@ -1180,7 +1181,7 @@
     "pattern": "projectile",
     "baseDamage": 22,
     "cooldownMs": 902,
-    "range": 368,
+    "range": 345,
     "projectileSpeed": 437,
     "knockback": 180,
     "maxLevel": 5,
@@ -1198,7 +1199,7 @@
     "pattern": "projectile",
     "baseDamage": 20,
     "cooldownMs": 492,
-    "range": 322,
+    "range": 299,
     "pierce": 1,
     "lifestealPercent": 0.195,
     "statusEffect": {
@@ -1218,7 +1219,7 @@
     "pattern": "beam",
     "baseDamage": 14,
     "cooldownMs": 107,
-    "range": 345,
+    "range": 322,
     "beamWidth": 50,
     "statusEffect": {
       "id": "paralysis",
@@ -1236,7 +1237,7 @@
     "pattern": "projectile",
     "baseDamage": 25,
     "cooldownMs": 738,
-    "range": 322,
+    "range": 299,
     "statusEffect": {
       "id": "defenseDown",
       "chance": 0.45
@@ -1255,7 +1256,7 @@
     "pattern": "projectile",
     "baseDamage": 22,
     "cooldownMs": 697,
-    "range": 322,
+    "range": 299,
     "projectileSpeed": 575,
     "pierce": 1,
     "count": 2,
@@ -1274,7 +1275,7 @@
     "pattern": "projectile",
     "baseDamage": 28,
     "cooldownMs": 820,
-    "range": 391,
+    "range": 345,
     "projectileSpeed": 483,
     "statusEffect": {
       "id": "attackDown",
@@ -1282,5 +1283,120 @@
     },
     "maxLevel": 5,
     "evolvedFrom": "moonblast"
+  },
+  "icicle_crash": {
+    "id": "icicle_crash",
+    "name": "고드름떨구기",
+    "type": "ice",
+    "category": "physical",
+    "pattern": "strike",
+    "baseDamage": 24,
+    "cooldownMs": 1500,
+    "range": 220,
+    "areaRadius": 110,
+    "statusEffect": {
+      "id": "freeze",
+      "chance": 0.18
+    },
+    "maxLevel": 5
+  },
+  "earthquake": {
+    "id": "earthquake",
+    "name": "지진",
+    "type": "ground",
+    "category": "physical",
+    "pattern": "circle",
+    "baseDamage": 26,
+    "cooldownMs": 2600,
+    "areaRadius": 180,
+    "knockback": 180,
+    "maxLevel": 5
+  },
+  "zen_headbutt": {
+    "id": "zen_headbutt",
+    "name": "사념의박치기",
+    "type": "psychic",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 22,
+    "cooldownMs": 900,
+    "range": 150,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.15
+    },
+    "maxLevel": 5
+  },
+  "leech_life": {
+    "id": "leech_life",
+    "name": "흡혈",
+    "type": "bug",
+    "category": "physical",
+    "pattern": "melee",
+    "baseDamage": 16,
+    "cooldownMs": 700,
+    "range": 150,
+    "lifestealPercent": 0.4,
+    "maxLevel": 5
+  },
+  "rock_blast": {
+    "id": "rock_blast",
+    "name": "스톤샤워",
+    "type": "rock",
+    "category": "physical",
+    "pattern": "spread",
+    "baseDamage": 10,
+    "cooldownMs": 1300,
+    "range": 240,
+    "count": 4,
+    "spreadAngle": 50,
+    "knockback": 90,
+    "maxLevel": 5
+  },
+  "dragon_rush": {
+    "id": "dragon_rush",
+    "name": "드래곤크루",
+    "type": "dragon",
+    "category": "physical",
+    "pattern": "dash",
+    "baseDamage": 24,
+    "cooldownMs": 1500,
+    "range": 200,
+    "beamWidth": 70,
+    "knockback": 160,
+    "maxLevel": 5
+  },
+  "dark_pulse": {
+    "id": "dark_pulse",
+    "name": "악의파동",
+    "type": "dark",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 9,
+    "cooldownMs": 130,
+    "range": 300,
+    "beamWidth": 36,
+    "tickMs": 130,
+    "statusEffect": {
+      "id": "attackDown",
+      "chance": 0.25
+    },
+    "maxLevel": 5
+  },
+  "flash_cannon": {
+    "id": "flash_cannon",
+    "name": "러스터캐논",
+    "type": "steel",
+    "category": "special",
+    "pattern": "explosion",
+    "baseDamage": 28,
+    "cooldownMs": 2000,
+    "range": 320,
+    "areaRadius": 110,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.3
+    },
+    "maxLevel": 5
   }
 }

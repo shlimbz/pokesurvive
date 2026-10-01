@@ -25,6 +25,7 @@ PS.VFXPatternMap = {
   explosion: 'Explosion',
   rain: 'GroundZone',
   ground_zone: 'GroundZone',
+  caltrop: 'GroundZone',
   dash: 'Dash',
   aura: 'Aura',
   orbit: 'Aura',

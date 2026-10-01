@@ -38,6 +38,38 @@ PS.VFXSystem = class VFXSystem {
     // is left as an extensible knob (setQuality) plus automatic P2-first scale-down when a lot
     // of enemies are alive, rather than inventing a full options menu out of scope for this pass.
     this.qualityMult = 1;
+
+    // Per-move signature-shape overrides (2026-10-01 request: "기술 이름이랑 테마에 맞게 VFX").
+    // Every renderer above is generic per (type, pattern-group) - good enough for most of the
+    // 36-move roster, but a handful of flagship moves get a bespoke CORE SHAPE instead (spec
+    // section 14's own examples: 불대문자=큰 X/大자 모양, 백만볼트=낙뢰, 지진=원형충격파+흔들림,
+    // 씨뿌리기=씨앗부착+초록이펙트, 문포스=달빛구체, 공수차기=Dash 슬래시). This table is purely
+    // ADDITIVE - a move id with no entry here falls straight through to the existing generic
+    // pattern-group renderer with zero behavior change, exactly as before this feature existed.
+    this.moveOverrides = {
+      fire_blast: (typeId, level, p) => this.playFireBlastX(typeId, level, p.x, p.y, p.radius),
+      thunderbolt: (typeId, level, p) => this.playLightningStrike(typeId, level, p.x, p.y),
+      earthquake: (typeId, level, p) => this.playEarthquakeShock(typeId, level, p.x, p.y, p.radius),
+      leech_seed: (typeId, level, p) => this.playSeedAttach(typeId, level, p.x, p.y),
+      karate_chop: (typeId, level, p) => this.playKarateChopSlash(typeId, level, p.x, p.y, p.angle)
+    };
+  }
+
+  // Returns true if a bespoke per-move visual was drawn for `moveId` (caller should skip its own
+  // generic call in that case); returns false for every other move, so every existing call site
+  // stays correct by just adding "if (!playMoveOverride(...)) { <old generic call> }" around
+  // itself - or, for purely additive flourishes (e.g. karate_chop's dash slash), callers may
+  // simply fire-and-forget this alongside their existing generic call without checking the
+  // return value at all.
+  playMoveOverride(moveId, typeId, level, params) {
+    const fn = this.moveOverrides[moveId];
+    if (!fn) return false;
+    try {
+      fn(typeId, level, params || {});
+      return true;
+    } catch (e) {
+      return false; // never let a bespoke VFX hiccup break gameplay or break the fallback chain.
+    }
   }
 
   setQuality(level) {
@@ -640,6 +672,230 @@ PS.VFXSystem = class VFXSystem {
         scale: { start: 1.4, end: 0 },
         tint: this.assets.hexToInt(colors[colors.length - 1] || colors[0])
       }, qty);
+    });
+  }
+
+  // ============================== Signature move overrides ==============================
+
+  // 불대문자 (Fire Blast): the move's real-game trademark look is the Chinese character 大
+  // ("big") drawn in flame - two strokes sharing one point (a horizontal bar + a crossing
+  // vertical, like 一 crossed by 十) read clearly as an X/大 shape at small scale, then the
+  // existing circular-explosion burst/flash plays underneath so it still reads as an explosion,
+  // not just abstract lines.
+  playFireBlastX(typeId, level, x, y, radius) {
+    const def = this.getEffectDef(typeId, 'Explosion');
+    const colors = this.resolveColors(def, typeId);
+    const r = Math.max(70, radius || 110);
+    const thick = 9 + level * 1.4;
+
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setDepth(8);
+
+    // Horizontal stroke (一) through the center.
+    g.lineStyle(thick, this.assets.hexToInt(colors[2] || colors[1] || colors[0]), 0.95);
+    g.beginPath();
+    g.moveTo(-r * 0.8, 0);
+    g.lineTo(r * 0.8, 0);
+    g.strokePath();
+
+    // Two diagonal legs crossing through the same center point (the 大/X silhouette).
+    g.lineStyle(thick, this.assets.hexToInt(colors[1] || colors[0]), 0.95);
+    g.beginPath();
+    g.moveTo(-r * 0.7, -r * 0.7);
+    g.lineTo(r * 0.7, r * 0.7);
+    g.strokePath();
+    g.beginPath();
+    g.moveTo(r * 0.7, -r * 0.7);
+    g.lineTo(-r * 0.7, r * 0.7);
+    g.strokePath();
+
+    this.scene.tweens.add({
+      targets: g,
+      scale: 1.4,
+      alpha: 0,
+      duration: 420,
+      onComplete: () => this.graphicsPool.release(g)
+    });
+
+    const flash = this.scene.add.circle(x, y, r * 0.3, this.assets.hexToInt(colors[0]), 0.35).setDepth(7);
+    this.scene.tweens.add({ targets: flash, scale: 2.6, alpha: 0, duration: 380, onComplete: () => flash.destroy() });
+
+    const qty = this.scaleParticleCount(def, level, 'P1');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 90, max: 260 },
+      lifespan: 420,
+      angle: { min: 0, max: 360 },
+      scale: { start: 1.3, end: 0 },
+      tint: this.assets.hexToInt(colors[1] || colors[0])
+    }, qty + 6);
+  }
+
+  // 백만볼트 (Thunderbolt): a single jagged bolt falling from off-screen above straight down onto
+  // the target - "낙뢰" (lightning strike from the sky), distinct from the chain pattern's
+  // between-two-targets zigzag and from the generic projectile look every other electric hit uses.
+  playLightningStrike(typeId, level, x, y) {
+    const def = this.getEffectDef(typeId, 'Beam');
+    const colors = this.resolveColors(def, typeId);
+    const topY = y - 420;
+
+    const g = this.graphicsPool.obtain();
+    g.setPosition(0, 0);
+    g.setDepth(10);
+    g.lineStyle(4 + level, this.assets.hexToInt(colors[0]), 0.95);
+    g.beginPath();
+    const segs = 6;
+    g.moveTo(x, topY);
+    for (let i = 1; i <= segs; i++) {
+      const t = i / segs;
+      const nx = x + (Math.random() - 0.5) * 50 * (1 - t * 0.6);
+      const ny = topY + (y - topY) * t;
+      g.lineTo(nx, ny);
+    }
+    g.strokePath();
+    g.lineStyle(2, 0xffffff, 0.9);
+    g.strokePath();
+
+    this.scene.tweens.add({ targets: g, alpha: 0, duration: 220, onComplete: () => this.graphicsPool.release(g) });
+
+    const flash = this.graphicsPool.obtain();
+    flash.setPosition(x, y);
+    flash.setDepth(10);
+    flash.fillStyle(0xffffff, 0.85);
+    flash.fillCircle(0, 0, 9 + level * 2);
+    this.scene.tweens.add({ targets: flash, scale: 3, alpha: 0, duration: 260, onComplete: () => this.graphicsPool.release(flash) });
+
+    const qty = this.scaleParticleCount(def, level, 'P1');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 80, max: 240 },
+      lifespan: 260,
+      angle: { min: 0, max: 360 },
+      scale: { start: 0.9, end: 0 },
+      tint: this.assets.hexToInt(colors[0])
+    }, qty);
+
+    this.scene.cameras.main.flash(80, 255, 255, 220, false);
+  }
+
+  // 지진 (Earthquake): 원형충격파 + 지면흔들림 - two offset expanding shockwave rings, radiating
+  // ground-crack lines, and an actual brief camera shake so it reads as the ground itself moving,
+  // not just another circle burst.
+  playEarthquakeShock(typeId, level, x, y, radius) {
+    const def = this.getEffectDef(typeId, 'Explosion');
+    const colors = this.resolveColors(def, typeId);
+    const r = radius || 150;
+
+    for (let i = 0; i < 2; i++) {
+      const g = this.graphicsPool.obtain();
+      g.setPosition(x, y);
+      g.setDepth(4);
+      g.lineStyle(6 - i * 2, this.assets.hexToInt(colors[i] || colors[0]), 0.85 - i * 0.2);
+      g.strokeCircle(0, 0, r * (0.3 + i * 0.1));
+      this.scene.tweens.add({
+        targets: g,
+        scaleX: 1 + 0.9 * (i + 1),
+        scaleY: 1 + 0.9 * (i + 1),
+        alpha: 0,
+        duration: 420 + i * 120,
+        delay: i * 90,
+        onComplete: () => this.graphicsPool.release(g)
+      });
+    }
+
+    const lineCount = 6;
+    const g2 = this.graphicsPool.obtain();
+    g2.setPosition(x, y);
+    g2.setDepth(4);
+    g2.lineStyle(3, this.assets.hexToInt(colors[1] || colors[0]), 0.7);
+    for (let i = 0; i < lineCount; i++) {
+      const a = (i / lineCount) * Math.PI * 2 + Math.random() * 0.3;
+      g2.beginPath();
+      g2.moveTo(0, 0);
+      g2.lineTo(Math.cos(a) * r * 0.9, Math.sin(a) * r * 0.9);
+      g2.strokePath();
+    }
+    this.scene.tweens.add({ targets: g2, alpha: 0, duration: 500, onComplete: () => this.graphicsPool.release(g2) });
+
+    const qty = this.scaleParticleCount(def, level, 'P1');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 40, max: 140 },
+      lifespan: 420,
+      angle: { min: 0, max: 360 },
+      scale: { start: 0.9, end: 0 },
+      tint: this.assets.hexToInt(colors[0])
+    }, qty);
+
+    this.scene.cameras.main.shake(260 + level * 10, 0.0045 + level * 0.0004);
+  }
+
+  // 씨뿌리기 (Leech Seed): 씨앗 부착 + 초록 지속 이펙트 - a small seed pod drops and "sticks" to
+  // the target, with a lingering green ring that reads as the ongoing drain rather than a one-shot
+  // hit. Called from the shared on-hit path, so it layers on top of (not instead of) the normal
+  // hit feedback every move already gets.
+  playSeedAttach(typeId, level, x, y) {
+    const def = this.getEffectDef(typeId, 'GroundZone');
+    const colors = this.resolveColors(def, typeId);
+    const seedColor = this.assets.hexToInt('#558b2f');
+
+    const seed = this.graphicsPool.obtain();
+    seed.setPosition(x, y - 6);
+    seed.setDepth(8);
+    seed.fillStyle(0x5d3a1a, 0.95);
+    seed.fillEllipse(0, 0, 7, 10);
+    this.scene.tweens.add({
+      targets: seed,
+      y: y + 4,
+      duration: 260,
+      ease: 'Bounce.easeOut',
+      onComplete: () => this.scene.tweens.add({
+        targets: seed, alpha: 0, delay: 500, duration: 300, onComplete: () => this.graphicsPool.release(seed)
+      })
+    });
+
+    const ring = this.graphicsPool.obtain();
+    ring.setPosition(x, y);
+    ring.setDepth(7);
+    ring.lineStyle(2, this.assets.hexToInt(colors[0]) || seedColor, 0.8);
+    ring.strokeCircle(0, 0, 14);
+    this.scene.tweens.add({
+      targets: ring, scaleX: 1.8, scaleY: 1.8, alpha: 0, duration: 900,
+      onComplete: () => this.graphicsPool.release(ring)
+    });
+
+    const qty = Math.max(3, this.scaleParticleCount(def, level, 'P2'));
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 10, max: 40 },
+      lifespan: 600,
+      angle: { min: -140, max: -40 },
+      scale: { start: 0.6, end: 0 },
+      tint: seedColor
+    }, qty);
+  }
+
+  // 공수차기 (Karate Chop / Fighting Dash): a bright chop-arc slash at the landing point, layered
+  // ON TOP OF the existing dash trail+shockwave (playDashFx) - purely additive, so every other
+  // dash-pattern move (aqua_jet, dragon_rush) keeps its current look untouched.
+  playKarateChopSlash(typeId, level, x, y, angle) {
+    const def = this.getEffectDef(typeId, 'Dash');
+    const colors = this.resolveColors(def, typeId);
+    const len = 46 + level * 3;
+
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setRotation(angle || 0);
+    g.setDepth(9);
+    g.lineStyle(5, 0xffffff, 0.95);
+    g.beginPath();
+    g.arc(0, 0, len * 0.5, Phaser.Math.DegToRad(-50), Phaser.Math.DegToRad(50), false);
+    g.strokePath();
+    g.lineStyle(3, this.assets.hexToInt(colors[0]), 0.9);
+    g.beginPath();
+    g.arc(0, 0, len * 0.5, Phaser.Math.DegToRad(-40), Phaser.Math.DegToRad(40), false);
+    g.strokePath();
+
+    this.scene.tweens.add({
+      targets: g, alpha: 0, scaleX: 1.4, scaleY: 1.4, duration: 180,
+      onComplete: () => this.graphicsPool.release(g)
     });
   }
 };

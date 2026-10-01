@@ -214,6 +214,14 @@
       "damagePercentPerSec": 0.035,
       "cooldown": 1,
       "name": "씨뿌리기"
+    },
+    "toxic": {
+      "duration": 8,
+      "chance": 0.9,
+      "stackLimit": 6,
+      "damagePercentPerSec": 0.015,
+      "cooldown": 1,
+      "name": "맹독"
     }
   },
   "bossStatusResistance": {
@@ -465,6 +473,10 @@
     "summon": {
       "field": "summonRadius",
       "perLevel": 8
+    },
+    "caltrop": {
+      "field": "areaRadius",
+      "perLevel": 6
     }
   },
   "bossPhases": [

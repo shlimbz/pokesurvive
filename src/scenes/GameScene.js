@@ -820,7 +820,11 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const radius = this.getEffectiveAreaRadius(move, 150);
         const targets = this.findEnemiesInRadius(player.x, player.y, radius);
         this.resolveAoe(move, targets, hpRatio, player);
-        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), player.x, player.y, radius);
+        // 지진 (earthquake) gets a bespoke shockwave+ground-crack+camera-shake treatment (spec
+        // section 14: "원형충격파+지면흔들림"); every other circle-pattern move is unaffected.
+        if (!this.vfx.playMoveOverride(move.id, move.type, moveLevel, { x: player.x, y: player.y, radius })) {
+          this.vfx.playCircleVfx(move.type, moveLevel, player.x, player.y, radius);
+        }
         return true;
       }
       case 'orbit': {
@@ -845,7 +849,11 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
         const targets = this.findEnemiesInRadius(point.x, point.y, radius);
         this.resolveAoe(move, targets, hpRatio, player);
-        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), point.x, point.y, radius);
+        // 백만볼트 (thunderbolt) gets a bespoke "lightning falling from above" look (spec section
+        // 14); every other strike-pattern move keeps the existing generic circle burst untouched.
+        if (!this.vfx.playMoveOverride(move.id, move.type, moveLevel, { x: point.x, y: point.y, radius })) {
+          this.vfx.playCircleVfx(move.type, moveLevel, point.x, point.y, radius);
+        }
         return true;
       }
       case 'explosion': {
@@ -853,7 +861,11 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         const point = nearest ? { x: nearest.x, y: nearest.y } : { x: player.x + Math.cos(aimAngle) * range, y: player.y + Math.sin(aimAngle) * range };
         const targets = this.findEnemiesInRadius(point.x, point.y, radius);
         this.resolveAoe(move, targets, hpRatio, player);
-        this.vfx.playCircleVfx(move.type, this.build.getMoveLevel(move.id), point.x, point.y, radius);
+        // 불대문자 (fire_blast) gets its signature 大/X-shaped burst (spec section 14); every
+        // other explosion-pattern move (e.g. flash_cannon) keeps the existing generic circle burst.
+        if (!this.vfx.playMoveOverride(move.id, move.type, moveLevel, { x: point.x, y: point.y, radius })) {
+          this.vfx.playCircleVfx(move.type, moveLevel, point.x, point.y, radius);
+        }
         return true;
       }
       case 'rain': {
@@ -894,15 +906,54 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         return true;
       }
       case 'dash': {
-        // Player physically dashes toward the aim direction, hitting everything in a corridor
-        // along the path (design spec section 4: Fighting/Flying/Dark "Dash" pattern).
-        const dashDistance = range;
+        // Player physically dashes toward the aim direction - 접근 -> 공격 -> 공간 확보 -> 탈출,
+        // one full combat beat (design spec 2026-10-01 section 7), not just a movement tool:
+        //
+        // 1) Variable distance: a close target is approached, not blown past - the whole point of
+        //    "dash INTO melee range" breaks if you overshoot a target standing right next to you.
+        //    A target beyond `range` just gets the usual max-distance dash.
+        // 2) Full-corridor damage along the path (already existed, kept as-is).
+        // 3) A small shockwave at the landing point, on top of corridor hits (distinct targets
+        //    only - no double-dipping the same enemy from both the corridor and the landing pulse).
+        // 4) A short post-dash invulnerability window that SCALES with how many enemies were just
+        //    hit, capped low - a melee build diving into a pack and immediately getting hit from
+        //    five sides as it "lands" is the single biggest reason melee archetypes feel unplayable
+        //    in a bullet-heaven; this buys just enough of a window to reposition, not a free pass.
+        const nearestDist = nearest ? PS.MathUtils.distance(player.x, player.y, nearest.x, nearest.y) : Infinity;
+        // Stop a hair short of the target's own position so the player doesn't dash fully on top
+        // of (and visually overlap) the thing it just closed on.
+        const dashDistance = Math.min(range, nearestDist > 0 ? Math.max(0, nearestDist - 12) : range);
         const targetX = player.x + Math.cos(aimAngle) * dashDistance;
         const targetY = player.y + Math.sin(aimAngle) * dashDistance;
         const corridorWidth = this.getPatternScaledField(move, moveLevel, 'beamWidth', move.beamWidth || 60);
-        const targets = this.findEnemiesNearSegment(player.x, player.y, targetX, targetY, corridorWidth / 2);
-        this.resolveAoe(move, targets, hpRatio, player);
+        const corridorTargets = this.findEnemiesNearSegment(player.x, player.y, targetX, targetY, corridorWidth / 2);
+        this.resolveAoe(move, corridorTargets, hpRatio, player);
+
+        const hitSet = new Set(corridorTargets);
+        const shockwaveRadius = this.getPatternScaledField(move, moveLevel, 'landingRadius', move.landingRadius || 80);
+        const shockwaveTargets = this.findEnemiesInRadius(targetX, targetY, shockwaveRadius).filter(e => !hitSet.has(e));
+        this.resolveAoe(move, shockwaveTargets, hpRatio, player);
+        if (shockwaveTargets.length) this.vfx.playCircleVfx(move.type, moveLevel, targetX, targetY, shockwaveRadius);
+        for (const t of shockwaveTargets) hitSet.add(t);
+
+        // Knockback on every dash-hit enemy (spec recommendation #2/#3: separate the player from
+        // the crowd it just dove into, not just damage it) - independent of whichever knockback
+        // the move's own data.knockback field already grants on-hit via applyPlayerHitToEnemy.
+        for (const t of hitSet) {
+          const dir = PS.MathUtils.normalize(t.x - targetX, t.y - targetY);
+          t.x += dir.x * 18;
+          t.y += dir.y * 18;
+        }
+
+        const hitCount = hitSet.size;
+        const invulnSec = hitCount >= 5 ? 0.45 : hitCount >= 3 ? 0.3 : hitCount >= 1 ? 0.15 : 0;
+        if (invulnSec > 0) player.invulnTimer = Math.max(player.invulnTimer, invulnSec);
+
         this.vfx.playDashFx(move.type, moveLevel, player.x, player.y, targetX, targetY);
+        // Purely additive per-move flourish on top of the dash trail+shockwave above (e.g.
+        // karate_chop's signature chop-arc slash, spec section 14) - a no-op for any dash move
+        // without a registered override (aqua_jet, dragon_rush keep their current look exactly).
+        this.vfx.playMoveOverride(move.id, move.type, moveLevel, { x: targetX, y: targetY, angle: aimAngle });
         this.tweens.add({ targets: player, x: targetX, y: targetY, duration: 160, ease: 'Cubic.easeOut' });
         return true;
       }
@@ -938,6 +989,28 @@ PS.GameScene = class GameScene extends Phaser.Scene {
             });
           }
         });
+        return true;
+      }
+      case 'caltrop': {
+        // 압정/장애물 (design spec section 6): unlike 'ground_zone' (telegraphed, anchored on the
+        // nearest enemy, one zone at a time), a caltrop drops INSTANTLY at the player's CURRENT
+        // position with no telegraph, and nothing stops several from coexisting - every cast just
+        // starts its own independent tick loop, so on a short-ish cooldown the player leaves a
+        // trail of lingering hazard zones behind them (Poison's 맹독압정). Reuses the exact same
+        // lingering-AoE-tick machinery as 'ground_zone' below, just anchored differently.
+        const point = { x: player.x, y: player.y };
+        const radius = this.getEffectiveAreaRadius(move, 90);
+        const tickMs = move.tickMs || 700;
+        const durationSec = move.durationSec || 5;
+        this.vfx.playGroundZoneFx(move.type, moveLevel, point.x, point.y, radius, durationSec * 1000);
+        const ticks = Math.max(1, Math.round((durationSec * 1000) / tickMs));
+        for (let i = 0; i < ticks; i++) {
+          this.time.delayedCall(i * tickMs, () => {
+            if (this.matchEnded) return;
+            const targets = this.findEnemiesInRadius(point.x, point.y, radius);
+            this.resolveAoe(move, targets, hpRatio, player);
+          });
+        }
         return true;
       }
       case 'summon': {
@@ -984,15 +1057,32 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   ensureOrbitVisual(move, player, count) {
     let state = this.orbitVisuals[move.id];
     if (state && state.sprites.length === count) return;
-    if (state) for (const s of state.sprites) s.destroy();
+    if (state) {
+      for (const s of state.sprites) s.destroy();
+      if (state.tween) state.tween.stop();
+    }
     const vfxDef = this.data_.vfx.types[move.type] || this.data_.vfx.types.normal;
+    // 문포스/달빛의구슬 (moonlight_orb) gets a signature pale glowing-moon satellite look (spec
+    // section 14: "문포스=달빛구체+폭발") instead of the plain type-tinted dot every other orbit
+    // move (fairy's base orbit mechanic) uses - additive-only, keyed off this one move id.
+    const isMoonOrb = move.id === 'moonlight_orb';
     const sprites = [];
     for (let i = 0; i < count; i++) {
-      const s = this.add.sprite(player.x, player.y, this.vfx.getTexture(move.type)).setDisplaySize(16, 16).setDepth(9);
-      s.setTint(this.assets.hexToInt(vfxDef.color));
+      const size = isMoonOrb ? 24 : 16;
+      const s = this.add.sprite(player.x, player.y, this.vfx.getTexture(move.type)).setDisplaySize(size, size).setDepth(9);
+      if (isMoonOrb) {
+        s.setTint(0xf5f3ff);
+        s.setBlendMode(Phaser.BlendModes.ADD);
+      } else {
+        s.setTint(this.assets.hexToInt(vfxDef.color));
+      }
       sprites.push(s);
     }
-    this.orbitVisuals[move.id] = { sprites };
+    let tween = null;
+    if (isMoonOrb) {
+      tween = this.tweens.add({ targets: sprites, scale: 1.25, alpha: 0.75, duration: 650, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    }
+    this.orbitVisuals[move.id] = { sprites, tween };
   }
 
   updateOrbitVisuals() {
@@ -1001,6 +1091,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       const stillOwned = this.build.getOwnedMoveIds().includes(moveId);
       if (!stillOwned) {
         for (const s of state.sprites) s.destroy();
+        if (state.tween) state.tween.stop();
         delete this.orbitVisuals[moveId];
         continue;
       }
@@ -1200,6 +1291,10 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     });
     this.vfx.showFeedbackText(enemy.x, enemy.y, result.label);
     this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), enemy.x, enemy.y);
+    // Purely additive per-move flourish layered on the shared hit pipeline every move already
+    // uses (e.g. leech_seed's seed-attach, spec section 14) - a no-op for every move without a
+    // registered override, so this never changes the look of the other ~30 moves.
+    this.vfx.playMoveOverride(move.id, move.type, this.build.getMoveLevel(move.id), { x: enemy.x, y: enemy.y });
     this.vfx.playHit({ type: move.type, x: enemy.x, y: enemy.y, critical: result.isCrit });
     this.audio.playHit(result.isCrit);
     if (result.label === 'superEffective') this.audio.playSuperEffective();
