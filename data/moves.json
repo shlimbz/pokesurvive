@@ -20,7 +20,7 @@
     "maxLevel": 5,
     "evolution": {
       "evolvesTo": "thunder_shock_plus",
-      "requiresMoveLevel": 5,
+      "requiresMoveLevel": 3,
       "requiresItem": "magnet",
       "requiresItemLevel": 3
     }
@@ -81,22 +81,34 @@
     "name": "전광석화",
     "type": "normal",
     "category": "physical",
-    "pattern": "melee",
+    "pattern": "projectile",
     "baseDamage": 13,
     "cooldownMs": 440,
-    "range": 124,
-    "maxLevel": 5
+    "range": 260,
+    "maxLevel": 5,
+    "projectileSpeed": 560,
+    "count": 1,
+    "pierce": 0,
+    "evolution": {
+      "evolvesTo": "quick_attack_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "silk_scarf",
+      "requiresItemLevel": 3
+    }
   },
   "tackle": {
     "id": "tackle",
     "name": "몸통박치기",
     "type": "normal",
     "category": "physical",
-    "pattern": "melee",
+    "pattern": "projectile",
     "baseDamage": 14,
     "cooldownMs": 560,
-    "range": 124,
-    "maxLevel": 5
+    "range": 260,
+    "maxLevel": 5,
+    "projectileSpeed": 480,
+    "count": 1,
+    "pierce": 0
   },
   "growl": {
     "id": "growl",
@@ -132,7 +144,7 @@
     "maxLevel": 5,
     "evolution": {
       "evolvesTo": "ember_plus",
-      "requiresMoveLevel": 5,
+      "requiresMoveLevel": 3,
       "requiresItem": "charcoal",
       "requiresItemLevel": 3
     }
@@ -196,7 +208,7 @@
     "maxLevel": 5,
     "evolution": {
       "evolvesTo": "water_gun_plus",
-      "requiresMoveLevel": 5,
+      "requiresMoveLevel": 3,
       "requiresItem": "mystic_water",
       "requiresItemLevel": 3
     }
@@ -252,7 +264,7 @@
     "maxLevel": 5,
     "evolution": {
       "evolvesTo": "vine_whip_plus",
-      "requiresMoveLevel": 5,
+      "requiresMoveLevel": 3,
       "requiresItem": "miracle_seed",
       "requiresItemLevel": 3
     }
@@ -307,17 +319,25 @@
     "name": "혀날름",
     "type": "ghost",
     "category": "physical",
-    "pattern": "melee",
+    "pattern": "projectile",
     "baseDamage": 14,
     "cooldownMs": 600,
-    "range": 171,
-    "pierce": 1,
+    "range": 280,
+    "pierce": 0,
     "lifestealPercent": 0.15,
     "statusEffect": {
       "id": "paralysis",
       "chance": 0.15
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "projectileSpeed": 460,
+    "count": 1,
+    "evolution": {
+      "evolvesTo": "lick_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "spell_tag",
+      "requiresItemLevel": 3
+    }
   },
   "confuse_ray": {
     "id": "confuse_ray",
@@ -353,12 +373,19 @@
     "name": "공수차기",
     "type": "fighting",
     "category": "physical",
-    "pattern": "melee",
+    "pattern": "dash",
     "baseDamage": 20,
     "cooldownMs": 640,
-    "range": 152,
+    "range": 220,
     "knockback": 220,
-    "maxLevel": 5
+    "maxLevel": 5,
+    "beamWidth": 60,
+    "evolution": {
+      "evolvesTo": "karate_chop_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "black_belt",
+      "requiresItemLevel": 3
+    }
   },
   "low_kick": {
     "id": "low_kick",
@@ -472,7 +499,13 @@
       "id": "poison",
       "chance": 0.35
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "evolution": {
+      "evolvesTo": "poison_sting_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "poison_barb",
+      "requiresItemLevel": 3
+    }
   },
   "sludge_bomb": {
     "id": "sludge_bomb",
@@ -495,15 +528,24 @@
     "name": "시저크로스",
     "type": "bug",
     "category": "physical",
-    "pattern": "strike",
+    "pattern": "projectile",
     "baseDamage": 20,
     "cooldownMs": 1000,
-    "range": 260,
+    "range": 280,
     "areaRadius": 70,
     "maxLevel": 5,
     "statusEffect": {
       "id": "poison",
       "chance": 0.25
+    },
+    "projectileSpeed": 520,
+    "count": 1,
+    "pierce": 0,
+    "evolution": {
+      "evolvesTo": "x_scissor_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "silver_powder",
+      "requiresItemLevel": 3
     }
   },
   "rock_throw": {
@@ -521,6 +563,12 @@
     "statusEffect": {
       "id": "defenseDown",
       "chance": 0.3
+    },
+    "evolution": {
+      "evolvesTo": "rock_throw_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "hard_stone",
+      "requiresItemLevel": 3
     }
   },
   "shadow_punch": {
@@ -550,22 +598,37 @@
       "chance": 0.15
     },
     "maxLevel": 5,
-    "tickMs": 130
+    "tickMs": 130,
+    "evolution": {
+      "evolvesTo": "dragon_breath_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "dragon_fang",
+      "requiresItemLevel": 3
+    }
   },
   "crunch": {
     "id": "crunch",
     "name": "어금니깨물기",
     "type": "dark",
     "category": "physical",
-    "pattern": "melee",
+    "pattern": "projectile",
     "baseDamage": 18,
     "cooldownMs": 900,
-    "range": 162,
+    "range": 280,
     "statusEffect": {
       "id": "defenseDown",
       "chance": 0.3
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "projectileSpeed": 460,
+    "count": 1,
+    "pierce": 0,
+    "evolution": {
+      "evolvesTo": "crunch_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "black_glasses",
+      "requiresItemLevel": 3
+    }
   },
   "moonblast": {
     "id": "moonblast",
@@ -581,7 +644,13 @@
       "id": "attackDown",
       "chance": 0.3
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "evolution": {
+      "evolvesTo": "moonblast_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "pixie_plate",
+      "requiresItemLevel": 3
+    }
   },
   "gust": {
     "id": "gust",
@@ -599,6 +668,12 @@
     "statusEffect": {
       "id": "attackDown",
       "chance": 0.25
+    },
+    "evolution": {
+      "evolvesTo": "gust_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "sharp_beak",
+      "requiresItemLevel": 3
     }
   },
   "wing_attack": {
@@ -627,7 +702,13 @@
       "chance": 0.2
     },
     "maxLevel": 5,
-    "tickMs": 120
+    "tickMs": 120,
+    "evolution": {
+      "evolvesTo": "psybeam_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "twisted_spoon",
+      "requiresItemLevel": 3
+    }
   },
   "powder_snow": {
     "id": "powder_snow",
@@ -645,14 +726,20 @@
       "id": "slow",
       "chance": 0.4
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "evolution": {
+      "evolvesTo": "powder_snow_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "never_melt_ice",
+      "requiresItemLevel": 3
+    }
   },
   "mud_slap": {
     "id": "mud_slap",
     "name": "진흙뿌리기",
     "type": "ground",
     "category": "physical",
-    "pattern": "circle",
+    "pattern": "projectile",
     "baseDamage": 12,
     "cooldownMs": 1000,
     "areaRadius": 130,
@@ -660,7 +747,17 @@
       "id": "defenseDown",
       "chance": 0.3
     },
-    "maxLevel": 5
+    "maxLevel": 5,
+    "range": 280,
+    "projectileSpeed": 440,
+    "count": 1,
+    "pierce": 0,
+    "evolution": {
+      "evolvesTo": "mud_slap_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "soft_sand",
+      "requiresItemLevel": 3
+    }
   },
   "hyper_beam": {
     "id": "hyper_beam",
@@ -908,5 +1005,282 @@
     "beamWidth": 70,
     "knockback": 220,
     "maxLevel": 5
+  },
+  "metal_claw": {
+    "id": "metal_claw",
+    "name": "메탈클로",
+    "type": "steel",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 16,
+    "cooldownMs": 850,
+    "range": 280,
+    "projectileSpeed": 500,
+    "pierce": 0,
+    "count": 1,
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.2
+    },
+    "evolution": {
+      "evolvesTo": "metal_claw_plus",
+      "requiresMoveLevel": 3,
+      "requiresItem": "metal_coat",
+      "requiresItemLevel": 3
+    }
+  },
+  "quick_attack_plus": {
+    "id": "quick_attack_plus",
+    "name": "전광석화+",
+    "type": "normal",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 18,
+    "cooldownMs": 361,
+    "range": 299,
+    "maxLevel": 5,
+    "projectileSpeed": 644,
+    "count": 2,
+    "pierce": 1,
+    "evolvedFrom": "quick_attack"
+  },
+  "powder_snow_plus": {
+    "id": "powder_snow_plus",
+    "name": "가루눈+",
+    "type": "ice",
+    "category": "special",
+    "pattern": "spread",
+    "baseDamage": 14,
+    "cooldownMs": 738,
+    "range": 322,
+    "projectileSpeed": 437,
+    "count": 4,
+    "spreadAngle": 80,
+    "statusEffect": {
+      "id": "slow",
+      "chance": 0.6
+    },
+    "maxLevel": 5,
+    "evolvedFrom": "powder_snow"
+  },
+  "karate_chop_plus": {
+    "id": "karate_chop_plus",
+    "name": "공수차기+",
+    "type": "fighting",
+    "category": "physical",
+    "pattern": "dash",
+    "baseDamage": 28,
+    "cooldownMs": 525,
+    "range": 253,
+    "knockback": 264,
+    "maxLevel": 5,
+    "beamWidth": 75,
+    "evolvedFrom": "karate_chop"
+  },
+  "poison_sting_plus": {
+    "id": "poison_sting_plus",
+    "name": "독침+",
+    "type": "poison",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 14,
+    "cooldownMs": 738,
+    "range": 322,
+    "projectileSpeed": 483,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.52
+    },
+    "maxLevel": 5,
+    "evolvedFrom": "poison_sting"
+  },
+  "mud_slap_plus": {
+    "id": "mud_slap_plus",
+    "name": "진흙뿌리기+",
+    "type": "ground",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 17,
+    "cooldownMs": 820,
+    "areaRadius": 156,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.45
+    },
+    "maxLevel": 5,
+    "range": 322,
+    "projectileSpeed": 506,
+    "count": 2,
+    "pierce": 1,
+    "evolvedFrom": "mud_slap"
+  },
+  "gust_plus": {
+    "id": "gust_plus",
+    "name": "회오리바람+",
+    "type": "flying",
+    "category": "special",
+    "pattern": "spread",
+    "baseDamage": 13,
+    "cooldownMs": 656,
+    "range": 345,
+    "projectileSpeed": 529,
+    "count": 4,
+    "spreadAngle": 70,
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "attackDown",
+      "chance": 0.38
+    },
+    "evolvedFrom": "gust"
+  },
+  "psybeam_plus": {
+    "id": "psybeam_plus",
+    "name": "사이키델릭+",
+    "type": "psychic",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 11,
+    "cooldownMs": 98,
+    "range": 345,
+    "beamWidth": 45,
+    "statusEffect": {
+      "id": "confusion",
+      "chance": 0.3
+    },
+    "maxLevel": 5,
+    "tickMs": 102,
+    "evolvedFrom": "psybeam"
+  },
+  "x_scissor_plus": {
+    "id": "x_scissor_plus",
+    "name": "시저크로스+",
+    "type": "bug",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 28,
+    "cooldownMs": 820,
+    "range": 322,
+    "areaRadius": 84,
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "poison",
+      "chance": 0.38
+    },
+    "projectileSpeed": 598,
+    "count": 2,
+    "pierce": 1,
+    "evolvedFrom": "x_scissor"
+  },
+  "rock_throw_plus": {
+    "id": "rock_throw_plus",
+    "name": "돌던지기+",
+    "type": "rock",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 22,
+    "cooldownMs": 902,
+    "range": 368,
+    "projectileSpeed": 437,
+    "knockback": 180,
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.45
+    },
+    "evolvedFrom": "rock_throw"
+  },
+  "lick_plus": {
+    "id": "lick_plus",
+    "name": "혀날름+",
+    "type": "ghost",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 20,
+    "cooldownMs": 492,
+    "range": 322,
+    "pierce": 1,
+    "lifestealPercent": 0.195,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.22
+    },
+    "maxLevel": 5,
+    "projectileSpeed": 529,
+    "count": 2,
+    "evolvedFrom": "lick"
+  },
+  "dragon_breath_plus": {
+    "id": "dragon_breath_plus",
+    "name": "용의숨결+",
+    "type": "dragon",
+    "category": "special",
+    "pattern": "beam",
+    "baseDamage": 14,
+    "cooldownMs": 107,
+    "range": 345,
+    "beamWidth": 50,
+    "statusEffect": {
+      "id": "paralysis",
+      "chance": 0.22
+    },
+    "maxLevel": 5,
+    "tickMs": 110,
+    "evolvedFrom": "dragon_breath"
+  },
+  "crunch_plus": {
+    "id": "crunch_plus",
+    "name": "어금니깨물기+",
+    "type": "dark",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 25,
+    "cooldownMs": 738,
+    "range": 322,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.45
+    },
+    "maxLevel": 5,
+    "projectileSpeed": 529,
+    "count": 2,
+    "pierce": 1,
+    "evolvedFrom": "crunch"
+  },
+  "metal_claw_plus": {
+    "id": "metal_claw_plus",
+    "name": "메탈클로+",
+    "type": "steel",
+    "category": "physical",
+    "pattern": "projectile",
+    "baseDamage": 22,
+    "cooldownMs": 697,
+    "range": 322,
+    "projectileSpeed": 575,
+    "pierce": 1,
+    "count": 2,
+    "maxLevel": 5,
+    "statusEffect": {
+      "id": "defenseDown",
+      "chance": 0.3
+    },
+    "evolvedFrom": "metal_claw"
+  },
+  "moonblast_plus": {
+    "id": "moonblast_plus",
+    "name": "문포스+",
+    "type": "fairy",
+    "category": "special",
+    "pattern": "projectile",
+    "baseDamage": 28,
+    "cooldownMs": 820,
+    "range": 391,
+    "projectileSpeed": 483,
+    "statusEffect": {
+      "id": "attackDown",
+      "chance": 0.45
+    },
+    "maxLevel": 5,
+    "evolvedFrom": "moonblast"
   }
 }

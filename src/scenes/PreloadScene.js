@@ -13,15 +13,18 @@ PS.Game = PS.Game || {};
 PS.SPRITE_IDS = [
   'bulbasaur', 'ivysaur', 'venusaur', 'charmander', 'charmeleon', 'charizard',
   'squirtle', 'wartortle', 'blastoise', 'pikachu', 'raichu',
-  'eevee', 'flareon', 'vaporeon', 'jolteon',
+  'eevee', 'flareon', 'vaporeon', 'jolteon', 'espeon', 'umbreon', 'leafeon', 'glaceon', 'sylveon',
   'gastly', 'haunter', 'gengar', 'machop', 'machoke', 'machamp',
   'vulpix', 'ninetales', 'piplup', 'prinplup', 'empoleon', 'riolu', 'lucario',
+  'clefairy', 'ralts', 'kirlia', 'gardevoir',
   'rattata', 'oddish', 'weedle', 'bellsprout',
   'poliwag', 'psyduck', 'tentacool', 'staryu',
   'growlithe', 'ponyta', 'numel', 'slugma',
   'beedrill', 'golduck', 'rapidash',
   'scyther', 'poliwrath',
-  'vileplume', 'gyarados', 'magmar'
+  'vileplume', 'gyarados', 'magmar',
+  // Added for full 18-type starter roster coverage (see data/pokemon.json comment).
+  'koffing', 'sandshrew', 'pidgey', 'geodude', 'dratini', 'beldum'
 ];
 
 PS.PreloadScene = class PreloadScene extends Phaser.Scene {

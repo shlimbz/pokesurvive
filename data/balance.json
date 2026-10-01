@@ -127,7 +127,7 @@
     }
   },
   "maxLevels": {
-    "move": 5,
+    "move": 3,
     "item": 5,
     "ability": 3,
     "stat": 10
@@ -301,7 +301,7 @@
       "startSec": 360,
       "endSec": 540,
       "label": "Elite 등장",
-      "spawnRateMult": 1.6,
+      "spawnRateMult": 1.8,
       "enemyHpMult": 1.35,
       "enemyDmgMult": 1.2,
       "eliteChanceMult": 1,
@@ -312,7 +312,7 @@
       "startSec": 540,
       "endSec": 720,
       "label": "고밀도 전투",
-      "spawnRateMult": 2.1,
+      "spawnRateMult": 3.0,
       "enemyHpMult": 1.6,
       "enemyDmgMult": 1.35,
       "eliteChanceMult": 1.3,
@@ -323,7 +323,7 @@
       "startSec": 720,
       "endSec": 840,
       "label": "Mini Boss",
-      "spawnRateMult": 2.4,
+      "spawnRateMult": 4.2,
       "enemyHpMult": 1.9,
       "enemyDmgMult": 1.5,
       "eliteChanceMult": 1.6,
@@ -335,7 +335,7 @@
       "startSec": 840,
       "endSec": 900,
       "label": "Final Boss",
-      "spawnRateMult": 2.6,
+      "spawnRateMult": 5.5,
       "enemyHpMult": 2.1,
       "enemyDmgMult": 1.6,
       "eliteChanceMult": 1.8,
@@ -346,8 +346,8 @@
   "matchDurationSec": 900,
   "spawnSystem": {
     "baseSpawnIntervalMs": 900,
-    "minSpawnIntervalMs": 140,
-    "maxAliveEnemies": 220,
+    "minSpawnIntervalMs": 80,
+    "maxAliveEnemies": 260,
     "eliteBaseChance": 0.03,
     "spawnRadius": 700,
     "despawnRadius": 1400

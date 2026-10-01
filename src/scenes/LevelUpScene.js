@@ -62,6 +62,12 @@ PS.LevelUpScene = class LevelUpScene extends Phaser.Scene {
   }
 
   renderCards(choices) {
+    // Bugfix: removeAll(true) destroys each child but Phaser does NOT auto-kill tweens still
+    // targeting a destroyed object (see the GameScene hazard-zone crash fix for what happens
+    // when a repeat:-1 tween outlives its target) - the epic/legendary pulseRing tween below
+    // is repeat:-1, so without this the previous render's pulse tweens kept ticking against
+    // destroyed rectangles on every reroll.
+    this.tweens.killTweensOf(this.cardContainer.list);
     this.cardContainer.removeAll(true);
     // Bugfix: only ONE-FOUR were ever cleared, but relic_opportunity can push the choice count
     // to 5-6 cards (see keyNames below) - a reroll with 5+ cards showing left the FIVE/SIX

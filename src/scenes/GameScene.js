@@ -1124,18 +1124,33 @@ PS.GameScene = class GameScene extends Phaser.Scene {
         }
       });
     }
-    this.time.delayedCall(durationSec * 1000 + 50, () => { zone.destroy(); innerZone.destroy(); label.destroy(); });
+    this.time.delayedCall(durationSec * 1000 + 50, () => {
+      // Bugfix (game-freezing crash): zone/innerZone/label each have infinitely-repeating
+      // (repeat:-1) tweens that never stop themselves. Destroying the target without killing
+      // its tween first left the tween running against a dead object - harmless for a plain
+      // Sprite's x/y/alpha, but innerZone's radius tween writes into a Phaser Arc's internal
+      // geometry object, which destroy() nulls out, so the next tween tick threw
+      // "Cannot set properties of null (setting 'radius')" and crashed Phaser's whole render
+      // loop (the game appeared to just freeze a few seconds after any hazard field expired).
+      this.tweens.killTweensOf([zone, innerZone, label]);
+      zone.destroy(); innerZone.destroy(); label.destroy();
+    });
   }
 
   findEnemiesNearSegment(x1, y1, x2, y2, halfWidth) {
+    // Perf: beam/dash patterns call this once per attack, and it used to take a sqrt
+    // (MathUtils.distance) per active enemy - squared-distance comparison against halfWidth^2
+    // gives the identical result without the sqrt, same trick already used by
+    // findEnemiesInRadius above.
     const result = [];
     const dx = x2 - x1, dy = y2 - y1;
     const lenSq = dx * dx + dy * dy || 1;
+    const halfWidthSq = halfWidth * halfWidth;
     this.enemyPool.forEachActive(e => {
       let t = ((e.x - x1) * dx + (e.y - y1) * dy) / lenSq;
       t = PS.MathUtils.clamp(t, 0, 1);
       const px = x1 + t * dx, py = y1 + t * dy;
-      if (PS.MathUtils.distance(e.x, e.y, px, py) <= halfWidth) result.push(e);
+      if (PS.MathUtils.distanceSq(e.x, e.y, px, py) <= halfWidthSq) result.push(e);
     });
     return result;
   }
@@ -1440,7 +1455,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     pickup.setDepth(3);
     this.pickupGroup.add(pickup);
     this.tweens.add({ targets: pickup, y: y - 10, duration: 650, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    this.time.delayedCall(20000, () => { if (pickup.active) pickup.destroy(); });
+    this.time.delayedCall(20000, () => { if (pickup.active) { this.tweens.killTweensOf(pickup); pickup.destroy(); } });
   }
 
   onPickupCollected(pickup) {
@@ -1457,6 +1472,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       this.damageNumberPool.obtain(this.player.x, this.player.y - 30, '자석 효과!', { color: '#ffd400', scale: 1.2 });
     }
     this.audio.playFieldPickup(kind);
+    this.tweens.killTweensOf(pickup);
     pickup.destroy();
   }
 
@@ -1483,7 +1499,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     // More eye-catching than the common pickups (slow spin + bigger bob) since it's rare.
     this.tweens.add({ targets: pickup, y: y - 14, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     this.tweens.add({ targets: pickup, angle: 360, duration: 3000, repeat: -1, ease: 'Linear' });
-    this.time.delayedCall(30000, () => { if (pickup.active) pickup.destroy(); });
+    this.time.delayedCall(30000, () => { if (pickup.active) { this.tweens.killTweensOf(pickup); pickup.destroy(); } });
   }
 
   onRelicPickupCollected(pickup) {
@@ -1493,6 +1509,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     this.player.refreshFromBuild();
     this.announceRelic(relic, gained);
     this.audio.playRelicPickup();
+    this.tweens.killTweensOf(pickup);
     pickup.destroy();
   }
 

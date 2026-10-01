@@ -8,45 +8,115 @@
     },
     "enemyPool": [
       {
+        "id": "weedle",
+        "weight": 44
+      },
+      {
         "id": "rattata",
-        "weight": 20
+        "weight": 40
       },
       {
         "id": "oddish",
-        "weight": 16
-      },
-      {
-        "id": "weedle",
-        "weight": 16
-      },
-      {
-        "id": "bellsprout",
-        "weight": 16
-      },
-      {
-        "id": "psyduck",
-        "weight": 6
+        "weight": 40
       },
       {
         "id": "growlithe",
-        "weight": 6
+        "weight": 40
+      },
+      {
+        "id": "poliwag",
+        "weight": 34
+      },
+      {
+        "id": "numel",
+        "weight": 26
+      },
+      {
+        "id": "geodude",
+        "weight": 25
+      },
+      {
+        "id": "bellsprout",
+        "weight": 24
+      },
+      {
+        "id": "sandshrew",
+        "weight": 24
+      },
+      {
+        "id": "gastly",
+        "weight": 24
+      },
+      {
+        "id": "psyduck",
+        "weight": 22
+      },
+      {
+        "id": "tentacool",
+        "weight": 22
+      },
+      {
+        "id": "ponyta",
+        "weight": 22
+      },
+      {
+        "id": "zubat",
+        "weight": 22
+      },
+      {
+        "id": "cubone",
+        "weight": 20
+      },
+      {
+        "id": "koffing",
+        "weight": 20
+      },
+      {
+        "id": "staryu",
+        "weight": 16
+      },
+      {
+        "id": "slugma",
+        "weight": 16
       },
       {
         "id": "cleffa",
-        "weight": 5
+        "weight": 9
       }
     ],
     "elitePool": [
       {
-        "id": "beedrill",
-        "weight": 20
+        "id": "golduck",
+        "weight": 40
       },
       {
-        "id": "golduck",
+        "id": "rapidash",
+        "weight": 40
+      },
+      {
+        "id": "beedrill",
+        "weight": 35
+      },
+      {
+        "id": "scyther",
+        "weight": 15
+      },
+      {
+        "id": "ninetales",
         "weight": 5
+      },
+      {
+        "id": "articuno",
+        "weight": 1
+      },
+      {
+        "id": "moltres",
+        "weight": 1
       }
     ],
     "miniBossPool": [
+      "ninetales",
+      "poliwrath",
       "scyther"
     ],
     "boss": "vileplume",
@@ -72,46 +142,116 @@
     },
     "enemyPool": [
       {
+        "id": "weedle",
+        "weight": 44
+      },
+      {
+        "id": "rattata",
+        "weight": 40
+      },
+      {
+        "id": "oddish",
+        "weight": 40
+      },
+      {
+        "id": "growlithe",
+        "weight": 40
+      },
+      {
         "id": "poliwag",
-        "weight": 20
+        "weight": 34
+      },
+      {
+        "id": "numel",
+        "weight": 26
+      },
+      {
+        "id": "geodude",
+        "weight": 25
+      },
+      {
+        "id": "bellsprout",
+        "weight": 24
+      },
+      {
+        "id": "sandshrew",
+        "weight": 24
+      },
+      {
+        "id": "gastly",
+        "weight": 24
       },
       {
         "id": "psyduck",
-        "weight": 16
+        "weight": 22
       },
       {
         "id": "tentacool",
-        "weight": 16
+        "weight": 22
+      },
+      {
+        "id": "ponyta",
+        "weight": 22
+      },
+      {
+        "id": "zubat",
+        "weight": 22
+      },
+      {
+        "id": "cubone",
+        "weight": 20
+      },
+      {
+        "id": "koffing",
+        "weight": 20
       },
       {
         "id": "staryu",
         "weight": 16
       },
       {
-        "id": "weedle",
-        "weight": 6
+        "id": "slugma",
+        "weight": 16
       },
       {
-        "id": "ponyta",
-        "weight": 6
+        "id": "cleffa",
+        "weight": 9
       }
     ],
     "elitePool": [
       {
         "id": "golduck",
-        "weight": 20
+        "weight": 40
       },
       {
         "id": "rapidash",
+        "weight": 40
+      },
+      {
+        "id": "beedrill",
+        "weight": 35
+      },
+      {
+        "id": "scyther",
+        "weight": 15
+      },
+      {
+        "id": "ninetales",
         "weight": 5
       },
       {
         "id": "articuno",
         "weight": 1
+      },
+      {
+        "id": "moltres",
+        "weight": 1
       }
     ],
     "miniBossPool": [
-      "poliwrath"
+      "ninetales",
+      "poliwrath",
+      "scyther"
     ],
     "boss": "gyarados",
     "spawnRate": 1.05,
@@ -136,15 +276,71 @@
     },
     "enemyPool": [
       {
-        "id": "growlithe",
-        "weight": 20
+        "id": "weedle",
+        "weight": 44
       },
       {
-        "id": "ponyta",
-        "weight": 16
+        "id": "rattata",
+        "weight": 40
+      },
+      {
+        "id": "oddish",
+        "weight": 40
+      },
+      {
+        "id": "growlithe",
+        "weight": 40
+      },
+      {
+        "id": "poliwag",
+        "weight": 34
       },
       {
         "id": "numel",
+        "weight": 26
+      },
+      {
+        "id": "geodude",
+        "weight": 25
+      },
+      {
+        "id": "bellsprout",
+        "weight": 24
+      },
+      {
+        "id": "sandshrew",
+        "weight": 24
+      },
+      {
+        "id": "gastly",
+        "weight": 24
+      },
+      {
+        "id": "psyduck",
+        "weight": 22
+      },
+      {
+        "id": "tentacool",
+        "weight": 22
+      },
+      {
+        "id": "ponyta",
+        "weight": 22
+      },
+      {
+        "id": "zubat",
+        "weight": 22
+      },
+      {
+        "id": "cubone",
+        "weight": 20
+      },
+      {
+        "id": "koffing",
+        "weight": 20
+      },
+      {
+        "id": "staryu",
         "weight": 16
       },
       {
@@ -152,22 +348,34 @@
         "weight": 16
       },
       {
-        "id": "oddish",
-        "weight": 6
-      },
-      {
-        "id": "poliwag",
-        "weight": 6
+        "id": "cleffa",
+        "weight": 9
       }
     ],
     "elitePool": [
       {
+        "id": "golduck",
+        "weight": 40
+      },
+      {
         "id": "rapidash",
-        "weight": 20
+        "weight": 40
       },
       {
         "id": "beedrill",
+        "weight": 35
+      },
+      {
+        "id": "scyther",
+        "weight": 15
+      },
+      {
+        "id": "ninetales",
         "weight": 5
+      },
+      {
+        "id": "articuno",
+        "weight": 1
       },
       {
         "id": "moltres",
@@ -175,7 +383,9 @@
       }
     ],
     "miniBossPool": [
-      "ninetales"
+      "ninetales",
+      "poliwrath",
+      "scyther"
     ],
     "boss": "magmar",
     "spawnRate": 1.15,
@@ -200,46 +410,116 @@
     },
     "enemyPool": [
       {
+        "id": "weedle",
+        "weight": 44
+      },
+      {
+        "id": "rattata",
+        "weight": 40
+      },
+      {
+        "id": "oddish",
+        "weight": 40
+      },
+      {
+        "id": "growlithe",
+        "weight": 40
+      },
+      {
+        "id": "poliwag",
+        "weight": 34
+      },
+      {
+        "id": "numel",
+        "weight": 26
+      },
+      {
         "id": "geodude",
         "weight": 25
+      },
+      {
+        "id": "bellsprout",
+        "weight": 24
+      },
+      {
+        "id": "sandshrew",
+        "weight": 24
+      },
+      {
+        "id": "gastly",
+        "weight": 24
+      },
+      {
+        "id": "psyduck",
+        "weight": 22
+      },
+      {
+        "id": "tentacool",
+        "weight": 22
+      },
+      {
+        "id": "ponyta",
+        "weight": 22
       },
       {
         "id": "zubat",
         "weight": 22
       },
       {
-        "id": "oddish",
-        "weight": 10
+        "id": "cubone",
+        "weight": 20
       },
       {
-        "id": "poliwag",
-        "weight": 8
+        "id": "koffing",
+        "weight": 20
       },
       {
-        "id": "weedle",
-        "weight": 8
+        "id": "staryu",
+        "weight": 16
       },
       {
-        "id": "growlithe",
-        "weight": 6
+        "id": "slugma",
+        "weight": 16
       },
       {
-        "id": "rattata",
-        "weight": 6
+        "id": "cleffa",
+        "weight": 9
       }
     ],
     "elitePool": [
+      {
+        "id": "golduck",
+        "weight": 40
+      },
+      {
+        "id": "rapidash",
+        "weight": 40
+      },
+      {
+        "id": "beedrill",
+        "weight": 35
+      },
       {
         "id": "scyther",
         "weight": 15
       },
       {
-        "id": "golduck",
+        "id": "ninetales",
         "weight": 5
+      },
+      {
+        "id": "articuno",
+        "weight": 1
+      },
+      {
+        "id": "moltres",
+        "weight": 1
       }
     ],
     "miniBossPool": [
-      "poliwrath"
+      "ninetales",
+      "poliwrath",
+      "scyther"
     ],
     "boss": "onix",
     "spawnRate": 1.05,
@@ -264,46 +544,116 @@
     },
     "enemyPool": [
       {
+        "id": "weedle",
+        "weight": 44
+      },
+      {
+        "id": "rattata",
+        "weight": 40
+      },
+      {
+        "id": "oddish",
+        "weight": 40
+      },
+      {
+        "id": "growlithe",
+        "weight": 40
+      },
+      {
+        "id": "poliwag",
+        "weight": 34
+      },
+      {
+        "id": "numel",
+        "weight": 26
+      },
+      {
+        "id": "geodude",
+        "weight": 25
+      },
+      {
+        "id": "bellsprout",
+        "weight": 24
+      },
+      {
         "id": "sandshrew",
         "weight": 24
+      },
+      {
+        "id": "gastly",
+        "weight": 24
+      },
+      {
+        "id": "psyduck",
+        "weight": 22
+      },
+      {
+        "id": "tentacool",
+        "weight": 22
+      },
+      {
+        "id": "ponyta",
+        "weight": 22
+      },
+      {
+        "id": "zubat",
+        "weight": 22
       },
       {
         "id": "cubone",
         "weight": 20
       },
       {
-        "id": "numel",
-        "weight": 10
+        "id": "koffing",
+        "weight": 20
       },
       {
-        "id": "growlithe",
-        "weight": 8
+        "id": "staryu",
+        "weight": 16
       },
       {
-        "id": "tentacool",
-        "weight": 6
+        "id": "slugma",
+        "weight": 16
       },
       {
-        "id": "weedle",
-        "weight": 6
-      },
-      {
-        "id": "rattata",
-        "weight": 6
+        "id": "cleffa",
+        "weight": 9
       }
     ],
     "elitePool": [
       {
+        "id": "golduck",
+        "weight": 40
+      },
+      {
         "id": "rapidash",
+        "weight": 40
+      },
+      {
+        "id": "beedrill",
+        "weight": 35
+      },
+      {
+        "id": "scyther",
         "weight": 15
       },
       {
         "id": "ninetales",
         "weight": 5
+      },
+      {
+        "id": "articuno",
+        "weight": 1
+      },
+      {
+        "id": "moltres",
+        "weight": 1
       }
     ],
     "miniBossPool": [
-      "ninetales"
+      "ninetales",
+      "poliwrath",
+      "scyther"
     ],
     "boss": "sandslash",
     "spawnRate": 1.1,
@@ -328,45 +678,115 @@
     },
     "enemyPool": [
       {
+        "id": "weedle",
+        "weight": 44
+      },
+      {
+        "id": "rattata",
+        "weight": 40
+      },
+      {
+        "id": "oddish",
+        "weight": 40
+      },
+      {
+        "id": "growlithe",
+        "weight": 40
+      },
+      {
+        "id": "poliwag",
+        "weight": 34
+      },
+      {
+        "id": "numel",
+        "weight": 26
+      },
+      {
+        "id": "geodude",
+        "weight": 25
+      },
+      {
+        "id": "bellsprout",
+        "weight": 24
+      },
+      {
+        "id": "sandshrew",
+        "weight": 24
+      },
+      {
         "id": "gastly",
         "weight": 24
+      },
+      {
+        "id": "psyduck",
+        "weight": 22
+      },
+      {
+        "id": "tentacool",
+        "weight": 22
+      },
+      {
+        "id": "ponyta",
+        "weight": 22
+      },
+      {
+        "id": "zubat",
+        "weight": 22
+      },
+      {
+        "id": "cubone",
+        "weight": 20
       },
       {
         "id": "koffing",
         "weight": 20
       },
       {
-        "id": "oddish",
-        "weight": 8
+        "id": "staryu",
+        "weight": 16
       },
       {
-        "id": "bellsprout",
-        "weight": 8
-      },
-      {
-        "id": "weedle",
-        "weight": 8
-      },
-      {
-        "id": "rattata",
-        "weight": 8
+        "id": "slugma",
+        "weight": 16
       },
       {
         "id": "cleffa",
-        "weight": 4
+        "weight": 9
       }
     ],
     "elitePool": [
       {
         "id": "golduck",
-        "weight": 10
+        "weight": 40
+      },
+      {
+        "id": "rapidash",
+        "weight": 40
       },
       {
         "id": "beedrill",
-        "weight": 10
+        "weight": 35
+      },
+      {
+        "id": "scyther",
+        "weight": 15
+      },
+      {
+        "id": "ninetales",
+        "weight": 5
+      },
+      {
+        "id": "articuno",
+        "weight": 1
+      },
+      {
+        "id": "moltres",
+        "weight": 1
       }
     ],
     "miniBossPool": [
+      "ninetales",
+      "poliwrath",
       "scyther"
     ],
     "boss": "haunter",

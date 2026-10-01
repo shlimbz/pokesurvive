@@ -17,8 +17,7 @@
     },
     "ability": "static",
     "moves": [
-      "thunder_shock",
-      "quick_attack"
+      "thunder_shock"
     ],
     "color": "0xFFD400",
     "description": "빠르고 마비를 유발하는 Electric Chain 빌드에 특화."
@@ -42,7 +41,6 @@
     "ability": "static",
     "moves": [
       "thunder_shock",
-      "quick_attack",
       "thunderbolt"
     ],
     "color": "0xF5A800",
@@ -66,8 +64,7 @@
     },
     "ability": "blaze",
     "moves": [
-      "ember",
-      "scratch"
+      "ember"
     ],
     "color": "0xFF8040",
     "description": "Burn과 폭발 위주의 Fire 빌드."
@@ -91,7 +88,6 @@
     "ability": "blaze",
     "moves": [
       "ember",
-      "scratch",
       "flamethrower"
     ],
     "color": "0xFF5A1F",
@@ -142,8 +138,7 @@
     },
     "ability": "torrent",
     "moves": [
-      "water_gun",
-      "tackle"
+      "water_gun"
     ],
     "color": "0x4FA8FF",
     "description": "튼튼한 Water/Defense 빌드."
@@ -167,7 +162,6 @@
     "ability": "torrent",
     "moves": [
       "water_gun",
-      "tackle",
       "hydro_pump"
     ],
     "color": "0x3A8FE0",
@@ -217,8 +211,7 @@
     },
     "ability": "overgrow",
     "moves": [
-      "vine_whip",
-      "leech_seed"
+      "vine_whip"
     ],
     "color": "0x4CBB3A",
     "description": "Poison / Sustain 빌드."
@@ -243,7 +236,6 @@
     "ability": "overgrow",
     "moves": [
       "vine_whip",
-      "growl",
       "razor_leaf"
     ],
     "color": "0x3C9E2E",
@@ -318,8 +310,7 @@
     "ability": "flash_fire",
     "moves": [
       "ember",
-      "fire_blast",
-      "quick_attack"
+      "fire_blast"
     ],
     "color": "0xE0602A",
     "description": "Eevee의 Fire 진화형."
@@ -343,8 +334,7 @@
     "ability": "water_absorb",
     "moves": [
       "water_gun",
-      "hydro_pump",
-      "quick_attack"
+      "hydro_pump"
     ],
     "color": "0x3FB6D6",
     "description": "Eevee의 Water 진화형."
@@ -368,8 +358,7 @@
     "ability": "volt_absorb",
     "moves": [
       "thunder_shock",
-      "thunder",
-      "quick_attack"
+      "thunder"
     ],
     "color": "0xF2E44A",
     "description": "Eevee의 Electric 진화형."
@@ -393,8 +382,7 @@
     },
     "ability": "levitate",
     "moves": [
-      "lick",
-      "confuse_ray"
+      "lick"
     ],
     "color": "0x6C5B9E",
     "description": "관통과 흡혈에 특화한 Ghost 빌드."
@@ -470,9 +458,7 @@
     },
     "ability": "guts",
     "moves": [
-      "karate_chop",
-      "low_kick",
-      "counter"
+      "karate_chop"
     ],
     "color": "0xB5442E",
     "description": "근접전 + Counter 반격 정체성의 Fighting 빌드 (진화 시 Force Palm 강타로 전환)."
@@ -534,7 +520,7 @@
       "fire"
     ],
     "generation": 1,
-    "isStarter": true,
+    "isStarter": false,
     "baseStats": {
       "hp": 38,
       "attack": 41,
@@ -545,8 +531,7 @@
     },
     "ability": "flash_fire",
     "moves": [
-      "ember",
-      "quick_attack"
+      "ember"
     ],
     "color": "0xF06A45",
     "description": "Fire 흡수 후 강화되는 빌드."
@@ -583,7 +568,7 @@
       "water"
     ],
     "generation": 4,
-    "isStarter": true,
+    "isStarter": false,
     "baseStats": {
       "hp": 53,
       "attack": 51,
@@ -658,7 +643,7 @@
       "fighting"
     ],
     "generation": 4,
-    "isStarter": true,
+    "isStarter": false,
     "baseStats": {
       "hp": 40,
       "attack": 70,
@@ -669,8 +654,7 @@
     },
     "ability": "steadfast",
     "moves": [
-      "force_palm",
-      "quick_attack"
+      "force_palm"
     ],
     "color": "0x2E3A66",
     "description": "상태이상 반격에 특화한 Fighting 빌드."
@@ -708,7 +692,7 @@
       "fairy"
     ],
     "generation": 1,
-    "isStarter": false,
+    "isStarter": true,
     "baseStats": {
       "hp": 45,
       "attack": 35,
@@ -719,8 +703,7 @@
     },
     "ability": "magic_shield",
     "moves": [
-      "moonlight_orb",
-      "disarming_voice"
+      "moonblast"
     ],
     "color": "0xFFB3EC",
     "description": "체력 소모 없는 Orbit+Homing 견제와 매직 가드(보호막)로 버티는 지속형 빌드."
@@ -818,8 +801,7 @@
     },
     "ability": "technician",
     "moves": [
-      "quick_attack",
-      "tackle"
+      "quick_attack"
     ],
     "color": "0xFFC0E8",
     "description": "이브이가 정신력을 갈고닦아 진화. 사이키델릭 빔으로 견제하는 고화력 특수공격형."
@@ -831,7 +813,7 @@
       "dark"
     ],
     "generation": 2,
-    "isStarter": false,
+    "isStarter": true,
     "baseStats": {
       "hp": 95,
       "attack": 65,
@@ -842,8 +824,7 @@
     },
     "ability": "steadfast",
     "moves": [
-      "quick_attack",
-      "tackle"
+      "crunch"
     ],
     "color": "0x2A2A40",
     "description": "이브이가 달빛 아래에서 진화. 높은 내구력과 심지 특성으로 버티는 탱커형."
@@ -866,8 +847,7 @@
     },
     "ability": "magic_shield",
     "moves": [
-      "quick_attack",
-      "tackle"
+      "quick_attack"
     ],
     "color": "0xFFD0E0",
     "description": "이브이가 유대를 키워 진화. 문포스와 매직 가드로 견제와 생존을 겸비한 지원형."
@@ -890,8 +870,7 @@
     },
     "ability": "chlorophyll",
     "moves": [
-      "quick_attack",
-      "tackle"
+      "quick_attack"
     ],
     "color": "0x4CAF50",
     "description": "이브이가 이끼 바위 근처에서 진화. 잎날가르기 확산 공격과 높은 방어력의 근접형."
@@ -903,7 +882,7 @@
       "ice"
     ],
     "generation": 4,
-    "isStarter": false,
+    "isStarter": true,
     "baseStats": {
       "hp": 65,
       "attack": 60,
@@ -914,10 +893,174 @@
     },
     "ability": "adaptability",
     "moves": [
-      "quick_attack",
-      "tackle"
+      "powder_snow"
     ],
     "color": "0xB0E8FF",
     "description": "이브이가 얼어붙은 바위 근처에서 진화. 가루눈 확산과 적응력으로 밀어붙이는 특수공격형."
+  },
+  "koffing": {
+    "id": "koffing",
+    "name": "또가스",
+    "types": [
+      "poison"
+    ],
+    "generation": 1,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 50,
+      "attack": 45,
+      "defense": 70,
+      "spAttack": 60,
+      "spDefense": 65,
+      "speed": 30
+    },
+    "ability": "levitate",
+    "moves": [
+      "poison_sting"
+    ],
+    "color": "0x8A6AAA",
+    "description": "독가스를 내뿜는 유독 가스 포켓몬. 부유 특성으로 땅 속성 피해에 강하다."
+  },
+  "sandshrew": {
+    "id": "sandshrew",
+    "name": "모래두지",
+    "types": [
+      "ground"
+    ],
+    "generation": 1,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 50,
+      "attack": 65,
+      "defense": 75,
+      "spAttack": 30,
+      "spDefense": 40,
+      "speed": 60
+    },
+    "ability": "huge_power",
+    "moves": [
+      "mud_slap"
+    ],
+    "color": "0xD8C078",
+    "description": "단단한 비늘로 몸을 감싼 사막의 포켓몬. 튼튼한 물리 어태커."
+  },
+  "pidgey": {
+    "id": "pidgey",
+    "name": "구구",
+    "types": [
+      "flying",
+      "normal"
+    ],
+    "generation": 1,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 45,
+      "attack": 50,
+      "defense": 35,
+      "spAttack": 35,
+      "spDefense": 35,
+      "speed": 100
+    },
+    "ability": "run_away",
+    "moves": [
+      "gust"
+    ],
+    "color": "0x8FC1E8",
+    "description": "빠른 속도로 날아다니며 돌풍을 일으키는 작은 새 포켓몬."
+  },
+  "scyther": {
+    "id": "scyther",
+    "name": "스라크",
+    "types": [
+      "bug",
+      "flying"
+    ],
+    "generation": 1,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 50,
+      "attack": 70,
+      "defense": 55,
+      "spAttack": 35,
+      "spDefense": 40,
+      "speed": 95
+    },
+    "ability": "technician",
+    "moves": [
+      "x_scissor"
+    ],
+    "color": "0x3FA040",
+    "description": "낫 모양의 팔로 빠르게 베어내는 사마귀 포켓몬."
+  },
+  "geodude": {
+    "id": "geodude",
+    "name": "꼬마돌",
+    "types": [
+      "rock",
+      "ground"
+    ],
+    "generation": 1,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 55,
+      "attack": 70,
+      "defense": 100,
+      "spAttack": 30,
+      "spDefense": 40,
+      "speed": 25
+    },
+    "ability": "guts",
+    "moves": [
+      "rock_throw"
+    ],
+    "color": "0x8A7A5C",
+    "description": "바위로 이루어진 몸을 가진 튼튼한 포켓몬. 높은 방어력이 특징."
+  },
+  "dratini": {
+    "id": "dratini",
+    "name": "미뇽",
+    "types": [
+      "dragon"
+    ],
+    "generation": 1,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 55,
+      "attack": 50,
+      "defense": 45,
+      "spAttack": 55,
+      "spDefense": 50,
+      "speed": 65
+    },
+    "ability": "adaptability",
+    "moves": [
+      "dragon_breath"
+    ],
+    "color": "0x4F7ADB",
+    "description": "전설의 포켓몬이라 불리는 드래곤 타입의 시조. 균형 잡힌 스탯."
+  },
+  "beldum": {
+    "id": "beldum",
+    "name": "빌더",
+    "types": [
+      "steel",
+      "psychic"
+    ],
+    "generation": 3,
+    "isStarter": true,
+    "baseStats": {
+      "hp": 50,
+      "attack": 55,
+      "defense": 90,
+      "spAttack": 45,
+      "spDefense": 70,
+      "speed": 35
+    },
+    "ability": "magic_shield",
+    "moves": [
+      "metal_claw"
+    ],
+    "color": "0xB8C4D0",
+    "description": "자석의 힘으로 떠다니는 강철 포켓몬. 단단한 방어력을 자랑한다."
   }
 }

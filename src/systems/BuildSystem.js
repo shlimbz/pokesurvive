@@ -187,6 +187,7 @@ PS.BuildSystem = class BuildSystem {
       survivalCharges: 0,
       survivalRechargeSec: 0,
       abilityHooks: [],
+      abilityHooksByType: {}, // populated by AbilitySystem.accumulate() below - see its comment
       // Shared "hook" collections that more than one system contributes to (items AND Type
       // Mastery can both grant bonus damage vs a status, or a per-pattern field bonus) - declared
       // once here, up front, so accumulate order below never matters and no contributor can

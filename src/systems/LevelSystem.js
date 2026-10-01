@@ -92,15 +92,19 @@ PS.LevelSystem = class LevelSystem {
   }
 
   candidateItem(grade, build) {
-    let pool = this.managers.item.getAllByGrade(grade).filter(i => build.getItemLevel(i.id) < i.maxLevel);
+    // Bugfix: items already owned no longer reappear as level-up choices (effectively Lv.1 is
+    // now the max for any single item) - previously an already-owned item stayed eligible up to
+    // its maxLevel, so late-game choice cards were flooded with "level up an item you already
+    // have" options instead of new ones. Only never-picked items (getItemLevel === 0) qualify now.
+    let pool = this.managers.item.getAllByGrade(grade).filter(i => build.getItemLevel(i.id) === 0);
     if (pool.length === 0) {
       pool = this.managers.item.getAllIds()
         .map(id => this.managers.item.getItem(id))
-        .filter(i => build.getItemLevel(i.id) < i.maxLevel);
+        .filter(i => build.getItemLevel(i.id) === 0);
     }
     if (pool.length === 0) return null;
     const item = PS.RandomUtils.pick(pool);
-    return { kind: 'item', grade, id: item.id, isNew: build.getItemLevel(item.id) === 0 };
+    return { kind: 'item', grade, id: item.id, isNew: true };
   }
 
   candidateAbility(grade, build) {

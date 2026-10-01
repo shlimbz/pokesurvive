@@ -16,6 +16,15 @@ PS.Projectile = class Projectile extends Phaser.Physics.Arcade.Sprite {
 
   spawn(x, y, angle, config) {
     this.setPosition(x, y);
+    // Bugfix: a pooled, previously-deactivated projectile's Arcade body stays frozen wherever it
+    // was when deactivate() disabled it (Arcade physics stops syncing a disabled body's position
+    // every frame) - setPosition() alone only moves the visual sprite, not body.x/y. Without this,
+    // every projectile/spread/chain/homing/boomerang move (the large majority of moves in the
+    // game) only ever hits anything on its very first, never-yet-recycled shot: every reused shot
+    // after that visually travels correctly but its hitbox sits wherever the object last died,
+    // tens of thousands of pixels away, so it can never overlap a real enemy again. Mirrors the
+    // same body.reset() call Player.update() and Enemy's spawn already do for the identical reason.
+    this.body.reset(x, y);
     this.setRotation(angle);
     this.kind = config.kind;
     this.move = config.move;
@@ -30,8 +39,17 @@ PS.Projectile = class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.traveled = 0;
     this.homing = config.kind === 'homing';
     this.boomerangReturning = false;
-    this.originX = x;
-    this.originY = y;
+    // Bugfix: these two MUST NOT be named originX/originY - Phaser.GameObjects.Sprite already
+    // defines originX/originY as the sprite's render/physics pivot (a 0..1 fraction of its
+    // width/height, default 0.5/0.5). Overwriting them with raw world pixel coordinates (e.g.
+    // 4000) corrupts displayOriginX/Y, which corrupts every getTopLeft()-based calculation -
+    // including Arcade Body.reset()'s position calc - so the hitbox silently drifts tens of
+    // thousands of pixels from the visible sprite. That's why ranged attacks (projectile/spread/
+    // chain/homing/boomerang - most moves in the game) stopped landing any hits at all past the
+    // very first shot: every later shot reused this same corrupted-origin object. Renamed to
+    // castOriginX/Y (the cast point, used by boomerang's return trip and max-range check below).
+    this.castOriginX = x;
+    this.castOriginY = y;
     this.hitSet.clear();
     // Chain pattern VFX (VFXSystem.playChain) needs the previous link point to draw a
     // connecting line between each hop - starts at the cast point, advances on every hit.
@@ -66,12 +84,12 @@ PS.Projectile = class Projectile extends Phaser.Physics.Arcade.Sprite {
 
     if (this.kind === 'boomerang' && !this.boomerangReturning && this.traveled >= this.maxRangePx) {
       this.boomerangReturning = true;
-      const angle = PS.MathUtils.angleBetween(this.x, this.y, this.originX, this.originY);
+      const angle = PS.MathUtils.angleBetween(this.x, this.y, this.castOriginX, this.castOriginY);
       this.setRotation(angle);
       this.body.setVelocity(Math.cos(angle) * this.speed, Math.sin(angle) * this.speed);
     }
 
-    const distFromOrigin = PS.MathUtils.distance(this.x, this.y, this.originX, this.originY);
+    const distFromOrigin = PS.MathUtils.distance(this.x, this.y, this.castOriginX, this.castOriginY);
     if (this.kind !== 'boomerang' && this.traveled >= this.maxRangePx + 40) this.deactivate();
     if (this.kind === 'boomerang' && this.boomerangReturning && distFromOrigin < 20) this.deactivate();
   }
