@@ -51,7 +51,23 @@ PS.VFXSystem = class VFXSystem {
       thunderbolt: (typeId, level, p) => this.playLightningStrike(typeId, level, p.x, p.y),
       earthquake: (typeId, level, p) => this.playEarthquakeShock(typeId, level, p.x, p.y, p.radius),
       leech_seed: (typeId, level, p) => this.playSeedAttach(typeId, level, p.x, p.y),
-      karate_chop: (typeId, level, p) => this.playKarateChopSlash(typeId, level, p.x, p.y, p.angle)
+      karate_chop: (typeId, level, p) => this.playKarateChopSlash(typeId, level, p.x, p.y, p.angle),
+      // 2026-10-02 batch: the remaining types that only ever got the generic pattern-group look,
+      // each given one real-game-style signature move instead (user feedback: don't wait to be
+      // told every single one - cover the roster the way an actual Pokemon game would).
+      hydro_pump: (typeId, level, p) => this.playHydroSplash(typeId, level, p.x, p.y),
+      icicle_crash: (typeId, level, p) => this.playIcicleCrash(typeId, level, p.x, p.y, p.radius),
+      sludge_bomb: (typeId, level, p) => this.playSludgeSplat(typeId, level, p.x, p.y, p.radius),
+      confuse_ray: (typeId, level, p) => this.playConfuseRings(typeId, level, p.x, p.y, p.radius),
+      shadow_ball: (typeId, level, p) => this.playShadowBallBurst(typeId, level, p.x, p.y),
+      crunch: (typeId, level, p) => this.playCrunchBite(typeId, level, p.x, p.y),
+      flash_cannon: (typeId, level, p) => this.playFlashCannonBurst(typeId, level, p.x, p.y, p.radius),
+      rock_throw: (typeId, level, p) => this.playRockDebris(typeId, level, p.x, p.y),
+      rock_blast: (typeId, level, p) => this.playRockDebris(typeId, level, p.x, p.y),
+      x_scissor: (typeId, level, p) => this.playScissorSlash(typeId, level, p.x, p.y),
+      dragon_rush: (typeId, level, p) => this.playDragonRushTrail(typeId, level, p.x, p.y, p.angle),
+      wing_attack: (typeId, level, p) => this.playWingSlash(typeId, level, p.x, p.y),
+      hyper_beam: (typeId, level, p) => this.playHyperBeamImpact(typeId, level, p.x, p.y)
     };
   }
 
@@ -287,6 +303,37 @@ PS.VFXSystem = class VFXSystem {
   // position every frame for its whole lifetime (same rotation/length/width, just translated), so
   // it always visibly emits from wherever the caster actually is "right now" instead of "where it
   // was when the attack fired". Purely additive - omitting followEntity keeps the old static look.
+  // Builds a closed ribbon polygon running along local +X from 0..length, `waveFn(t)` (t in
+  // [0,1]) perturbing the ribbon's centerline sideways - used so a beam's SHAPE, not just its
+  // color, reads as a different element (2026-10-02 feedback: "빔들도 그냥 색만 다른거잖아").
+  buildRibbonPoints(length, width, segments, waveFn) {
+    const top = [];
+    const bottom = [];
+    for (let i = 0; i <= segments; i++) {
+      const t = i / segments;
+      const x = length * t;
+      const off = waveFn ? waveFn(t) : 0;
+      top.push({ x, y: off - width / 2 });
+      bottom.push({ x, y: off + width / 2 });
+    }
+    return top.concat(bottom.reverse());
+  }
+
+  // Per-type beam "wave shapes" (2026-10-02): electric crackles in sharp jagged zigzags, water
+  // undulates like a wave/current; everything else stays a clean straight beam (still gets the
+  // new 3-tone gradient below). Deterministic-ish randomness is fine here - beams are short-lived
+  // and refired often, so a slightly different jagged path each cast reads as "crackling", not buggy.
+  getBeamWaveFn(typeId, width) {
+    if (typeId === 'electric') {
+      const seed = Math.random() * 10;
+      return (t) => Math.sin(t * 26 + seed) * width * 0.55 * (1 - Math.abs(t - 0.5) * 0.6);
+    }
+    if (typeId === 'water') {
+      return (t) => Math.sin(t * Math.PI * 3.2) * width * 0.65;
+    }
+    return null;
+  }
+
   playBeam(typeId, level, x1, y1, x2, y2, followEntity) {
     const def = this.getEffectDef(typeId, 'Beam');
     const colors = this.resolveColors(def, typeId);
@@ -297,16 +344,21 @@ PS.VFXSystem = class VFXSystem {
     const angle = Math.atan2(y2 - y1, x2 - x1);
     const length = PS.MathUtils.distance(x1, y1, x2, y2) || 1;
     const width = (16 + level * 2.4) * scale;
+    const waveFn = this.getBeamWaveFn(typeId, width);
+    const segments = waveFn ? 14 : 1;
 
     const g = this.graphicsPool.obtain();
     g.setPosition(x1, y1);
     g.setRotation(angle);
     g.setDepth(6);
-    // Outer glow stripe + brighter core stripe (two colors from the spec row).
-    g.fillStyle(this.assets.hexToInt(colors[1] || colors[0]), 0.35);
-    g.fillRect(0, -width / 2, length, width);
-    g.fillStyle(this.assets.hexToInt(colors[0]), 0.85);
-    g.fillRect(0, -width * 0.22, length, width * 0.44);
+    // Three-tone gradient band (outer glow -> mid type color -> white-hot core) instead of a
+    // flat two-color rectangle, following the beam's wave shape above.
+    g.fillStyle(this.assets.hexToInt(colors[1] || colors[0]), 0.32);
+    g.fillPoints(this.buildRibbonPoints(length, width, segments, waveFn), true);
+    g.fillStyle(this.assets.hexToInt(colors[0]), 0.8);
+    g.fillPoints(this.buildRibbonPoints(length, width * 0.55, segments, waveFn), true);
+    g.fillStyle(0xffffff, 0.55);
+    g.fillPoints(this.buildRibbonPoints(length, width * 0.2, segments, waveFn), true);
 
     this.scene.tweens.add({
       targets: g,
@@ -317,11 +369,17 @@ PS.VFXSystem = class VFXSystem {
     });
 
     // A few particle puffs riding along the beam length (def.particleCount, quality-scaled).
+    // Follows the same waveFn offset as the ribbon above so puffs sit ON the jagged/wavy path
+    // instead of cutting straight across it.
     const qty = this.scaleParticleCount(def, level, 'P1');
     const samples = Math.min(4, Math.max(2, Math.round(qty / 3)));
+    const perpX = -Math.sin(angle), perpY = Math.cos(angle);
     for (let i = 1; i <= samples; i++) {
       const t = i / (samples + 1);
-      this.explodeAt(typeId, x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, {
+      const off = waveFn ? waveFn(t) : 0;
+      const px = x1 + (x2 - x1) * t + perpX * off;
+      const py = y1 + (y2 - y1) * t + perpY * off;
+      this.explodeAt(typeId, px, py, {
         speed: { min: 20, max: 60 },
         lifespan: 220,
         scale: { start: 0.7 * scale, end: 0 },
@@ -565,6 +623,62 @@ PS.VFXSystem = class VFXSystem {
       const star = this.scene.add.text(x, y - 12, '★', { fontFamily: 'Arial Black', fontSize: '14px', color: '#ffd740' }).setOrigin(0.5).setDepth(12);
       this.scene.tweens.add({ targets: star, y: y - 34, alpha: 0, duration: 380, onComplete: () => star.destroy() });
     }
+
+    // Per-type on-hit signature flourishes (2026-10-02 feedback: "전기는 파지직 거리는 이펙트,
+    // 격투는 주먹 모양"). Additive on top of the generic hit flash/ring/burst above - every type
+    // still gets those, these are just extra flavor for a couple of types that read especially
+    // well with a signature touch. More types can be added the same way later.
+    if (type === 'electric') this.playElectricCrackle(x, y, critical);
+    if (type === 'fighting') this.playFistImpact(x, y, critical);
+  }
+
+  // 전기 (Electric) on-hit: a few jagged little crackle branches radiating out from the hit
+  // point, like static discharge - distinct from the generic round burst every other type uses.
+  playElectricCrackle(x, y, critical) {
+    const branches = critical ? 6 : 4;
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setDepth(12);
+    g.lineStyle(2, 0xffffff, 0.9);
+    for (let i = 0; i < branches; i++) {
+      const baseAngle = Math.random() * Math.PI * 2;
+      const len = 10 + Math.random() * 10;
+      let cx = 0, cy = 0;
+      g.beginPath();
+      g.moveTo(cx, cy);
+      const kinks = 2;
+      for (let k = 1; k <= kinks; k++) {
+        const a = baseAngle + (Math.random() - 0.5) * 1.2;
+        cx += Math.cos(a) * (len / kinks);
+        cy += Math.sin(a) * (len / kinks);
+        g.lineTo(cx, cy);
+      }
+      g.strokePath();
+    }
+    this.scene.tweens.add({
+      targets: g, alpha: 0, duration: 160,
+      onComplete: () => this.graphicsPool.release(g)
+    });
+  }
+
+  // 격투 (Fighting) on-hit: reuses the fighting-type particle texture (already a knuckle-duster
+  // silhouette, see AssetManager.generateVfxTexture) at a much larger size as a single "fist mark"
+  // stamp at the impact point, instead of only ever appearing tiny inside the generic particle
+  // burst.
+  playFistImpact(x, y, critical) {
+    const sprite = this.spritePool.obtain(this.getTexture('fighting'));
+    sprite.setPosition(x, y);
+    sprite.setDepth(12);
+    sprite.setAngle(Math.random() * 40 - 20);
+    sprite.setScale(critical ? 0.4 : 0.2);
+    sprite.setAlpha(0.95);
+    this.scene.tweens.add({
+      targets: sprite,
+      scale: (critical ? 2.6 : 2.0),
+      alpha: 0,
+      duration: 220,
+      onComplete: () => this.spritePool.release(sprite)
+    });
   }
 
   // ============================== Skill Level Up (spec section 24, new capability) ==============================
@@ -691,30 +805,48 @@ PS.VFXSystem = class VFXSystem {
   // vertical, like 一 crossed by 十) read clearly as an X/大 shape at small scale, then the
   // existing circular-explosion burst/flash plays underneath so it still reads as an explosion,
   // not just abstract lines.
+  // Samples a stroke from (x1,y1) to (x2,y2) and scatters small fire-texture puffs along it with
+  // a bit of perpendicular jitter, instead of one ruler-straight line - makes the stroke read as
+  // "drawn in flame" rather than a solid geometric bar (2026-10-02 feedback: "진짜 불꽃으로 이루어진
+  // 불대문자였으면"). A thin bright core line stays underneath so the 大/X silhouette is still
+  // crisp at a glance even while the puffs flicker and fade.
+  drawFlameStroke(x1, y1, x2, y2, coreColorHex, level) {
+    const len = PS.MathUtils.distance(x1, y1, x2, y2);
+    const ang = Math.atan2(y2 - y1, x2 - x1);
+    const perpX = -Math.sin(ang), perpY = Math.cos(ang);
+    const steps = Math.max(5, Math.round(len / 14));
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const jitter = (Math.random() - 0.5) * 7;
+      const px = x1 + (x2 - x1) * t + perpX * jitter;
+      const py = y1 + (y2 - y1) * t + perpY * jitter;
+      this.explodeAt('fire', px, py, {
+        speed: { min: 10, max: 50 },
+        lifespan: 260 + Math.random() * 140,
+        scale: { start: 0.65 + Math.random() * 0.4 + level * 0.03, end: 0 },
+        alpha: { start: 0.95, end: 0 },
+        tint: coreColorHex
+      }, 1);
+    }
+  }
+
   playFireBlastX(typeId, level, x, y, radius) {
     const def = this.getEffectDef(typeId, 'Explosion');
     const colors = this.resolveColors(def, typeId);
     const r = Math.max(70, radius || 110);
-    const thick = 9 + level * 1.4;
+    const fireColor = this.assets.hexToInt(colors[1] || colors[0]);
+    const emberColor = this.assets.hexToInt(colors[2] || colors[1] || colors[0]);
 
+    // Thin bright core strokes underneath the flame puffs - keeps the 大/X silhouette crisp.
     const g = this.graphicsPool.obtain();
     g.setPosition(x, y);
     g.setDepth(8);
-
-    // Horizontal stroke (一) through the center.
-    g.lineStyle(thick, this.assets.hexToInt(colors[2] || colors[1] || colors[0]), 0.95);
+    g.lineStyle(3 + level * 0.4, 0xffd54a, 0.8);
     g.beginPath();
     g.moveTo(-r * 0.8, 0);
     g.lineTo(r * 0.8, 0);
-    g.strokePath();
-
-    // Two diagonal legs crossing through the same center point (the 大/X silhouette).
-    g.lineStyle(thick, this.assets.hexToInt(colors[1] || colors[0]), 0.95);
-    g.beginPath();
     g.moveTo(-r * 0.7, -r * 0.7);
     g.lineTo(r * 0.7, r * 0.7);
-    g.strokePath();
-    g.beginPath();
     g.moveTo(r * 0.7, -r * 0.7);
     g.lineTo(-r * 0.7, r * 0.7);
     g.strokePath();
@@ -726,6 +858,11 @@ PS.VFXSystem = class VFXSystem {
       duration: 420,
       onComplete: () => this.graphicsPool.release(g)
     });
+
+    // The strokes themselves, built out of scattered fire puffs rather than solid bars.
+    this.drawFlameStroke(x - r * 0.8, y, x + r * 0.8, y, emberColor, level);
+    this.drawFlameStroke(x - r * 0.7, y - r * 0.7, x + r * 0.7, y + r * 0.7, fireColor, level);
+    this.drawFlameStroke(x + r * 0.7, y - r * 0.7, x - r * 0.7, y + r * 0.7, fireColor, level);
 
     const flash = this.scene.add.circle(x, y, r * 0.3, this.assets.hexToInt(colors[0]), 0.35).setDepth(7);
     this.scene.tweens.add({ targets: flash, scale: 2.6, alpha: 0, duration: 380, onComplete: () => flash.destroy() });
@@ -906,5 +1043,283 @@ PS.VFXSystem = class VFXSystem {
       targets: g, alpha: 0, scaleX: 1.4, scaleY: 1.4, duration: 180,
       onComplete: () => this.graphicsPool.release(g)
     });
+  }
+
+  // 하이드로펌프 (Hydro Pump): a heavy water impact - two expanding foam/wave rings plus droplets
+  // flung outward, layered on top of the wavy beam corridor so the actual landing point reads as
+  // a real water blast, not just a line stopping.
+  playHydroSplash(typeId, level, x, y) {
+    const def = this.getEffectDef(typeId, 'Hit');
+    const colors = this.resolveColors(def, typeId);
+    for (let i = 0; i < 2; i++) {
+      const ring = this.graphicsPool.obtain();
+      ring.setPosition(x, y);
+      ring.setDepth(7);
+      ring.lineStyle(3 - i, i === 0 ? 0xffffff : this.assets.hexToInt(colors[0]), 0.8 - i * 0.2);
+      ring.strokeCircle(0, 0, 10 + i * 6);
+      this.scene.tweens.add({
+        targets: ring, scaleX: 2.4 + i * 0.6, scaleY: 2.4 + i * 0.6, alpha: 0, duration: 340 + i * 100,
+        onComplete: () => this.graphicsPool.release(ring)
+      });
+    }
+    const qty = this.scaleParticleCount(def, level, 'P1');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 60, max: 200 }, lifespan: 320, angle: { min: -160, max: -20 },
+      scale: { start: 0.9, end: 0 }, tint: this.assets.hexToInt(colors[0])
+    }, qty);
+  }
+
+  // 아이시클크래시 (Icicle Crash): a solid icicle falls from above and shatters on impact, instead
+  // of the generic round burst every other strike-pattern move uses.
+  playIcicleCrash(typeId, level, x, y, radius) {
+    const def = this.getEffectDef(typeId, 'Explosion');
+    const colors = this.resolveColors(def, typeId);
+    const topY = y - 260;
+    const icicle = this.graphicsPool.obtain();
+    icicle.setPosition(x, topY);
+    icicle.setDepth(9);
+    icicle.fillStyle(this.assets.hexToInt(colors[0]), 0.9);
+    icicle.fillTriangle(-7, 0, 7, 0, 0, 46);
+    icicle.lineStyle(1.5, 0xffffff, 0.8);
+    icicle.strokeTriangle(-7, 0, 7, 0, 0, 46);
+    this.scene.tweens.add({
+      targets: icicle, y, duration: 180, ease: 'Cubic.easeIn',
+      onComplete: () => {
+        this.graphicsPool.release(icicle);
+        const qty = this.scaleParticleCount(def, level, 'P1');
+        this.explodeAt(typeId, x, y, {
+          speed: { min: 80, max: 220 }, lifespan: 340, angle: { min: 0, max: 360 },
+          scale: { start: 0.9, end: 0 }, tint: this.assets.hexToInt(colors[0])
+        }, qty + 4);
+        const flash = this.scene.add.circle(x, y, (radius || 60) * 0.25, 0xffffff, 0.5).setDepth(8);
+        this.scene.tweens.add({ targets: flash, scale: 2.2, alpha: 0, duration: 260, onComplete: () => flash.destroy() });
+      }
+    });
+  }
+
+  // 오물폭탄 (Sludge Bomb): a purple sludge blob arcs down and splats into a dripping puddle ring.
+  playSludgeSplat(typeId, level, x, y, radius) {
+    const def = this.getEffectDef(typeId, 'Explosion');
+    const colors = this.resolveColors(def, typeId);
+    const blob = this.graphicsPool.obtain();
+    blob.setPosition(x, y - 70);
+    blob.setDepth(9);
+    blob.fillStyle(this.assets.hexToInt(colors[0]), 0.9);
+    blob.fillCircle(0, 0, 9);
+    this.scene.tweens.add({
+      targets: blob, y, duration: 160, ease: 'Cubic.easeIn',
+      onComplete: () => {
+        this.graphicsPool.release(blob);
+        const puddle = this.graphicsPool.obtain();
+        puddle.setPosition(x, y);
+        puddle.setDepth(4);
+        puddle.fillStyle(this.assets.hexToInt(colors[0]), 0.5);
+        puddle.fillEllipse(0, 0, (radius || 70) * 0.5, (radius || 70) * 0.22);
+        this.scene.tweens.add({ targets: puddle, alpha: 0, delay: 400, duration: 350, onComplete: () => this.graphicsPool.release(puddle) });
+        const qty = this.scaleParticleCount(def, level, 'P1');
+        this.explodeAt(typeId, x, y, {
+          speed: { min: 50, max: 160 }, lifespan: 300, angle: { min: -160, max: -20 },
+          scale: { start: 0.8, end: 0 }, tint: this.assets.hexToInt(colors[0])
+        }, qty);
+      }
+    });
+  }
+
+  // 혼란의빛 (Confuse Ray): soft pastel rings expand and rotate around the target with a couple of
+  // orbiting sparkle stars - a dizzying "hypnosis" look instead of the generic circle burst.
+  playConfuseRings(typeId, level, x, y, radius) {
+    const def = this.getEffectDef(typeId, 'Circle');
+    const colors = this.resolveColors(def, typeId);
+    for (let i = 0; i < 2; i++) {
+      const ring = this.graphicsPool.obtain();
+      ring.setPosition(x, y);
+      ring.setDepth(7);
+      ring.lineStyle(2, this.assets.hexToInt(colors[i] || colors[0]), 0.75);
+      ring.strokeEllipse(0, 0, 18 + i * 10, 7 + i * 4);
+      this.scene.tweens.add({
+        targets: ring, angle: 180, scaleX: 1.6, scaleY: 1.6, alpha: 0, duration: 500 + i * 120,
+        onComplete: () => this.graphicsPool.release(ring)
+      });
+    }
+    const starCount = 3;
+    for (let i = 0; i < starCount; i++) {
+      const a = (i / starCount) * Math.PI * 2;
+      const star = this.scene.add.text(x + Math.cos(a) * 16, y - 14 + Math.sin(a) * 6, '✦', {
+        fontFamily: 'Arial', fontSize: '12px', color: '#ce93d8'
+      }).setOrigin(0.5).setDepth(11);
+      this.scene.tweens.add({
+        targets: star, y: star.y - 10, alpha: 0, duration: 420, delay: i * 60,
+        onComplete: () => star.destroy()
+      });
+    }
+  }
+
+  // 섀도볼 (Shadow Ball): the projectile orb bursts into dark rings + dispersing wisps on impact.
+  playShadowBallBurst(typeId, level, x, y) {
+    const def = this.getEffectDef(typeId, 'Hit');
+    const colors = this.resolveColors(def, typeId);
+    const ring = this.graphicsPool.obtain();
+    ring.setPosition(x, y);
+    ring.setDepth(11);
+    ring.lineStyle(2.5, this.assets.hexToInt(colors[0]), 0.85);
+    ring.strokeCircle(0, 0, 8);
+    this.scene.tweens.add({
+      targets: ring, scaleX: 2.6, scaleY: 2.6, alpha: 0, duration: 300,
+      onComplete: () => this.graphicsPool.release(ring)
+    });
+    const qty = this.scaleParticleCount(def, level, 'P1');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 20, max: 90 }, lifespan: 420, angle: { min: 0, max: 360 },
+      scale: { start: 1.1, end: 0 }, alpha: { start: 0.9, end: 0 }, tint: this.assets.hexToInt(colors[0])
+    }, qty + 4);
+  }
+
+  // 크런치 (Crunch): two curved fang shapes snap shut on the target - a quick bite-mark instead of
+  // the generic projectile hit flash.
+  playCrunchBite(typeId, level, x, y) {
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setDepth(11);
+    g.fillStyle(0xffffff, 0.9);
+    g.fillTriangle(-12, -10, -2, -2, -14, -1);
+    g.fillTriangle(12, -10, 2, -2, 14, -1);
+    g.fillTriangle(-12, 10, -2, 2, -14, 1);
+    g.fillTriangle(12, 10, 2, 2, 14, 1);
+    this.scene.tweens.add({
+      targets: g, scaleX: 0.3, scaleY: 0.3, alpha: 0, duration: 200,
+      onComplete: () => this.graphicsPool.release(g)
+    });
+  }
+
+  // 플래시캐논 (Flash Cannon): a blinding white-silver flash with a metallic ring shockwave.
+  playFlashCannonBurst(typeId, level, x, y, radius) {
+    const def = this.getEffectDef(typeId, 'Explosion');
+    const colors = this.resolveColors(def, typeId);
+    const flash = this.scene.add.circle(x, y, (radius || 90) * 0.3, 0xffffff, 0.85).setDepth(9);
+    this.scene.tweens.add({ targets: flash, scale: 3, alpha: 0, duration: 280, onComplete: () => flash.destroy() });
+    const ring = this.graphicsPool.obtain();
+    ring.setPosition(x, y);
+    ring.setDepth(8);
+    ring.lineStyle(4, this.assets.hexToInt(colors[0]), 0.9);
+    ring.strokeCircle(0, 0, (radius || 90) * 0.35);
+    this.scene.tweens.add({
+      targets: ring, scaleX: 2.2, scaleY: 2.2, alpha: 0, duration: 350,
+      onComplete: () => this.graphicsPool.release(ring)
+    });
+    this.scene.cameras.main.flash(60, 255, 255, 255, false);
+    const qty = this.scaleParticleCount(def, level, 'P1');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 80, max: 220 }, lifespan: 300, angle: { min: 0, max: 360 },
+      scale: { start: 0.9, end: 0 }, tint: 0xe8eaf6
+    }, qty);
+  }
+
+  // 돌떨구기/바위 공격: a couple of rock chunks (reusing the rock-type particle texture, scaled
+  // way up) tumble down and crash onto the target with a dust puff.
+  playRockDebris(typeId, level, x, y) {
+    const def = this.getEffectDef(typeId, 'Hit');
+    const chunkCount = 2 + Math.min(2, Math.floor(level / 2));
+    for (let i = 0; i < chunkCount; i++) {
+      const fromX = x + (Math.random() - 0.5) * 50;
+      const sprite = this.spritePool.obtain(this.getTexture('rock'));
+      sprite.setPosition(fromX, y - 60 - Math.random() * 30);
+      sprite.setDepth(9);
+      sprite.setScale(1.4 + Math.random() * 0.6);
+      sprite.setAngle(Math.random() * 360);
+      this.scene.tweens.add({
+        targets: sprite, x, y, angle: sprite.angle + 180, duration: 220 + i * 40, ease: 'Cubic.easeIn',
+        onComplete: () => { this.spritePool.release(sprite); }
+      });
+    }
+    this.scene.time.delayedCall(240, () => {
+      const dust = this.graphicsPool.obtain();
+      dust.setPosition(x, y);
+      dust.setDepth(4);
+      dust.fillStyle(0xbcaaa4, 0.6);
+      dust.fillCircle(0, 0, 14);
+      this.scene.tweens.add({
+        targets: dust, scaleX: 1.8, scaleY: 1.8, alpha: 0, duration: 260,
+        onComplete: () => this.graphicsPool.release(dust)
+      });
+    });
+  }
+
+  // 엑스어썸 (X-Scissor): two crossing saber-slash arcs forming an X, like scissor blades snapping
+  // shut on the target - distinct from fire_blast's straight-line 大/X (these are curved arcs).
+  playScissorSlash(typeId, level, x, y) {
+    const def = this.getEffectDef(typeId, 'Hit');
+    const colors = this.resolveColors(def, typeId);
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setDepth(11);
+    g.lineStyle(3, this.assets.hexToInt(colors[0]), 0.95);
+    g.beginPath();
+    g.arc(0, 0, 14, Phaser.Math.DegToRad(-60), Phaser.Math.DegToRad(30), false);
+    g.strokePath();
+    g.beginPath();
+    g.arc(0, 0, 14, Phaser.Math.DegToRad(150), Phaser.Math.DegToRad(240), false);
+    g.strokePath();
+    this.scene.tweens.add({
+      targets: g, scaleX: 1.6, scaleY: 1.6, alpha: 0, duration: 180,
+      onComplete: () => this.graphicsPool.release(g)
+    });
+  }
+
+  // 드래곤러쉬 (Dragon Rush): a glowing draconic streak trails behind the dash and bursts at the
+  // landing point, instead of the generic dash trail every other dash move uses alone.
+  playDragonRushTrail(typeId, level, x, y, angle) {
+    const def = this.getEffectDef(typeId, 'Dash');
+    const colors = this.resolveColors(def, typeId);
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setRotation(angle || 0);
+    g.setDepth(9);
+    g.lineStyle(5, this.assets.hexToInt(colors[0]), 0.85);
+    g.beginPath();
+    g.moveTo(-40, 0);
+    for (let i = 1; i <= 6; i++) {
+      const t = i / 6;
+      g.lineTo(-40 + 40 * t, Math.sin(t * Math.PI * 2.4) * 6);
+    }
+    g.strokePath();
+    this.scene.tweens.add({
+      targets: g, alpha: 0, scaleX: 1.3, duration: 220,
+      onComplete: () => this.graphicsPool.release(g)
+    });
+    const qty = this.scaleParticleCount(def, level, 'P1');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 60, max: 180 }, lifespan: 300, angle: { min: 0, max: 360 },
+      scale: { start: 1.0, end: 0 }, tint: this.assets.hexToInt(colors[0])
+    }, qty);
+  }
+
+  // 윙어택 (Wing Attack): a single crescent-moon wing-blade slash at the hit point.
+  playWingSlash(typeId, level, x, y) {
+    const def = this.getEffectDef(typeId, 'Hit');
+    const colors = this.resolveColors(def, typeId);
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setDepth(11);
+    g.setRotation(Math.random() * Math.PI * 2);
+    g.lineStyle(3.5, this.assets.hexToInt(colors[0]), 0.9);
+    g.beginPath();
+    g.arc(0, 0, 13, Phaser.Math.DegToRad(-70), Phaser.Math.DegToRad(70), false);
+    g.strokePath();
+    this.scene.tweens.add({
+      targets: g, scaleX: 1.8, scaleY: 1.8, alpha: 0, duration: 200,
+      onComplete: () => this.graphicsPool.release(g)
+    });
+  }
+
+  // 하이퍼빔 (Hyper Beam): the roster's heaviest-hitting ultimate gets an oversized impact flash
+  // at every point it connects, instead of the same small hit flash as a basic attack.
+  playHyperBeamImpact(typeId, level, x, y) {
+    const flash = this.scene.add.circle(x, y, 18, 0xfff176, 0.85).setDepth(11);
+    this.scene.tweens.add({ targets: flash, scale: 2.6, alpha: 0, duration: 300, onComplete: () => flash.destroy() });
+    const qty = this.scaleParticleCount(this.getEffectDef(typeId, 'Hit'), level, 'P0');
+    this.explodeAt(typeId, x, y, {
+      speed: { min: 100, max: 260 }, lifespan: 360, angle: { min: 0, max: 360 },
+      scale: { start: 1.3, end: 0 }, tint: 0xfff176
+    }, qty + 6);
   }
 };
