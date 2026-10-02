@@ -641,7 +641,7 @@ PS.GameScene = class GameScene extends Phaser.Scene {
       const move = this.managers.move.getMove(moveId);
       if (!move) continue;
       const isAreaPattern = move.pattern === 'circle' || move.pattern === 'orbit' || move.pattern === 'aura';
-      const radius = isAreaPattern ? this.getEffectiveAreaRadius(move, 150) : this.getEffectiveRange(move);
+      const radius = isAreaPattern ? this.getEffectiveAreaRadius(move, 150) : this.getEffectiveRange(move, this.build.getMoveLevel(moveId));
       const key = Math.round(radius / 4); // dedupe near-identical radii so rings don't overdraw
       if (!radius || seen.has(key)) continue;
       seen.add(key);
@@ -761,8 +761,22 @@ PS.GameScene = class GameScene extends Phaser.Scene {
   }
 
   // ================= Player attack pattern resolution =================
-  getEffectiveRange(move) {
-    return (move.range || 300) * this.build.modifiers.rangeMult;
+  // moveLevel defaults to the move's current owned level when the caller doesn't already have
+  // it handy (e.g. the range-ring indicator below, which iterates owned moves directly).
+  getEffectiveRange(move, moveLevel) {
+    const level = moveLevel || this.build.getMoveLevel(move.id) || 1;
+    const rangeLevelMult = this.getMoveLevelRangeMult(level);
+    return (move.range || 300) * this.build.modifiers.rangeMult * rangeLevelMult;
+  }
+
+  // See moveLevelRangeMult comment in data/balance.json: Lv1 moves reach less far, growing to
+  // their full listed range by max move level (3). Mirrors how CombatSystem.moveLevelDamageMult
+  // is indexed, so a future bump to maxLevels.move keeps working without code changes here.
+  getMoveLevelRangeMult(moveLevel) {
+    const table = this.data_.balance.moveLevelRangeMult;
+    if (!table) return 1;
+    const idx = PS.MathUtils.clamp(moveLevel, 1, table.byLevel.length) - 1;
+    return table.byLevel[idx];
   }
 
   // Pattern-specific growth (spec: 패턴마다 다른 핵심 스탯이 성장) - data/balance.json's
@@ -792,12 +806,12 @@ PS.GameScene = class GameScene extends Phaser.Scene {
     const nearest = this.findNearestEnemy(player.x, player.y, null);
     const aimAngle = nearest ? PS.MathUtils.angleBetween(player.x, player.y, nearest.x, nearest.y) : (player.lastFacingAngle || -Math.PI / 2);
     const hpRatio = player.getHpRatio();
-    const range = this.getEffectiveRange(move);
     const moveLevel = this.build.getMoveLevel(move.id) || 1;
+    const range = this.getEffectiveRange(move, moveLevel);
 
     switch (move.pattern) {
       case 'melee': {
-        const meleeRange = (move.range || 70) * this.build.modifiers.rangeMult;
+        const meleeRange = (move.range || 70) * this.build.modifiers.rangeMult * this.getMoveLevelRangeMult(moveLevel);
         const target = nearest && PS.MathUtils.distance(player.x, player.y, nearest.x, nearest.y) <= meleeRange ? nearest : null;
         if (target) this.applyPlayerHitToEnemy(move, target, hpRatio, player);
         this.vfx.playTypeVfx(move.type, this.build.getMoveLevel(move.id), player.x + Math.cos(aimAngle) * 30, player.y + Math.sin(aimAngle) * 30, aimAngle);

@@ -238,6 +238,16 @@ PS.BuildSystem = class BuildSystem {
       }
     }
     let cooldown = move.cooldownMs * mult * (1 - this.gameStats.attackSpeedBonus);
+    // moveLevelCooldownMult (data/balance.json, added 2026-10-02): a freshly-learned Lv1 move
+    // fires noticeably slower, ramping down to its real cooldownMs by max move level - see
+    // comment there. Multiplies AFTER all the other speed modifiers so item/ability/Speed-stat
+    // attack-speed bonuses still apply at their full percentage regardless of move level.
+    const levelTable = this.balance.moveLevelCooldownMult;
+    if (levelTable) {
+      const moveLevel = this.getMoveLevel(move.id) || 1;
+      const idx = PS.MathUtils.clamp(moveLevel, 1, levelTable.byLevel.length) - 1;
+      cooldown *= levelTable.byLevel[idx];
+    }
     return Math.max(60, cooldown);
   }
 

@@ -81,6 +81,20 @@ PS.AssetManager = class AssetManager {
     const size = 24;
     const cx = size / 2;
     const cy = size / 2;
+    // Soft multi-tone glow halo behind every shape (2026-10-02 feedback: "스킬 이펙트가 다 단색이라
+    // 별로야" - every particle was a single flat fillStyle color, reading as a plain cutout).
+    // Three concentric washes - a near-white hot core fading out through the type color - drawn
+    // BEFORE the shape itself, so the crisp per-type silhouette still reads clearly on top, but
+    // every single particle now carries a bit of gradient/glow instead of one flat tone. Shape-
+    // agnostic (just concentric circles), so it applies uniformly to all 18 types with one block
+    // instead of hand-editing every case below.
+    g.fillStyle(0xffffff, 0.5);
+    g.fillCircle(cx, cy, 3.5);
+    g.fillStyle(c, 0.55);
+    g.fillCircle(cx, cy, 7.5);
+    g.fillStyle(c, 0.22);
+    g.fillCircle(cx, cy, 10.5);
+
     g.fillStyle(c, 1);
     // A crisp white outline on EVERY shape (not just poison/dragon, as before) - 2026-10-01
     // feedback ("각 속성을 확실히 알아볼 수 있게"): these already-distinct per-type silhouettes

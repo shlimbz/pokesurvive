@@ -9,7 +9,12 @@ PS.CombatSystem = class CombatSystem {
     this.typeFx = typeEffectivenessSystem;
     this.statusFx = statusEffectSystem;
     this.balance = balanceData;
-    this.moveLevelDamageMult = [1.0, 1.10, 1.25, 1.45, 1.70];
+    // Retuned 2026-10-02 (user feedback: every move already feels "complete" from the moment
+    // it's picked at Lv1, so leveling it up barely changes anything). Lv1 now hits noticeably
+    // softer (70% instead of 100%) so a freshly-learned move visibly ramps up as it's leveled,
+    // instead of starting at full strength. maxLevels.move caps real moves at level 3 (index 2,
+    // 1.25x) - the lv4/5 entries stay for forward-compat / anything that reads past that cap.
+    this.moveLevelDamageMult = [0.70, 0.95, 1.25, 1.45, 1.70];
   }
 
   // ---- Player (build-driven) attacking an enemy ----
