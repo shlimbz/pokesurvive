@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>기술 테스트 페이지 - Pokémon × Survivors</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { overflow: hidden; }
+    #game-container { position: absolute; top: 0; left: 0; right: 340px; bottom: 0; }
+    #panel {
+      position: absolute; top: 0; right: 0; width: 340px; height: 100%;
+      background: #15161c; color: #eee; font-family: Arial, Helvetica, sans-serif;
+      box-sizing: border-box; display: flex; flex-direction: column; z-index: 10;
+      border-left: 2px solid #333;
+    }
+    #panel h1 { font-size: 15px; margin: 10px 12px 4px; }
+    #panel .sub { font-size: 11px; color: #999; margin: 0 12px 8px; }
+    #controls { padding: 0 12px 8px; border-bottom: 1px solid #333; }
+    #controls label { font-size: 12px; display: block; margin: 6px 0 2px; color: #bbb; }
+    #levelRow { display: flex; gap: 6px; }
+    #levelRow button {
+      flex: 1; padding: 6px 0; background: #2a2c36; color: #eee; border: 1px solid #444;
+      border-radius: 4px; cursor: pointer; font-size: 13px;
+    }
+    #levelRow button.active { background: #4a7fd6; border-color: #6ea0ff; font-weight: bold; }
+    #distanceRow { display: flex; align-items: center; gap: 8px; }
+    #distanceRow input { flex: 1; }
+    #distanceVal { width: 42px; font-size: 12px; text-align: right; }
+    #counterBtn {
+      margin-top: 6px; width: 100%; padding: 6px 0; background: #3a2c2c; color: #eee;
+      border: 1px solid #553; border-radius: 4px; cursor: pointer; font-size: 12px;
+    }
+    #statPanel { padding: 8px 12px; border-bottom: 1px solid #333; font-size: 12px; line-height: 1.6; }
+    #statPanel .row { display: flex; justify-content: space-between; }
+    #statPanel .label { color: #999; }
+    #moveList { flex: 1; overflow-y: auto; padding: 4px 0; }
+    .typeGroup { margin: 4px 0; }
+    .typeHeader {
+      font-size: 12px; font-weight: bold; padding: 4px 12px; background: #1d1e26;
+      position: sticky; top: 0; color: #9fc3ff;
+    }
+    .moveItem {
+      padding: 6px 12px; font-size: 12.5px; cursor: pointer; display: flex;
+      justify-content: space-between; align-items: center; border-bottom: 1px solid #22232b;
+    }
+    .moveItem:hover { background: #22232e; }
+    .moveItem.selected { background: #2d3a55; }
+    .moveName { color: #eee; }
+    .badge {
+      font-size: 10px; padding: 1px 6px; border-radius: 8px; margin-left: 6px; flex-shrink: 0;
+    }
+    .badge.learnable { background: #2d5a2d; color: #b6ffb6; }
+    .badge.enemyOnly { background: #5a2d2d; color: #ffb6b6; }
+    #bootMsg {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      color: #ccc; font-family: Arial, sans-serif; font-size: 14px; z-index: 20;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+  <div id="bootMsg">게임 데이터 불러오는 중...</div>
+
+  <div id="panel">
+    <h1>기술 테스트 페이지</h1>
+    <div class="sub">기술을 선택하면 레벨에 따른 스탯과 VFX를 바로 확인할 수 있습니다. (더미 타겟 = 꼬렛, 고정 체력)</div>
+
+    <div id="controls">
+      <label>레벨</label>
+      <div id="levelRow">
+        <button data-level="1" class="active">Lv.1</button>
+        <button data-level="2">Lv.2</button>
+        <button data-level="3">Lv.3</button>
+        <button data-level="4">Lv.4</button>
+        <button data-level="5">Lv.5</button>
+      </div>
+      <label>더미와의 거리 (<span id="distanceVal">160</span>px)</label>
+      <div id="distanceRow">
+        <input type="range" id="distanceSlider" min="0" max="600" value="160" />
+      </div>
+      <button id="counterBtn">더미 공격 1회 유도 (counter 패턴 확인용)</button>
+    </div>
+
+    <div id="statPanel">
+      <div class="row"><span class="label">선택된 기술</span><span id="statName">-</span></div>
+      <div class="row"><span class="label">패턴</span><span id="statPattern">-</span></div>
+      <div class="row"><span class="label">사거리</span><span id="statRange">-</span></div>
+      <div class="row"><span class="label">쿨타임</span><span id="statCooldown">-</span></div>
+      <div class="row"><span class="label">레벨 보정 데미지(추정)</span><span id="statDamage">-</span></div>
+      <div class="row"><span class="label">최대 레벨</span><span id="statMaxLevel">-</span></div>
+    </div>
+
+    <div id="moveList"></div>
+  </div>
+
+  <!-- Local Phaser build - no CDN, fully offline (see vendor/phaser.min.js) -->
+  <script src="vendor/phaser.min.js"></script>
+
+  <!-- Utils -->
+  <script src="src/utils/MathUtils.js"></script>
+  <script src="src/utils/RandomUtils.js"></script>
+  <script src="src/utils/ObjectPool.js"></script>
+  <script src="src/utils/KoreanLabels.js"></script>
+  <script src="src/utils/UITheme.js"></script>
+
+  <!-- Managers -->
+  <script src="src/managers/AssetManager.js"></script>
+  <script src="src/managers/PokemonManager.js"></script>
+  <script src="src/managers/MoveManager.js"></script>
+  <script src="src/managers/ItemManager.js"></script>
+  <script src="src/managers/AbilityManager.js"></script>
+  <script src="src/managers/EnemyManager.js"></script>
+  <script src="src/managers/RelicManager.js"></script>
+  <script src="src/managers/TypeMasteryManager.js"></script>
+
+  <!-- Systems -->
+  <script src="src/systems/TypeEffectivenessSystem.js"></script>
+  <script src="src/systems/StatusEffectSystem.js"></script>
+  <script src="src/systems/ItemSystem.js"></script>
+  <script src="src/systems/RelicSystem.js"></script>
+  <script src="src/systems/AbilitySystem.js"></script>
+  <script src="src/systems/BuildSystem.js"></script>
+  <script src="src/systems/CombatSystem.js"></script>
+  <script src="src/systems/VFXPatternMap.js"></script>
+  <script src="src/systems/VFXSystem.js"></script>
+  <script src="src/systems/LevelSystem.js"></script>
+  <script src="src/systems/EvolutionSystem.js"></script>
+  <script src="src/systems/MoveEvolutionSystem.js"></script>
+  <script src="src/systems/TypeMasterySystem.js"></script>
+  <script src="src/systems/WaveSystem.js"></script>
+  <script src="src/systems/SpawnSystem.js"></script>
+  <script src="src/systems/SaveSystem.js"></script>
+  <script src="src/systems/AudioSystem.js"></script>
+
+  <!-- Entities -->
+  <script src="src/entities/DamageNumber.js"></script>
+  <script src="src/entities/ExpGem.js"></script>
+  <script src="src/entities/Projectile.js"></script>
+  <script src="src/entities/Enemy.js"></script>
+  <script src="src/entities/Boss.js"></script>
+  <script src="src/entities/Player.js"></script>
+
+  <!-- Scenes -->
+  <script src="src/scenes/BootScene.js"></script>
+  <script src="src/scenes/PreloadScene.js"></script>
+  <script src="src/scenes/MenuScene.js"></script>
+  <script src="src/scenes/PokemonSelectScene.js"></script>
+  <script src="src/scenes/MapSelectScene.js"></script>
+  <script src="src/scenes/GameScene.js"></script>
+  <script src="src/scenes/LevelUpScene.js"></script>
+  <script src="src/scenes/EvolutionScene.js"></script>
+  <script src="src/scenes/GameOverScene.js"></script>
+
+  <script src="src/main.js"></script>
+
+  <!-- Debug-only harness: never referenced by index.html, zero impact on the real game -->
+  <script src="src/debug/MoveTestHarness.js"></script>
+
+  <script>
+    (function () {
+      const moveListEl = document.getElementById('moveList');
+      const levelRow = document.getElementById('levelRow');
+      const distanceSlider = document.getElementById('distanceSlider');
+      const distanceVal = document.getElementById('distanceVal');
+      const counterBtn = document.getElementById('counterBtn');
+      const bootMsg = document.getElementById('bootMsg');
+
+      let selectedLevel = 1;
+      let selectedMoveId = null;
+
+      function updateStatPanel(stats, move) {
+        document.getElementById('statName').textContent = move ? `${move.name} (${move.id})` : '-';
+        document.getElementById('statPattern').textContent = stats ? (PS.patternNameKo ? PS.patternNameKo(stats.pattern) : stats.pattern) : '-';
+        document.getElementById('statRange').textContent = stats ? `${stats.range}px` : '-';
+        document.getElementById('statCooldown').textContent = stats ? `${stats.cooldownMs}ms` : '-';
+        document.getElementById('statDamage').textContent = stats ? `${stats.estimatedDamage} (base ${stats.rawBaseDamage})` : '-';
+        document.getElementById('statMaxLevel').textContent = stats ? stats.maxLevel : '-';
+      }
+
+      function selectMove(move, el) {
+        selectedMoveId = move.id;
+        document.querySelectorAll('.moveItem.selected').forEach(n => n.classList.remove('selected'));
+        if (el) el.classList.add('selected');
+        const maxLevel = move.maxLevel || 5;
+        levelRow.querySelectorAll('button').forEach(b => {
+          const lvl = parseInt(b.dataset.level, 10);
+          b.style.display = lvl <= maxLevel ? '' : 'none';
+        });
+        if (selectedLevel > maxLevel) selectedLevel = maxLevel;
+        levelRow.querySelectorAll('button').forEach(b => b.classList.toggle('active', parseInt(b.dataset.level, 10) === selectedLevel));
+        const stats = window.MoveTestHarness.selectMove(move.id, selectedLevel);
+        updateStatPanel(stats, move);
+      }
+
+      function buildMoveList() {
+        const moves = window.MoveTestHarness.getAllMoves();
+        const byType = {};
+        for (const m of moves) {
+          (byType[m.type] = byType[m.type] || []).push(m);
+        }
+        const typeOrder = Object.keys(byType).sort();
+        let firstMove = null, firstEl = null;
+        for (const typeId of typeOrder) {
+          const header = document.createElement('div');
+          header.className = 'typeHeader';
+          header.textContent = PS.typeNameKo ? PS.typeNameKo(typeId) : typeId;
+          moveListEl.appendChild(header);
+          for (const m of byType[typeId]) {
+            const item = document.createElement('div');
+            item.className = 'moveItem';
+            const badge = m.learnable
+              ? '<span class="badge learnable">사용 가능</span>'
+              : '<span class="badge enemyOnly">적 전용</span>';
+            item.innerHTML = `<span class="moveName">${m.name}</span>${badge}`;
+            item.addEventListener('click', () => selectMove(m, item));
+            moveListEl.appendChild(item);
+            if (!firstMove) { firstMove = m; firstEl = item; }
+          }
+        }
+        if (firstMove) selectMove(firstMove, firstEl);
+      }
+
+      levelRow.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        selectedLevel = parseInt(btn.dataset.level, 10);
+        levelRow.querySelectorAll('button').forEach(b => b.classList.toggle('active', b === btn));
+        if (selectedMoveId) {
+          const stats = window.MoveTestHarness.setLevel(selectedLevel);
+          const move = window.MoveTestHarness.getAllMoves().find(m => m.id === selectedMoveId);
+          updateStatPanel(stats, move);
+        }
+      });
+
+      distanceSlider.addEventListener('input', () => {
+        distanceVal.textContent = distanceSlider.value;
+        window.MoveTestHarness.setDummyDistance(parseInt(distanceSlider.value, 10));
+      });
+
+      counterBtn.addEventListener('click', () => window.MoveTestHarness.triggerDummyHit());
+
+      window.MoveTestHarness.onReady(() => {
+        bootMsg.remove();
+        window.MoveTestHarness.setDummyDistance(parseInt(distanceSlider.value, 10));
+        buildMoveList();
+      });
+    })();
+  </script>
+</body>
+</html>
