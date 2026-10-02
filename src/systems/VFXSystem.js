@@ -55,11 +55,19 @@ PS.VFXSystem = class VFXSystem {
       // 2026-10-02 batch: the remaining types that only ever got the generic pattern-group look,
       // each given one real-game-style signature move instead (user feedback: don't wait to be
       // told every single one - cover the roster the way an actual Pokemon game would).
-      hydro_pump: (typeId, level, p) => this.playHydroSplash(typeId, level, p.x, p.y),
+      //
+      // IMPORTANT: only MoveManager.representativeMoveByType's two moves per type are ever
+      // player-learnable (everything else in moves.json, e.g. hydro_pump/shadow_ball/confuse_ray/
+      // sludge_bomb, is enemy-only - gyarados's hydro_pump, etc). First pass here wired up a few
+      // moves that LOOKED like the obvious pick for their type but a player can never actually
+      // own/cast (caught by user feedback - "하이드로펌프 스킬 없잖아"). Fixed below to key off the
+      // real learnable move for each of those types instead.
+      aqua_jet: (typeId, level, p) => this.playAquaJetTrail(typeId, level, p.x, p.y, p.angle),
       icicle_crash: (typeId, level, p) => this.playIcicleCrash(typeId, level, p.x, p.y, p.radius),
-      sludge_bomb: (typeId, level, p) => this.playSludgeSplat(typeId, level, p.x, p.y, p.radius),
-      confuse_ray: (typeId, level, p) => this.playConfuseRings(typeId, level, p.x, p.y, p.radius),
-      shadow_ball: (typeId, level, p) => this.playShadowBallBurst(typeId, level, p.x, p.y),
+      poison_sting: (typeId, level, p) => this.playSludgeSplat(typeId, level, p.x, p.y, p.radius),
+      toxic_spikes: (typeId, level, p) => this.playToxicSpikes(typeId, level, p.x, p.y, p.radius),
+      zen_headbutt: (typeId, level, p) => this.playConfuseRings(typeId, level, p.x, p.y, p.radius),
+      shadow_punch: (typeId, level, p) => this.playShadowBallBurst(typeId, level, p.x, p.y),
       crunch: (typeId, level, p) => this.playCrunchBite(typeId, level, p.x, p.y),
       flash_cannon: (typeId, level, p) => this.playFlashCannonBurst(typeId, level, p.x, p.y, p.radius),
       rock_throw: (typeId, level, p) => this.playRockDebris(typeId, level, p.x, p.y),
@@ -1045,9 +1053,10 @@ PS.VFXSystem = class VFXSystem {
     });
   }
 
-  // 하이드로펌프 (Hydro Pump): a heavy water impact - two expanding foam/wave rings plus droplets
-  // flung outward, layered on top of the wavy beam corridor so the actual landing point reads as
-  // a real water blast, not just a line stopping.
+  // Generic heavy water impact - two expanding foam/wave rings plus droplets flung outward.
+  // Used as the landing splash for aqua_jet below (hydro_pump itself is enemy-only - see the
+  // moveOverrides table comment - so this is reused rather than tied to a move the player can
+  // never actually cast).
   playHydroSplash(typeId, level, x, y) {
     const def = this.getEffectDef(typeId, 'Hit');
     const colors = this.resolveColors(def, typeId);
@@ -1067,6 +1076,60 @@ PS.VFXSystem = class VFXSystem {
       speed: { min: 60, max: 200 }, lifespan: 320, angle: { min: -160, max: -20 },
       scale: { start: 0.9, end: 0 }, tint: this.assets.hexToInt(colors[0])
     }, qty);
+  }
+
+  // 아쿠아제트 (Aqua Jet): the player's actual learnable water dash move - a wavy water-wake trail
+  // behind the dash, then the splash burst above at the landing point.
+  playAquaJetTrail(typeId, level, x, y, angle) {
+    const def = this.getEffectDef(typeId, 'Dash');
+    const colors = this.resolveColors(def, typeId);
+    const g = this.graphicsPool.obtain();
+    g.setPosition(x, y);
+    g.setRotation(angle || 0);
+    g.setDepth(9);
+    g.lineStyle(5, this.assets.hexToInt(colors[0]), 0.6);
+    g.beginPath();
+    g.moveTo(-44, 0);
+    for (let i = 1; i <= 7; i++) {
+      const t = i / 7;
+      g.lineTo(-44 + 44 * t, Math.sin(t * Math.PI * 3) * 7);
+    }
+    g.strokePath();
+    this.scene.tweens.add({
+      targets: g, alpha: 0, duration: 240,
+      onComplete: () => this.graphicsPool.release(g)
+    });
+    this.playHydroSplash(typeId, level, x, y);
+  }
+
+  // 독가시 (Poison Sting) splat + 맹독압정 (Toxic Spikes): the sting's venom splat reuses the
+  // sludge-splat look (playSludgeSplat is kept generic/renamed-in-place); toxic spikes instead
+  // leaves a few small thorn spikes jutting out of the ground - it's a trap laid down, not a
+  // direct hit, so it deserves a visibly different "placed object" look rather than a splat.
+  playToxicSpikes(typeId, level, x, y, radius) {
+    const def = this.getEffectDef(typeId, 'GroundZone');
+    const colors = this.resolveColors(def, typeId);
+    const count = 3 + Math.min(3, level);
+    const r = (radius || 50) * 0.6;
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2 + Math.random() * 0.4;
+      const px = x + Math.cos(a) * r * Math.random();
+      const py = y + Math.sin(a) * r * Math.random() * 0.5;
+      const spike = this.graphicsPool.obtain();
+      spike.setPosition(px, py);
+      spike.setDepth(4);
+      spike.setScale(1, 0);
+      spike.fillStyle(this.assets.hexToInt(colors[0]), 0.9);
+      spike.fillTriangle(-3, 4, 3, 4, 0, -10);
+      spike.lineStyle(1, 0xffffff, 0.7);
+      spike.strokeTriangle(-3, 4, 3, 4, 0, -10);
+      this.scene.tweens.add({
+        targets: spike, scaleY: 1, duration: 180, delay: i * 40, ease: 'Back.easeOut',
+        onComplete: () => this.scene.tweens.add({
+          targets: spike, alpha: 0, delay: 700, duration: 300, onComplete: () => this.graphicsPool.release(spike)
+        })
+      });
+    }
   }
 
   // 아이시클크래시 (Icicle Crash): a solid icicle falls from above and shatters on impact, instead
@@ -1097,7 +1160,9 @@ PS.VFXSystem = class VFXSystem {
     });
   }
 
-  // 오물폭탄 (Sludge Bomb): a purple sludge blob arcs down and splats into a dripping puddle ring.
+  // 독가시 (Poison Sting): a purple venom blob arcs down and splats into a dripping puddle ring on
+  // contact (named playSludgeSplat since the visual itself - "venom splatting on impact" - fits
+  // any poison hit; sludge_bomb, the move whose name it borrows, is actually enemy-only).
   playSludgeSplat(typeId, level, x, y, radius) {
     const def = this.getEffectDef(typeId, 'Explosion');
     const colors = this.resolveColors(def, typeId);
@@ -1125,8 +1190,10 @@ PS.VFXSystem = class VFXSystem {
     });
   }
 
-  // 혼란의빛 (Confuse Ray): soft pastel rings expand and rotate around the target with a couple of
-  // orbiting sparkle stars - a dizzying "hypnosis" look instead of the generic circle burst.
+  // 사念머리박치기 (Zen Headbutt): soft pastel psychic rings expand and rotate around the target
+  // with a couple of orbiting sparkle stars on contact - confuse_ray (whose name this visual
+  // borrows, "a dizzying hypnosis look") is actually enemy-only, zen_headbutt is the real
+  // player-learnable psychic move.
   playConfuseRings(typeId, level, x, y, radius) {
     const def = this.getEffectDef(typeId, 'Circle');
     const colors = this.resolveColors(def, typeId);
@@ -1154,7 +1221,8 @@ PS.VFXSystem = class VFXSystem {
     }
   }
 
-  // 섀도볼 (Shadow Ball): the projectile orb bursts into dark rings + dispersing wisps on impact.
+  // 섀도펀치 (Shadow Punch): a dark burst of rings + dispersing wisps on impact (shadow_ball, whose
+  // name this visual borrows, is actually enemy-only - shadow_punch is the real player move).
   playShadowBallBurst(typeId, level, x, y) {
     const def = this.getEffectDef(typeId, 'Hit');
     const colors = this.resolveColors(def, typeId);
