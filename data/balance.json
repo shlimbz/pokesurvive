@@ -424,6 +424,14 @@
       "tint": "0xff3b3b"
     }
   },
+  "moveLevelRangeMult": {
+    "comment": "Added 2026-10-02 (user feedback: a move already reaches its full range the instant it's learned at Lv1, so leveling it up only changed damage/VFX tier, not how far it reaches). Scales move.range/meleeRange by move level so a fresh Lv1 move visibly reaches less far and grows into its full listed range by max level (maxLevels.move = 3). Does not touch areaRadius/beamWidth/count/etc - those already grow via patternGrowth.",
+    "byLevel": [0.6, 0.8, 1.0, 1.0, 1.0]
+  },
+  "moveLevelCooldownMult": {
+    "comment": "Added 2026-10-02 (user feedback: Lv1 moves already fire at full attack speed, so leveling up only raised damage/range/VFX, never felt 'faster'). Multiplies BuildSystem.getMoveCooldownMs's result by move level - Lv1 fires noticeably slower (40% longer wait), ramping down to the move's real listed cooldownMs at max level (maxLevels.move = 3).",
+    "byLevel": [1.4, 1.15, 1.0, 1.0, 1.0]
+  },
   "patternGrowth": {
     "comment": "패턴별 성장 차별화 (spec: 패턴마다 다른 핵심 스탯이 레벨업으로 성장). 데미지는 CombatSystem의 공통 moveLevelDamageMult로 이미 성장하므로, 여기서는 패턴의 '개성'을 만드는 비-데미지 필드 하나씩만 레벨당 추가 성장시킨다.",
     "spread": {

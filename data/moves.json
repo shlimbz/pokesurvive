@@ -156,7 +156,7 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 9,
-    "cooldownMs": 120,
+    "cooldownMs": 400,
     "range": 320,
     "beamWidth": 42,
     "statusEffect": {
@@ -164,7 +164,7 @@
       "chance": 0.12
     },
     "maxLevel": 5,
-    "tickMs": 120
+    "tickMs": 400
   },
   "fire_blast": {
     "id": "fire_blast",
@@ -239,12 +239,12 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 12,
-    "cooldownMs": 130,
+    "cooldownMs": 430,
     "range": 340,
     "beamWidth": 50,
     "splashRadius": 80,
     "maxLevel": 5,
-    "tickMs": 130
+    "tickMs": 430
   },
   "vine_whip": {
     "id": "vine_whip",
@@ -590,7 +590,7 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 10,
-    "cooldownMs": 130,
+    "cooldownMs": 430,
     "range": 240,
     "beamWidth": 40,
     "statusEffect": {
@@ -598,7 +598,7 @@
       "chance": 0.15
     },
     "maxLevel": 5,
-    "tickMs": 130,
+    "tickMs": 430,
     "evolution": {
       "evolvesTo": "dragon_breath_plus",
       "requiresMoveLevel": 3,
@@ -694,7 +694,7 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 8,
-    "cooldownMs": 120,
+    "cooldownMs": 400,
     "range": 240,
     "beamWidth": 36,
     "statusEffect": {
@@ -702,7 +702,7 @@
       "chance": 0.2
     },
     "maxLevel": 5,
-    "tickMs": 120,
+    "tickMs": 400,
     "evolution": {
       "evolvesTo": "psybeam_plus",
       "requiresMoveLevel": 3,
@@ -838,12 +838,12 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 13,
-    "cooldownMs": 130,
+    "cooldownMs": 430,
     "range": 345,
     "beamWidth": 60,
     "splashRadius": 100,
     "knockback": 260,
-    "tickMs": 130,
+    "tickMs": 430,
     "maxLevel": 5
   },
   "vine_whip_plus": {
@@ -1142,7 +1142,7 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 11,
-    "cooldownMs": 98,
+    "cooldownMs": 325,
     "range": 322,
     "beamWidth": 45,
     "statusEffect": {
@@ -1150,7 +1150,7 @@
       "chance": 0.3
     },
     "maxLevel": 5,
-    "tickMs": 102,
+    "tickMs": 325,
     "evolvedFrom": "psybeam"
   },
   "x_scissor_plus": {
@@ -1218,7 +1218,7 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 14,
-    "cooldownMs": 107,
+    "cooldownMs": 355,
     "range": 322,
     "beamWidth": 50,
     "statusEffect": {
@@ -1226,7 +1226,7 @@
       "chance": 0.22
     },
     "maxLevel": 5,
-    "tickMs": 110,
+    "tickMs": 355,
     "evolvedFrom": "dragon_breath"
   },
   "crunch_plus": {
@@ -1373,10 +1373,10 @@
     "category": "special",
     "pattern": "beam",
     "baseDamage": 9,
-    "cooldownMs": 130,
+    "cooldownMs": 430,
     "range": 300,
     "beamWidth": 36,
-    "tickMs": 130,
+    "tickMs": 430,
     "statusEffect": {
       "id": "attackDown",
       "chance": 0.25
